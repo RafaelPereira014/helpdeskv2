@@ -668,7 +668,7 @@ def get_topic_id(ticket_id):
     conn = connect_to_database()
     cursor = conn.cursor()
     # Use a parameterized query to avoid SQL injection
-    query = "SELECT id FROM Topics WHERE ticket_id = %s ORDER BY key_word ASC"
+    query = "SELECT topic_id FROM tickets WHERE id = %s "
     cursor.execute(query, (ticket_id,))
     topic_id = cursor.fetchone()  # Fetch the first (and only) row returned by the query
     cursor.close()
@@ -695,6 +695,17 @@ def insert_topic(keyword, group_id):
     conn.commit()
     cursor.close()
     conn.close()
+    
+def get_topic_name(topic_id):
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    # Use a parameterized query to avoid SQL injection
+    query = "SELECT key_word FROM Topics WHERE id = %s "
+    cursor.execute(query, (topic_id,))
+    topic = cursor.fetchone()  # Fetch the first (and only) row returned by the query
+    cursor.close()
+    conn.close()
+    return topic[0] if topic else None  # Return the topic_id or None if no topic found
 
 
 def delete_topic(topic_id):
