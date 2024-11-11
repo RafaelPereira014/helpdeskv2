@@ -390,8 +390,11 @@ def send_message():
     
     admin_emails = get_emails_by_group(ticket_id)
 
-    title = get_title(ticket_id)    
-
+    title = get_title(ticket_id)
+    criado_por = get_creator_name(ticket_id)
+    unidade_org = get_unidadeOrg(ticket_id)
+    attributed_user = attributed_to_by_ticket(ticket_id)
+    info = get_ticket_details(ticket_id)
     # Check if the message contains specific phrases
     if "este ticket foi aceite com sucesso." not in message.lower() and "este ticket foi fechado com sucesso." not in message.lower():
         # If the sender is an admin, send the message to the email of the ticket creator
@@ -421,6 +424,22 @@ def send_message():
                 mail.send(msg)
         else:
             # Send email notification to unique admin emails
+            if info.get('state') == 'Fechado':
+                cursor = connection.cursor()
+                cursor.execute("UPDATE tickets SET state = 'em execucao' WHERE id = %s", (ticket_id,))
+                connection.commit()
+                cursor.close()
+            
+            print(attributed_user)
+            
+            if attributed_user is None :
+                cursor = connection.cursor()
+                cursor.execute("UPDATE tickets SET state = 'Aberto' WHERE id = %s", (ticket_id,))
+                connection.commit()
+                cursor.close()
+                attributed_user = "-"
+                
+            
             if admin_emails:
                 unique_admin_emails = set(admin_emails)
                 for admin_email in unique_admin_emails:
@@ -462,9 +481,15 @@ def send_message():
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="10px" style="padding: 30px 30px 30px 60px;">
                                     <tr>
                                         <td>
-                                            <h4>Foi registada a seguinte atualização no ticket com o numero #<strong>{ticket_id}</strong>.</h4>
-                                            <p>Mensagem: {message}</p>
-                                            <hr></hr>
+                                            <h4>Foi registada a seguinte atualização no ticket com o numero 
+                                                #<strong><a href="https://helpdesk.edu.azores.gov.pt/ticket_details/{ticket_id}" target="_blank">{ticket_id}</a></strong>.
+                                            </h4>
+                                            <p><strong>Criado por</strong>: {criado_por}</p>
+                                            <p><strong>Unidade Orgânica</strong>: {unidade_org}</p>
+                                            <p><strong>Atribuido a</strong>: {attributed_user}</p>
+                                            <p><strong>Mensagem</strong>: <br>{message}</p>
+                                            
+                                            <hr>
                                         </td>
                                     </tr>
                                 </table>
@@ -719,6 +744,9 @@ def close_ticket_route(ticket_id):
         closed_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         update_ticket_close_time(ticket_id,closed_time)
         
+        send_ticket_message(ticket_id,"Este Ticket foi fechado com sucesso.",'admin',attributed_to(user_id),closed_time,None)
+
+        
         # Send an email to the user
         user_email = get_user_email_by_ticket(ticket_id)
         if user_email:
@@ -752,6 +780,10 @@ def close_ticket_route(ticket_id):
 
 @app.route('/reopen_ticket/<int:ticket_id>', methods=['POST'])
 def reopen_ticket_route(ticket_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+
     reopen_ticket(ticket_id)
 
     return jsonify({'success': True})
@@ -764,11 +796,14 @@ def accept_ticket_route(ticket_id):
     user_id = session['user_id']
     claim_ticket(user_id, ticket_id)
     attributed_to(user_id)
+    
 
     # Get the current time and update the ticket with this time
     accept_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     update_ticket_accept_time(ticket_id, accept_time)
-
+    
+    
+    send_ticket_message(ticket_id,"Este Ticket foi aceite com sucesso.",'admin',attributed_to(user_id),accept_time,None)
     user_email = get_user_email_by_ticket(ticket_id)
     if user_email:
         msg = Message(f'Helpdesk NIT: Ticket aceite #{ticket_id}', sender='noreply@azores.gov.pt', recipients=[user_email])

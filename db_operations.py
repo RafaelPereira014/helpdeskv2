@@ -184,6 +184,25 @@ def update_ticket_close_time(ticket_id, close_time):
     finally:
         cursor.close()
         conn.close()
+        
+def send_ticket_message(ticket_id, message_content, sender_type, sender_name,sent_at, file_url=None):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    
+    # Insert message into the database
+    if file_url:
+        cursor.execute("""
+            INSERT INTO messages (ticket_id, message, sender_type, sender_name, file,sent_at) 
+            VALUES (%s, %s, %s, %s, %s,%s)
+        """, (ticket_id, message_content, sender_type, sender_name, file_url))
+    else:
+        cursor.execute("""
+            INSERT INTO messages (ticket_id, message, sender_type, sender_name,sent_at) 
+            VALUES (%s, %s, %s, %s,%s)
+        """, (ticket_id, message_content, sender_type, sender_name,sent_at))
+    
+    connection.commit()
+    cursor.close()
 
 
 
@@ -318,6 +337,22 @@ def get_creator_name(ticket_id):
             FROM users
             JOIN tickets ON users.id = tickets.created_by
             WHERE tickets.id = %s
+        """, (ticket_id,))
+        creator_name = cursor.fetchone()
+        return creator_name[0] if creator_name else None  # Return None if no user found
+    except Exception as e:
+        print("Error:", e)
+    finally:
+        cursor.close()
+        conn.close()
+        
+def get_unidadeOrg(ticket_id):
+    try:
+        conn = connect_to_database()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT UnidadeOrg
+            FROM tickets where id=%s
         """, (ticket_id,))
         creator_name = cursor.fetchone()
         return creator_name[0] if creator_name else None  # Return None if no user found
