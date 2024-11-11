@@ -102,7 +102,7 @@ def init_page():
 @app.route('/my_profile', methods=['GET', 'POST'])
 def profile_page():
     if 'user_id' not in session:
-        return redirect(url_for('login'))  # Redirect to login page if user is not logged in
+        return redirect(url_for('login'))  
 
     user_id = session['user_id']
     user_name = get_username(user_id)
