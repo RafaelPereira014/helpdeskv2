@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo ticket - Helpdesk NIT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/basic.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/new_ticket.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/side_menu.css') }}">
+    <link href='https://unpkg.com/css.gg@2.0.0/icons/css/log-out.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <!-- Include Quill stylesheet -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    
+    <style>
+        p {
+            margin: 0;
+            padding: 0;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidenav">
+        <img src="{{ url_for('static', filename='images/NIT_logo.png') }}" alt="logo-main" class="logo-main">
+        {% if admin_status %}
+            <div class="menu-item">
+                <a href="/admin_init"><i class="fa fa-home"></i> Inicio</a>
+            </div>
+            <div class="menu-item">
+                <a href="/new_ticket"><i class="fa fa-ticket"></i> Abrir novo ticket</a>
+            </div>
+            <div class="menu-item">
+                <a href="/admin_pannel"><i class="fa fa-dashboard"></i> Painel de administração</a>
+            </div>
+            <div class="menu-item">
+                <a href="/pannel_personal"><i class="fa fa-user"></i>Painel pessoal</a>
+            </div>
+            <div class="menu-item">
+                <a href="/pannel_group"><i class="fa fa-users"></i>Painel de grupo</a>
+            </div>
+            <div class="menu-item">
+                <a href="/gerirtopicos"><i class="fa fa-list-alt"></i>Gerir tópicos</a>
+            </div>
+            <div class="menu-item">
+                <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
+            </div>
+            <div class="menu-item">
+                <a href="/new_user"><i class="fa fa-user-plus"></i> Gerir utilizadores</a>
+            </div>
+            <div class="menu-item">
+                <a href="/logout"><i class="gg-log-out"></i> Terminar sessão</a>
+            </div>
+        {% endif %}
+        
+        {% if not admin_status %}
+            <div class="menu-item">
+                <a href="/init_page"><i class="fa fa-home"></i> Inicio</a>
+            </div>
+            <div class="menu-item">
+                <a href="/new_ticket"><i class="fa fa-ticket"></i> Abrir novo ticket</a>
+            </div>
+            <div class="menu-item">
+                <a href="/my_tickets"><i class="fa fa-users"></i> Tickets</a>
+            </div>
+            <div class="menu-item">
+                <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
+            </div>
+            <div class="menu-item">
+                <a href="/logout"><i class="gg-log-out"></i> Terminar sessão</a>
+            </div>
+        {% endif %}
+        
+    </div>
+
+    <div class="main">
+        <div class="container">
+            <h1>Abrir novo ticket</h1>
+            <form method="POST" action="/new_ticket" id="ticket_form" enctype="multipart/form-data">
+                <div id="popup-message" class="popup" style="display: none;">Ticket criado com sucesso!</div>
+                
+                {% if admin_status %}
+                    <label for="assigned_to">Atribuir ticket a:</label>
+                    <select id="assigned_to" name="assigned_to" required>
+                        <option value="">- Selecione utilizador -</option>
+                        {% for user_tuple in all_users %}
+                            {% set user = user_tuple[0] %}
+                            <option value="{{ user }}">{{ user }}</option>
+                        {% endfor %}
+                    </select>
+                {% endif %}
+
+                <label for="topic">Tópico de ajuda:</label>
+                <select id="topic_id" name="topic_id" required>
+                <option value="">-Selecione um tópico de ajuda-</option> <!-- Updated default option -->
+
+                    {% if admin_status %}
+                        {% for topic in all_topics %}
+                            <option value="{{ topic[0] }}">{{ topic[1] }}</option>
+                        {% endfor %}
+                    {% elif is_edu %}
+                        {% for topic in edu_topics_list %}
+                            <option value="{{ topic[0] }}">{{ topic[1] }}</option>
+                        {% endfor %}
+                    {% else %}
+                        {% for topic in gra_topics_list %}
+                            <option value="{{ topic[0] }}">{{ topic[1] }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+
+                <label for="title">Sumário do problema:</label>
+                <input type="text" id="title" name="title" required>
+                
+                {% if is_edu %}
+                    <label for="ilha">Ilha:</label>
+                    <select id="ilha" name="ilha" required>
+                        <option>-Selecione uma opção-</option>
+                        <option>Santa Maria</option>
+                        <option>São Miguel</option>
+                        <option>Terceira</option>
+                        <option>Faial</option>
+                        <option>Pico</option>
+                        <option>São Jorge</option>
+                        <option>Graciosa</option>
+                        <option>Flores</option>
+                        <option>Corvo</option>
+                    </select>
+                {% endif %}
+                
+                <label for="UnidadeOrg">Unidade orgânica:</label>
+                <select id="UnidadeOrg" name="UnidadeOrg" required></select>
+
+                <!-- Div for description -->
+                <div id="description_div">
+                    <label for="description">Descrição:</label>
+                    <!-- Replace textarea with div for Quill -->
+                    <div id="quill_editor" style="height: 300px;"></div>
+                    <input type="hidden" name="description" id="description" required>
+                </div>
+
+                <label for="contacto">Contacto (VOIP ou outro):</label>
+                <input type="text" id="contacto" name="contacto" required>
+
+                <label for="file">Anexar ficheiro:</label>
+                <input type="file" id="file" name="file" accept=".png, .jpg, .jpeg, .pdf, .xlsx, .zip, .rar">
+
+                <div style="margin-top: 10px;">
+                    <button type="submit" id="submit_button">Submeter ticket</button>
+                </div>
+                
+                <div id="loader">
+                    <i class="fa fa-spinner fa-spin"></i>A submeter o ticket. Por favor aguarde...
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Include Quill JavaScript -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <script>
+        var is_edu = {{ is_edu|tojson }};
+        var is_admin = {{ admin_status|tojson }};
+
+        window.onload = function() {
+            document.getElementById('loader').style.display = 'none';
+            fetchUnidadeOrganica();
+            if (is_edu) {
+                document.getElementById('ilha').addEventListener('change', fetchUnidadeOrganica);
+            }
+            document.getElementById('topic_id').addEventListener('change', fetchUnidadeOrganica);
+        };
+        
+        var ilhaOptions = {
+            "São Miguel": [
+                "Conservatório Regional Ponta Delgada",
+                "EBIA - Escola Básica Integrada Arrifes",
+                "EBIAP - Escola Básica Integrada Água Pau",
+                "EBICM - Escola Básica Integrada Canto Maia",
+                "EBIG - Escola Básica Integrada Ginetes",
+                "EBIL - Escola Básica Integrada Lagoa",
+                "EBIM - Escola Básica Integrada Maia",
+                "EBIPG - Escola Básica Integrada Ponta Garça",
+                "EBIRG - Escola Básica Integrada Ribeira Grande",
+                "EBIRP - Escola Básica Integrada Rabo Peixe",
+                "EBIVC - Escola Básica Integrada Vila Capelas",
+                "EBIVT - Escola Básica Integrada Vila Topo",
+                "EBSN - Escola Básica Secundária Nordeste",
+                "EBSP - Escola Básica Secundária Povoação",
+                "EBSVFC - Escola Básica Secundária Vila Franca Campo",
+                "EPC - Escola Profissional Capelas",
+                "ESAQ - Escola Secundária Antero Quental",
+                "ESBIRI - Escola Básica Integrada Roberto Ivens",
+                "ESDR - Escola Secundária Domingos Rebelo",
+                "ESL - Escola Secundária Lagoa",
+                "ESL - Escola Secundária Laranjeiras",
+                "ESRG - Escola Secundária Ribeira Grande"
+            ],
+            "Santa Maria": ["EBS Santa Maria"],
+            "São Jorge": ["EBS das Velas","EBS da Calheta","EBS Topo"],
+            "Terceira": ["EBI da Praia da Vitória","EBI de Angra do Heroísmo","EBI dos Biscoitos","EBI Francisco Ferreira Drummond","ES Jerónimo Emiliano Andrade","EBS Tomás de Borba","ES Vitorino Nemésio"],
+            "Faial": ["EBI Horta","ES Manuel Arriaga"],
+            "Pico": ["EBS da Madalena","EBS Lajes do Pico","EBS S.Roque do Pico"],
+            "Graciosa": ["EBS da Graciosa"],
+            "Flores": ["EBS das Flores","EBS Lajes Flores"],
+            "Corvo": ["EBS Mouzinho Silveira"]
+        };
+        
+        var graUnidades = [
+            ".",
+            "Gabinete SRECD",
+            "DREAE",
+            "DRD",
+            "SDISMA",
+            "SDISM",
+            "SDIT",
+            "SDISJ",
+            "SDIP",
+            "SDIF",
+            "SDIFLORES",
+            "SDIC",
+            "SDIG",
+            "DRAC",
+            "IRE"
+        ];
+
+        
+        var adminUnidades = [
+            ".",
+            "Gabinete SRECD",
+            "DREAE",
+            "DRD",
+            "SDISMA",
+            "SDISM",
+            "SDIT",
+            "SDISJ",
+            "SDIP",
+            "SDIF",
+            "SDIFLORES",
+            "SDIC",
+            "DRAC",
+            "IRE",
+            "Conservatório Regional Ponta Delgada",
+            "EBI Arrifes",
+            "EBI Canto Maia",
+            "EBI Francisco Ferreira Drummond",
+            "EBI Ginetes",
+            "EBI Horta",
+            "EBI Lagoa",
+            "EBI Maia",
+            "EBI Ponta Garça",
+            "EBI Rabo Peixe",
+            "EBI Ribeira Grande",
+            "EBI Roberto Ivens",
+            "EBI Vila Capelas",
+            "EBI Vila Topo",
+            "EBI da Praia da Vitória",
+            "EBI de Angra do Heroísmo",
+            "EBI dos Biscoitos",
+            "EBI Água Pau",
+            "EBS Lajes Flores",
+            "EBS Lajes do Pico",
+            "EBS Mouzinho Silveira",
+            "EBS Nordeste",
+            "EBS Povoação",
+            "EBS S.Roque do Pico",
+            "EBS Santa Maria",
+            "EBS Tomás de Borba",
+            "EBS Topo",
+            "EBS Armando Côrtes-Rodrigues",
+            "EBS da Calheta",
+            "EBS da Graciosa",
+            "EBS da Madalena",
+            "EBS das Flores",
+            "EBS das Velas",
+            "ES Antero Quental",
+            "ES Domingos Rebelo",
+            "ES Jerónimo Emiliano Andrade",
+            "ES Lagoa",
+            "ES Laranjeiras",
+            "ES Manuel Arriaga",
+            "ES Ribeira Grande",
+            "ES Vitorino Nemésio",
+            "Escola Profissional Capelas"
+        ];
+
+        function showPopup() {
+            var popup = document.getElementById('popup-message');
+            popup.style.display = 'block';
+    
+            // Hide the popup after 3 seconds (3000 milliseconds)
+            setTimeout(function() {
+                popup.style.display = 'none';
+                // Redirect based on admin status
+                if (is_admin) {
+                    window.location.href = '/admin_pannel';
+                } else {
+                    window.location.href = '/my_tickets';
+                }
+            }, 3000); // Adjust the duration as needed
+        }
+
+        function validateTopicSelection(selectElement) {
+            if (selectElement.value === "") {
+                selectElement.setCustomValidity('Selecione um tópico de ajuda.');
+            } else {
+                selectElement.setCustomValidity('');
+            }
+        }
+
+        function fetchUnidadeOrganica() {
+            var ilhaDropdown = document.getElementById('ilha');
+            var unidadeOrgDropdown = document.getElementById('UnidadeOrg');
+
+            unidadeOrgDropdown.innerHTML = '';
+
+            if (is_edu) {
+                var selectedIlha = ilhaDropdown.value;
+                var options = ilhaOptions[selectedIlha] || [];
+                options.forEach(option => {
+                    var newOption = document.createElement('option');
+                    newOption.textContent = option.trim();
+                    unidadeOrgDropdown.appendChild(newOption);
+                });
+            } else if (is_admin) {
+                adminUnidades.forEach(option => {
+                    var newOption = document.createElement('option');
+                    newOption.textContent = option.trim();
+                    unidadeOrgDropdown.appendChild(newOption);
+                });
+            } else {
+                graUnidades.forEach(option => {
+                    var newOption = document.createElement('option');
+                    newOption.textContent = option.trim();
+                    unidadeOrgDropdown.appendChild(newOption);
+                });
+            }
+        }
+
+        // Initialize Quill editor
+        var quill = new Quill('#quill_editor', {
+            theme: 'snow'
+        });
+        
+        // Handle form submission
+        document.getElementById('ticket_form').addEventListener('submit', function(event) {
+            var quillEditorContent = quill.root.innerHTML;
+            var quillEditorText = quill.getText().trim();
+
+            if (quillEditorText === '') {
+                event.preventDefault();  // Prevent form submission
+                alert('Descrição é obrigatória!');  // Show error message
+            } else {
+                document.getElementById('description').value = quillEditorContent;
+                showPopup();  // Show popup and redirect after 3 seconds
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu perfil - Helpdesk NIT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/basic.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/profile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/new_user.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/side_menu.css') }}">
+    <link href='https://unpkg.com/css.gg@2.0.0/icons/css/log-out.css' rel='stylesheet'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="sidenav">
+        <img src="{{ url_for('static', filename='images/NIT_logo.png') }}" alt="logo-main" class="logo-main">
+        {% if is_admin %}
+            <div class="menu-item">
+                <a href="/admin_init"><i class="fa fa-home"></i> Inicio</a>
+            </div>
+            <div class="menu-item">
+                <a href="/new_ticket"><i class="fa fa-ticket"></i> Abrir novo ticket</a>
+            </div>
+            <div class="menu-item">
+                <a href="/admin_pannel"><i class="fa fa-dashboard"></i> Painel de administração</a>
+            </div>
+            <div class="menu-item">
+                <a href="/pannel_personal"><i class="fa fa-user" ></i>Painel pessoal</a>
+            </div>
+            <div class="menu-item">
+                <a href="/pannel_group"><i class="fa fa-users"></i> Painel de grupo</a>
+            </div>
+            <div class="menu-item">
+                <a href="/gerirtopicos"><i class="fa fa-list-alt"></i> Gerir tópicos</a>
+            </div>
+            <div class="menu-item">
+                <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
+            </div>
+            <div class="menu-item">
+                <a href="/new_user"><i class="fa fa-user-plus"></i> Gerir utilizadores</a>
+            </div>
+            <div class="menu-item">
+                <a href="/logout"><i class="gg-log-out"></i> Terminar sessão</a>
+            </div>
+        {% endif %}
+        {% if not is_admin %}
+            <div class="menu-item">
+                <a href="/init_page"><i class="fa fa-home"></i> Inicio</a>
+            </div>
+            <div class="menu-item">
+                <a href="/new_ticket"><i class="fa fa-ticket"></i> Abrir novo ticket</a>
+            </div>
+            <div class="menu-item">
+                <a href="/my_tickets"><i class="fa fa-users"></i> Tickets</a>
+            </div>
+            <div class="menu-item">
+                <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
+            </div>
+            <div class="menu-item">
+                <a href="/logout"><i class="gg-log-out"></i> Terminar sessão</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="main">
+        <div class="container">
+            <h1>Meu perfil</h1>
+            <div class="profile-info">
+                <h2>{{ user_name }}</h2>
+                <form method="POST">
+                    <label for="password">Palavra-passe atual:</label>
+                    <input type="password" id="password" name="password" required>
+                
+                    <label for="new_password">Nova palavra-passe:</label>
+                    <input type="password" id="new_password" name="new_password" required>
+                
+                    <label for="confirm_password">Confirmar nova palavra-passe:</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required>
+                
+                    <button type="submit" class="button">Alterar palavra-passe</button>
+                    {% if message %}
+                        <!-- Modal -->
+                        <div id="myModal" class="modal">
+                            <!-- Modal content -->
+                            <div class="modal-content">
+                                <span class="close" onclick="closeModal()">&times;</span>
+                                <p>{{ message.content }}</p>
+                            </div>
+                        </div>
+                        <script>
+                            var modal = document.getElementById("myModal");
+                            modal.style.display = "block";
+    
+                            function closeModal() {
+                                modal.style.display = "none";
+                            }
+                            window.onclick = function(event) {
+                                if (event.target == modal) {
+                                    modal.style.display = "none";
+                                }
+                            }
+                        </script>
+                    {% endif %}
+                </form>
+            </div>
+            {% if is_admin %}
+            <div class="ticket-chart">
+                <canvas id="ticketChart"></canvas>
+                <script>
+                    var ctx = document.getElementById('ticketChart').getContext('2d');
+                    var ticketChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Abertos', 'Fechados', 'Em execução'],
+                            datasets: [{
+                                label: 'Tickets',
+                                data: [
+                                    {{ tickets_open_by }},
+                                    {{ tickets_closed_by }},
+                                    {{ tickets_executing_by }}
+                                ],
+                                backgroundColor: [
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(255, 206, 86, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                </script>
+            </div>
+            {% endif %}
+            <script>
+                function goBack() {
+                    window.history.back();
+                }
+            </script>
+        </div>
+    </div>
+</body>
+</html>

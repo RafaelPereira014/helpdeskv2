@@ -1,0 +1,154 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    background-color: #fff;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.message-container {
+    padding: 20px;
+}
+
+.message {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.user-message {
+    background-color: #ebebeb;
+    color: rgb(0, 0, 0);
+    float: left;
+    clear: both;
+}
+
+.admin-message {
+    background-color: #d4d4d4e1;
+    color: rgb(0, 0, 0);
+    float: right;
+    clear: both;
+}
+
+.message-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.user-header {
+    color: #5cafe6;
+}
+
+.admin-header {
+    color: #4e79bf;
+}
+
+.ticket-info table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ticket-info td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.ticket-info td:first-child {
+    width: 30%;
+    font-weight: bold;
+    color: #333;
+}
+
+textarea {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.claim-ticket-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+}
+
+.claim-ticket-btn:hover {
+    background-color: #0056b3;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #888;
+}
+
+/* Popup styles */
+/* Popup styles */
+.popup {
+    position: fixed;
+    top: 20px; /* Adjust top position */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: none;
+    z-index: 999;
+}
+
+/* Animation for showing popup */
+@keyframes slideIn {
+    from {
+        top: -50px; /* Adjust top position */
+    }
+    to {
+        top: 20px; /* Adjust top position */
+    }
+}
+
+
+.close-popup {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    cursor: pointer;
+}
+

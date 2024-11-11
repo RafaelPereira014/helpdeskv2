@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/basic.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/side_menu.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/table.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href='https://unpkg.com/css.gg@2.0.0/icons/css/log-out.css' rel='stylesheet'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Painel de administração - Tickets</title>
+
+    <style>
+        /* Styles for search form */
+        #searchForm {
+            margin-bottom: 10px; /* Adds some space below the form */
+        }
+
+        /* Styles for search input */
+        #searchInput {
+            padding: 8px;
+            font-size: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 5px;
+            width: 300px; /* Adjust width as needed */
+        }
+
+        /* Styles for search and clear buttons */
+        #searchForm button {
+            padding: 8px 16px;
+            font-size: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007BFF; /* Blue color for buttons */
+            color: white;
+        }
+
+        #searchForm button[type="submit"] {
+            background-color: #007BFF; /* Blue color for search button */
+        }
+
+        #searchForm button[type="submit"]:hover,
+        #searchForm button[type="button"]:hover {
+            background-color: #0056b3; /* Darker blue color on hover */
+        }
+
+        #searchForm button[type="button"] {
+            background-color: #DC3545; /* Red color for clear button */
+            margin-left: 5px; /* Adds space between buttons */
+        }
+
+        #searchForm button[type="button"]:hover {
+            background-color: #c82333; /* Darker red color on hover */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="sidenav">
+        <img src="{{ url_for('static', filename='images/NIT_logo.png') }}" alt="logo-main" class="logo-main">
+        <div class="menu-item">
+            <a href="/admin_init"><i class="fa fa-home"></i> Inicio</a>
+        </div>
+        <div class="menu-item">
+            <a href="/new_ticket"><i class="fa fa-ticket"></i> Abrir novo ticket</a>
+        </div>
+        <div class="menu-item">
+            <a href="/admin_pannel"><i class="fa fa-dashboard"></i> Painel de administração</a>
+        </div>
+        <div class="menu-item">
+            <a href="/pannel_personal"><i class="fa fa-user"></i>Painel pessoal</a>
+        </div>
+        <div class="menu-item">
+            <a href="/pannel_group"><i class="fa fa-users"></i>Painel de grupo</a>
+        </div>
+        <div class="menu-item">
+            <a href="/gerirtopicos"><i class="fa fa-list-alt"></i>Gerir tópicos</a>
+        </div>
+        <div class="menu-item">
+            <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
+        </div>
+        <div class="menu-item">
+            <a href="/new_user"><i class="fa fa-user-plus"></i> Gerir utilizadores</a>
+        </div>
+        <div class="menu-item">
+            <a href="/logout"><i class="gg-log-out"></i> Terminar sessão</a>
+        </div>
+    </div>
+
+    <div class="main">
+        <h1>Painel de administração - Tickets</h1>
+        
+        
+        
+        
+        
+        <button id="all-btn" class="button-filter">Todos</button>
+        <button id="aberto-btn" class="button-filter">Aberto({{ open_tickets }})</button>
+        <button id="fechado-btn" class="button-filter">Fechado({{ closed_tickets }})</button>
+        <button id="executing-btn" class="button-filter">Em execucao({{ executing_tickets }})</button>
+        
+        <form id="searchForm" class="search-form" method="GET" action="{{ url_for('admin_panel') }}">
+            <input type="text" id="search_id" name="search_id" class="search-input" placeholder="Procurar por ID..." value="{{ search_id }}">
+            <input type="text" id="search_title" name="search_title" class="search-input" placeholder="Procurar por título..." value="{{ search_title }}">
+            <input type="text" id="search_date" name="search_date" class="search-input" placeholder="Procurar por data..." value="{{ search_date }}">
+            <input type="text" id="search_user" name="search_user" class="search-input" placeholder="Procurar por utilizador..." value="{{ search_user }}">
+            <input type="text" id="search_unidade" name="search_unidade" class="search-input" placeholder="Procurar por UO..." value="{{ search_unidade }}">
+            <button type="submit">Procurar</button>
+            <button type="button" onclick="clearSearch()">Limpar</button>
+        </form>
+        
+
+        <table id="ticket-table">
+            <thead>
+                <tr>
+                    <th>Pedido #</th>
+                    <th>Data de criação</th>
+                    <th>Utilizador</th>
+                    <th>Unidade Org.</th>
+                    <th>Titulo</th>
+                    <th>Estado</th>
+                    <th>Grupo ID</th>
+                    <th>Atribuido a/Fechado por</th>
+                </tr>
+            </thead>
+            <tbody id="ticket-table-body">
+                <!-- Ticket data will be inserted here -->
+            </tbody>
+        </table>
+        <div id="pagination">
+            <button id="prev-btn" class="button">Anterior</button>
+            <span id="page-num">[1]</span>
+            <button id="next-btn" class="button">Próximo</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var tickets = [
+                {% for ticket in tickets %}
+                {
+                    id: "{{ ticket.id }}",
+                    date: "{{ ticket.date }}",
+                    created_by_user: "{{ ticket.created_by_user }}",
+                    UnidadeOrg: "{{ ticket.UnidadeOrg }}",
+                    title: "{{ ticket.title }}",
+                    state: "{{ ticket.state }}",
+                    group_id: "{{ ticket.group_id }}",
+                    closed_by: "{{ ticket.closed_by }}",
+                    attributed_to_name: "{{ ticket.attributed_to_name }}"
+                },
+                {% endfor %}
+            ];
+            var currentPage = 1;
+            var ticketsPerPage = 10; // Number of tickets to display per page
+            var currentFilter = 'all'; // Default filter option
+        
+            var tableBody = document.getElementById('ticket-table-body');
+            var prevButton = document.getElementById('prev-btn');
+            var nextButton = document.getElementById('next-btn');
+            var pageNumSpan = document.getElementById('page-num');
+            var abertoButton = document.getElementById('aberto-btn');
+            var fechadoButton = document.getElementById('fechado-btn');
+            var executingButton = document.getElementById('executing-btn');
+            var allButton = document.getElementById('all-btn');
+        
+            var searchIdInput = document.getElementById('search_id');
+            var searchTitleInput = document.getElementById('search_title');
+            var searchDateInput = document.getElementById('search_date');
+            var searchUserInput = document.getElementById('search_user');
+            var searchUnidadeInput = document.getElementById('search_unidade');
+            var searchForm = document.getElementById('searchForm');
+        
+            // Function to display tickets for the current page based on the selected filter option and search criteria
+            function displayTickets() {
+                var filteredTickets = tickets;
+        
+                // Apply filter
+                if (currentFilter === 'aberto') {
+                    filteredTickets = filteredTickets.filter(ticket => ticket.state === 'Aberto');
+                } else if (currentFilter === 'fechado') {
+                    filteredTickets = filteredTickets.filter(ticket => ticket.state === 'Fechado');
+                } else if (currentFilter === 'em execucao') {
+                    filteredTickets = filteredTickets.filter(ticket => ticket.state.toLowerCase().includes('execucao'));
+                }
+        
+                // Apply search criteria
+                var searchId = searchIdInput.value.trim().toLowerCase();
+                var searchTitle = searchTitleInput.value.trim().toLowerCase();
+                var searchDate = searchDateInput.value.trim().toLowerCase();
+                var searchUser = searchUserInput.value.trim().toLowerCase();
+                var searchUnidade = searchUnidadeInput.value.trim().toLowerCase();
+        
+                filteredTickets = filteredTickets.filter(ticket => {
+                    return (searchId === '' || ticket.id.toLowerCase().includes(searchId)) &&
+                           (searchTitle === '' || ticket.title.toLowerCase().includes(searchTitle)) &&
+                           (searchDate === '' || ticket.date.toLowerCase().includes(searchDate)) &&
+                           (searchUser === '' || ticket.created_by_user.toLowerCase().includes(searchUser)) &&
+                           (searchUnidade === '' || ticket.UnidadeOrg.toLowerCase().includes(searchUnidade));
+                });
+        
+                var startIdx = (currentPage - 1) * ticketsPerPage;
+                var endIdx = Math.min(startIdx + ticketsPerPage, filteredTickets.length);
+        
+                tableBody.innerHTML = ''; // Clear previous entries
+        
+                for (var i = startIdx; i < endIdx; i++) {
+                    var ticket = filteredTickets[i];
+                    var row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${ticket.id}</td>
+                        <td>${ticket.date}</td>
+                        <td>${ticket.created_by_user}</td>
+                        <td>${ticket.UnidadeOrg}</td>
+                        <td><a href="/ticket_details/${ticket.id}">${ticket.title}</a></td>
+                        <td>${ticket.state}</td>
+                        <td>
+                            <select data-ticket-id="${ticket.id}" class="group-id-dropdown">
+                                <option value="1" ${ticket.group_id == 1 ? 'selected' : ''}>1</option>
+                                <option value="2" ${ticket.group_id == 2 ? 'selected' : ''}>2</option>
+                                <option value="3" ${ticket.group_id == 3 ? 'selected' : ''}>3</option>
+                                <!-- Add more options as needed -->
+                            </select>
+                        </td>
+                        <td>${ticket.state === 'Fechado' ? ticket.closed_by : ticket.state === 'em execucao' ? ticket.attributed_to_name : '-'}</td>
+                        <td><button class="update-group-id-btn" data-ticket-id="${ticket.id}">Atualizar</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                }
+        
+                pageNumSpan.textContent = currentPage;
+            }
+        
+            // Function to navigate to the previous page
+            function goToPrevPage() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayTickets();
+                }
+            }
+        
+            // Function to navigate to the next page
+            function goToNextPage() {
+                var totalPages = Math.ceil(tickets.length / ticketsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayTickets();
+                }
+            }
+        
+            // Function to update group_id
+            function updateGroupId(ticketId, newGroupId) {
+                fetch(`/update_group_id/${ticketId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ group_id: newGroupId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                        displayTickets();
+                    } else {
+                        alert('Failed to update Group ID');
+                    }
+                });
+            }
+        
+            // Event listeners for pagination buttons
+            prevButton.addEventListener('click', goToPrevPage);
+            nextButton.addEventListener('click', goToNextPage);
+        
+            // Event listeners for filter buttons
+            abertoButton.addEventListener('click', function () {
+                currentFilter = 'aberto';
+                currentPage = 1; // Reset page number when changing filter
+                displayTickets();
+            });
+        
+            fechadoButton.addEventListener('click', function () {
+                currentFilter = 'fechado';
+                currentPage = 1; // Reset page number when changing filter
+                displayTickets();
+            });
+        
+            executingButton.addEventListener('click', function () {
+                currentFilter = 'em execucao';
+                currentPage = 1; // Reset page number when changing filter
+                displayTickets();
+            });
+        
+            allButton.addEventListener('click', function () {
+                currentFilter = 'all';
+                currentPage = 1; // Reset page number when changing filter
+                displayTickets();
+            });
+        
+            // Event listener for the search form submission
+            searchForm.addEventListener('submit', function (event) {
+                event.preventDefault(); // Prevent form submission
+                currentPage = 1; // Reset page number when searching
+                displayTickets();
+            });
+        
+            // Function to clear search
+            function clearSearch() {
+                searchIdInput.value = '';
+                searchTitleInput.value = '';
+                searchDateInput.value = '';
+                searchUserInput.value = '';
+                searchUnidadeInput.value = '';
+                currentPage = 1; // Reset page number
+                displayTickets(); // Display all tickets
+            }
+        
+            // Event listener for update buttons
+            tableBody.addEventListener('click', function (event) {
+                if (event.target.classList.contains('update-group-id-btn')) {
+                    var ticketId = event.target.getAttribute('data-ticket-id');
+                    var dropdown = document.querySelector(`select[data-ticket-id="${ticketId}"]`);
+                    var newGroupId = dropdown.value;
+                    updateGroupId(ticketId, newGroupId);
+                }
+            });
+        
+            // Initial display
+            displayTickets();
+        });
+        
+    </script>
+    
+    
+    
+</body>
+</html>

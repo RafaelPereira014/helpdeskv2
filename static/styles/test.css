@@ -1,0 +1,81 @@
+.ticket-info {
+    margin-bottom: 20px;
+}
+
+.ticket-info-item {
+    margin-bottom: 15px;
+}
+
+.info-label {
+    font-weight: bold;
+    color: #555;
+}
+
+.info-value {
+    color: #333;
+    margin-left: 10px;
+}
+
+.message-container {
+    margin-top: 20px;
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+}
+
+.message-container .message {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.message-container .message .message-header {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.user-message {
+    background-color: #007bff;
+    color: white;
+    float: left;
+    clear: both;
+}
+
+.admin-message {
+    background-color: #96a4b3;
+    color: white;
+    float: right;
+    clear: both;
+}
+
+.user-header {
+    color: #3498db;
+}
+
+.admin-header {
+    color: #4e79bf;
+}
+
+#message {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}

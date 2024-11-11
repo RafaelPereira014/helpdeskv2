@@ -1,0 +1,8 @@
+//Updade de um campo na base de Dados
+
+UPDATE table SET field = % WHERE clausula = %;
+
+//Apagar um campo na base de dados
+DELETE FROM table
+WHERE clausula = % ;
+

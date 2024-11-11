@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helpdesk NIT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/basic.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/side_menu.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href='https://unpkg.com/css.gg@2.0.0/icons/css/log-out.css' rel='stylesheet'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        /* Add custom styles for the ticket status panel */
+        .ticket-status {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .ticket-status .status-item {
+            flex: 1; /* Use flex to distribute items evenly */
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add transition for hover effect */
+        }
+
+      
+
+        .ticket-status .status-item h2 {
+            color: #333;
+            margin-bottom: 10px; /* Add spacing between title and content */
+        }
+
+        .ticket-status .status-item p {
+            margin: 0; /* Remove default margin */
+            color: #666;
+        }
+
+        /* Pie Chart */
+        .pie-chart {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            border-radius: 50%;
+            background-color: #fff;
+            overflow: hidden;
+        }
+
+        .pie-chart::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #FFC107;
+            clip-path: polygon(50% 50%, 0 0, 0 100%);
+            transform-origin: center right;
+            transform: rotate(calc(360 * {{ open_tickets }}/100deg));
+        }
+
+        .pie-chart::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #f44336;
+            clip-path: polygon(50% 50%, 0 0, 0 100%);
+            transform-origin: center right;
+            transform: rotate(calc(360 * {{ closed_tickets }}/100deg));
+        }
+
+        /* Adjust z-index to show the last segment on top */
+        .pie-chart::before {
+            z-index: 1;
+        }
+
+        /* Add styles for the actions section */
+        .actions {
+            margin-top: 40px;
+            text-align: left;
+        }
+
+        .actions h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .action {
+            margin-bottom: 10px;
+        }
+
+        .action i {
+            font-size: 24px;
+            color: #007bff; /* Blue color */
+            margin-right: 10px;
+        }
+
+        .action span {
+            font-size: 18px;
+        }
+
+        /* Add styles for the latest changes panel */
+        .latest-changes {
+            margin-top: 40px;
+            background-color: #f8f9fa; /* Light gray background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+        }
+
+        .latest-changes h2 {
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .latest-changes ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .latest-changes li {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .latest-changes li strong {
+            color: #007bff; /* Blue color */
+        }
+    </style>
+</head>
+<body>
+    <div class="sidenav">
+        <img src="{{ url_for('static', filename='images/NIT_logo.png') }}" alt="logo-main" class="logo-main">
+        <div class="menu-item">
+            <a href="/init_page"><i class="fa fa-home"></i> Inicio</a>
+        </div>
+        <div class="menu-item">
+            <a href="/new_ticket"><i class="fa fa-ticket"></i> Abrir novo ticket</a>
+        </div>
+        <div class="menu-item">
+            <a href="/my_tickets"><i class="fa fa-users"></i> Tickets</a>
+        </div>
+        <div class="menu-item">
+            <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
+        </div>
+        <div class="menu-item">
+            <a href="/logout"><i class="gg-log-out"></i> Terminar sessão</a>
+        </div>
+    </div>
+    
+    <div class="main">
+        <div class="container">
+            <h1>Bem-vindo ao sistema de apoio do Núcleo de Informática e Telecomunicações</h1>
+            
+            <!-- Ticket Status Panel -->
+            <div class="ticket-status">
+                <div class="status-item">
+                    <h2>Abertos</h2>
+                    <p>{{ open_tickets }} Tickets</p>
+                </div>
+                <div class="status-item">
+                    <h2>Fechados</h2>
+                    <p>{{ closed_tickets }} Tickets</p>
+                </div>
+                <div class="status-item">
+                    <h2>Em Execução</h2>
+                    <p>{{ executing_tickets }} Tickets</p>
+                </div>
+            </div>
+            
+            <!-- Actions Section -->
+            <div class="actions">
+                <h2>Nesta versão, é possivel:</h2>
+                <div class="action">
+                    <i class="fa fa-plus-circle"></i><span>Abrir um novo Ticket</span> <!-- Icon for creating tickets -->
+                </div>
+                <div class="action">
+                    <i class="fa fa-list-alt"></i><span>Ver o estado dos Tickets</span> <!-- Icon for viewing ticket status -->
+                </div>
+                <div class="action">
+                    <i class="fa fa-edit"></i><span>Editar mensagens no Ticket</span> <!-- Icon for changing messages -->
+                </div>
+                <div class="action">
+                    <i class="fa fa-history"></i><span>Ver o histórico de Tickets</span> <!-- Icon for viewing history -->
+                </div>
+                <div class="action">
+                    <i class="fa fa-key"></i><span>Alterar password</span> <!-- Icon for changing password -->
+                </div>
+                <div class="action">
+                    <i class="fa fa-upload"></i><span>Adicionar um ficheiro</span> <!-- Icon for adding a file -->
+                </div>
+            </div>
+    
+            <!-- Latest Changes Panel -->
+            <div class="latest-changes">
+                <h2>Últimos updates</h2>
+                <ul>
+                    <li>
+                        <strong>1.0.2:</strong> Correções na plataforma.
+                    </li>
+                    <li>
+                        <strong>1.0.1:</strong> Possibilidade de adicionar ficheiros à mensagem, após o ticket estar aberto.
+                        Correções na plataforma.
+                    </li>
+                    <li>
+                        <strong>1.0.0:</strong> Lançamento inicial do sistema de tickets.
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Version Information -->
+            <footer>
+                <p>Versão: v1.0.2</p>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>

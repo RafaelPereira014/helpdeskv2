@@ -1,0 +1,47 @@
+.container {
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 600px;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+.profile-info {
+    margin-top: 20px;
+}
+
+.profile-info form {
+    margin-top: 20px;
+}
+
+.profile-info label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.profile-info input,
+.profile-info select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.profile-info button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.profile-info button:hover {
+    background-color: #0056b3;
+}
+
+

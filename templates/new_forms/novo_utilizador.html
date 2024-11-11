@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo utilizador - Helpdesk NIT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/basic.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/profile.css') }}"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/new_user.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/side_menu.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href='https://unpkg.com/css.gg@2.0.0/icons/css/log-out.css' rel='stylesheet'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <div class="sidenav">
+        <img src="{{ url_for('static', filename='images/NIT_logo.png') }}" alt="logo-main" class="logo-main">
+        <div class="menu-item">
+            <a href="/admin_init"><i class="fa fa-home"></i> Inicio</a>
+        </div>
+        <div class="menu-item">
+            <a href="/new_ticket"><i class="fa fa-ticket"></i> Abrir novo ticket</a>
+        </div>
+        <div class="menu-item">
+            <a href="/admin_pannel"><i class="fa fa-dashboard"></i> Painel de administração</a>
+        </div>
+        <div class="menu-item">
+            <a href="/pannel_personal"><i class="fa fa-user" ></i>Painel pessoal</a>
+        </div>
+        <div class="menu-item">
+            <a href="/pannel_group"><i class="fa fa-users"></i> Painel de grupo</a>
+        </div>
+        <div class="menu-item">
+            <a href="/gerirtopicos"><i class="fa fa-list-alt"></i> Gerir tópicos</a>
+        </div>
+        <div class="menu-item">
+            <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
+        </div>
+        <div class="menu-item">
+            <a href="/new_user"><i class="fa fa-user-plus"></i> Gerir utilizadores</a>
+        </div>
+        <div class="menu-item">
+            <a href="/logout"><i class="gg-log-out"></i> Terminar sessão</a>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="container">
+            <h1>Criar utilizador</h1>
+            <div class="profile-info">
+                <form method="POST">
+                    <label for="name">Nome:</label>
+                    <input type="text" id="name" name="name" required><br>
+    
+                    <label for="password">Palavra-passe:</label>
+                    <input type="password" id="password" name="password" required><br>
+    
+                    <label for="type">Tipo utilizador:</label>
+                    <select id="type" name="type" required onchange="toggleGroupField()">
+                        <option value="user">Utilizador</option>
+                        <option value="admin">Administrador</option>
+                    </select><br>
+    
+                    <div id="group" style="display: none;">
+                        <label for="group_id">Grupo:</label>
+                        <select id="group_id" name="group_id">
+                            <option value="1">micro-informática</option>
+                            <option value="2">macro-informática</option>
+                        </select><br>
+                    </div>
+    
+                    <label for="email">Correio eletrónico:</label>
+                    <input type="email" id="email" name="email" required><br>
+    
+                    <button type="submit">Criar utilizador</button>
+                </form>
+            </div>
+
+            <h1>Alterar password</h1>
+            <div class="profile-info">
+                <form method="POST" action="/change_password" onsubmit="return showSuccessAlert()">
+                    <label for="email_change">Correio eletrónico:</label>
+                    <input type="email" id="email_change" name="email_change" required><br>
+
+                    <button type="submit">Alterar password</button>
+                </form>
+            </div>
+            
+
+            <script>
+                function goBack() {
+                    window.history.back();
+                }
+                unction showSuccessAlert() {
+                    // Display an alert message
+                    alert("Password alterada com sucesso!");
+            
+                    // Returning true to submit the form
+                    return true;
+                }
+                function toggleGroupField() {
+                    var userTypeSelect = document.getElementById('type');
+                    var groupField = document.getElementById('group');
+    
+                    if (userTypeSelect.value === 'admin') {
+                        groupField.style.display = 'block';
+                    } else {
+                        groupField.style.display = 'none';
+                    }
+                }
+                
+            </script>
+        </div>
+    </div>
+</body>
+</html>

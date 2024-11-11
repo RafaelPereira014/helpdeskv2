@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes Ticket</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/basic.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/popup.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/side_menu.css') }}">
+    <link href='https://unpkg.com/css.gg@2.0.0/icons/css/check.css' rel='stylesheet'>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href='https://unpkg.com/css.gg@2.0.0/icons/css/log-out.css' rel='stylesheet'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        /* Hide the default file input */
+        #file {
+            display: none;
+        }
+
+        /* Style the custom button */
+        .custom-file-upload {
+            display: inline-block;
+            padding: 8px 16px;
+            cursor: pointer;
+            background-color: #007bff; /* Change to match your design */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        /* Quill editor style */
+        #quill-editor {
+            height: 300px;
+        }
+
+    </style>
+    <style>
+        /* General Container Styles */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f4f4f9; /* Light background for a clean look */
+        }
+
+        /* Timeline Styles */
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #ffffff; /* Clean white background */
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for a floating effect */
+        }
+
+        .timeline-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #007bff, #00d4ff); /* Gradient for a modern touch */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .timeline-content {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 10px;
+            width: calc(100% - 50px); /* Adjust width to account for icon */
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05); /* Subtle inner shadow */
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: #888;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .timeline-action {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        /* Ticket Info Styles */
+        .ticket-info {
+            margin-top: 40px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .ticket-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background 0.3s ease;
+        }
+
+        .ticket-info-item:hover {
+            background: #f1f1f1; /* Light hover effect */
+        }
+
+        .ticket-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            color: #555;
+            word-wrap: break-word;
+        }
+
+        .info-value a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .info-value a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .timeline-item, .ticket-info-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .message-attachment {
+            margin-top: 15px;
+        }
+
+        .message-attachment a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .message-attachment a:hover {
+            text-decoration: underline;
+        }
+
+        
+
+    </style>
+    <style>
+        #file-url-container {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            display: none; /* Initially hidden */
+            align-items: center;
+        }
+        
+        #file-url-container label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-right: 10px;
+        }
+        
+        #file-url-container input[type="text"] {
+            width: calc(100% - 100px); /* Adjusted width to accommodate the button */
+            padding: 6px 10px;
+            font-size: 14px;
+            color: #555;
+            border: 1px solid #dcdcdc;
+            border-radius: 4px;
+            background-color: #fff;
+            margin-right: 10px;
+        }
+        
+        #file-url-container button {
+            padding: 6px 12px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        #file-url-container button:hover {
+            background-color: #0056b3;
+        }
+        
+        #file-url-container button:active {
+            background-color: #003f7f;
+        }
+        
+        @media (max-width: 768px) {
+            #file-url-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        
+            #file-url-container input[type="text"] {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        
+            #file-url-container button {
+                width: 100%;
+            }
+        }
+    </style>        
+</head>
+<body>
+    <!-- Side Navigation Menu -->
+    <div class="sidenav">
+        <img src="{{ url_for('static', filename='images/NIT_logo.png') }}" alt="logo-main" class="logo-main">
+        {%if is_admin%}
+            <div class="menu-item">
+                <a href="/admin_init"><i class="fa fa-home"></i> Inicio</a>
+            </div>
+            <div class="menu-item">
+                <a href="/new_ticket"><i class="fa fa-ticket"></i> Abrir novo ticket</a>
+            </div>
+            <div class="menu-item">
+                <a href="/admin_pannel"><i class="fa fa-dashboard"></i> Painel de administração</a>
+            </div>
+            <div class="menu-item">
+                <a href="/pannel_personal"><i class="fa fa-user"></i>Painel pessoal</a>
+            </div>
+            <div class="menu-item">
+                <a href="/pannel_group"><i class="fa fa-users"></i>Painel de grupo</a>
+            </div>
+
+            <div class="menu-item">
+                <a href="/gerirtopicos"><i class="fa fa-list-alt"></i>Gerir tópicos</a>
+            </div>
+            
+            <div class="menu-item">
+                <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
+            </div>
+            <div class="menu-item">
+                <a href="/new_user"><i class="fa fa-user-plus"></i> Gerir utilizadores</a>
+            </div>
+            <div class="menu-item">
+                <a href="/logout"><i class="gg-log-out"></i> Terminar sessão</a>
+            </div>
+        {%endif%}
+        
+        {%if not is_admin%}
+            <div class="menu-item">
+                <a href="/init_page"><i class="fa fa-home"></i> Inicio</a>
+            </div>
+            <div class="menu-item">
+                <a href="/new_ticket"><i class="fa fa-dashboard"></i>Abrir novo ticket</a>
+            </div>
+            <div class="menu-item">
+                <a href="/my_tickets"><i class="fa fa-users"></i>Tickets</a>
+            </div>
+            <div class="menu-item">
+                <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
+            </div>
+            <div class="menu-item">
+                <a href="/logout"><i class="gg-log-out"></i> Terminar sessão</a>
+            </div>
+        {% endif %}
+        
+    </div>
+
+    <!-- Notification Banner -->
+    <div id="status-notification" class="status-notification" style="display:none;">
+        Ticket {{ ticket_details.state }} by {{ ticket_details.recent_action_by }}.
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+        <div class="container">
+            <h1>{{ ticket_details.title }} #{{ ticket_details.id }}</h1>
+            <h2>Informação acerca do ticket</h2>
+            
+    
+            <div class="ticket-info">
+                <!-- Ticket Info Items -->
+                <div class="ticket-info-item">
+                    <span class="info-label">Utilizador:</span>
+                    <span class="info-value">{{ user_name }}</span>
+                </div>
+                <div class="ticket-info-item">
+                    <span class="info-label">Contacto:</span>
+                    <span class="info-value">{{ ticket_details.contacto }}</span>
+                </div>
+                <div class="ticket-info-item">
+                    <span class="info-label">Unidade Org:</span>
+                    <span class="info-value">{{ ticket_details.UnidadeOrg }}</span>
+                </div>
+                <div class="ticket-info-item">
+                    <span class="info-label">Descrição:</span>
+                    <span class="info-value">{{ ticket_details.description | safe }}</span>
+                </div>
+                {% if ticket_details.file != "Sem ficheiro." %}
+                <div class="ticket-info-item">
+                    <span class="info-label">Anexo:</span>
+                    <span class="info-value">
+                        <a href="{{ url_for('static', filename='uploads/' + ticket_details.file) }}" download>{{ ticket_details.file }}</a>
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+
+            
+            <div class="timeline">
+                <h2>Estado do ticket:</h2>
+                {%if ticket_details.state == 'Aberto'%}
+                <!-- Created Item -->
+                <div class="timeline-item">
+                    <div class="timeline-icon"><i class="fa fa-calendar-check"></i></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">{{ ticket_details.date }}</span>
+                        <span class="timeline-action">Ticket criado por <strong>{{ user_name}}</strong>.</span>
+                    </div>
+                </div>
+                {%endif%}
+
+                {% if ticket_details.state == 'em execucao'%}
+                <!-- Created Item -->
+                <div class="timeline-item">
+                    <div class="timeline-icon"><i class="fa fa-calendar-check"></i></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">{{ ticket_details.date }}</span>
+                        <span class="timeline-action">Ticket criado por <strong>{{ user_name}}</strong>.</span>
+                    </div>
+                </div>
+                <!-- Accepted Item (conditionally displayed) -->
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">{{ ticket_details.accepted_at }}</span>
+                        <span class="timeline-action">Ticket aceite por <strong>{{ ticket_details.attributed_to_name }}</strong>.</span>
+                    </div>
+                </div>
+                {%endif%}
+
+                {%if ticket_details.state == 'Fechado'%}
+                <!-- Created Item -->
+                <div class="timeline-item">
+                    <div class="timeline-icon"><i class="fa fa-calendar-check"></i></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">{{ ticket_details.date }}</span>
+                        <span class="timeline-action">Ticket criado por <strong>{{ user_name}}</strong></span>
+                    </div>
+                </div>
+                <!-- Accepted Item (conditionally displayed) -->
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">{{ ticket_details.accepted_at }}</span>
+                        <span class="timeline-action">Ticket aceite por <strong>{{ ticket_details.attributed_to_name }}</strong></span>
+                    </div>
+                </div>
+                <!-- Closed Item (conditionally displayed) -->
+                <div class="timeline-item">
+                    <div class="timeline-icon"><i class="fa fa-times-circle"></i></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">{{ ticket_details.closed_at }}</span>
+                        <span class="timeline-action">Ticket fechado por <strong>{{ ticket_details.closed_by}}</strong></span>
+                    </div>
+                </div>
+                {%endif%}
+
+            
+                
+            </div>
+            
+            
+            <div class="message-container" id="message-container">
+                <!-- Messages will be displayed here -->
+                {% for message in ticket_details.messages %}
+                <div class="message {% if message.sender_type == 'user' %}user-message{% else %}admin-message{% endif %}">
+                    <div class="message-header {% if message.sender_type == 'user' %}user-header{% else %}admin-header{% endif %}">
+                        {% if message.sender_type == 'user' %}
+                        {{ user_name }} - {{ message.sent_at }}
+                        {% else %}
+                        {{ message.sender_name }} - {{ message.sent_at }}
+                        {% endif %}
+                    </div>
+                    <div class="message-content">
+                        {{ message.message|safe }}
+                    </div>
+                    {% if message.file %}
+                        <div class="message-attachment">
+                            <span class="info-label">Anexo:</span>
+                            <span class="info-value">
+                                <a href="{{ url_for('download_file', filename=message.file) }}" download>{{ message.file }}</a>
+                            </span>
+                        </div>
+                        {% endif %}
+
+                </div>
+                {% endfor %}
+
+            </div>
+    
+            <form id="message-form" enctype="multipart/form-data">
+                <!-- Quill editor container -->
+                <div id="quill-editor"></div>
+            
+                
+            
+                <!-- File URL display area -->
+                <div id="file-url-container" style="margin-top: 10px; display: none;">
+                    <label for="file-url">URL ficheiro:</label>
+                    <input type="text" id="file-url" readonly>
+                    <button type="button" id="copy-file-url">Copiar URL</button>
+                </div>
+            
+                <button type="submit" class="button">Publicar resposta</button>
+                <!-- File input -->
+                <label for="file" class="custom-file-upload">Escolher ficheiro</label>
+                <input type="file" name="file" id="file">
+            </form>
+            
+            
+            
+            
+            
+            {% if is_admin %}
+            <button id="accept-ticket-btn" class="button-accept">Aceitar Ticket</button> <!-- Button to accept the ticket -->
+            <button id="close-ticket-btn" class="button">Fechar Ticket</button>
+            <button id="reopen-ticket-btn" class="button">Reabrir Ticket</button>
+            {% endif %}
+            <!--estado do ticket passa para fechado-->
+        </div>
+    </div>
+
+    <!---->
+    <div id="loading-modal" class="modal">
+        <div class="modal-content">
+            <div class="loader"></div>
+            <p>Aguarde enquanto a mensagem é submetida.</p>
+        </div>
+    </div>
+    <div id="popup" class="popup">
+        <span class="popup-text" id="popup-text"></span>
+        <span class="close-popup" id="close-popup">&times;</span>
+    </div>
+
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var messageForm = document.getElementById('message-form');
+                var fileInput = document.getElementById('file');
+                var fileUrlContainer = document.getElementById('file-url-container');
+                var fileUrlInput = document.getElementById('file-url');
+                var copyFileUrlButton = document.getElementById('copy-file-url');
+                var messageContainer = document.getElementById('message-container');
+                var acceptTicketBtn = document.getElementById('accept-ticket-btn');
+                var closeTicketBtn = document.getElementById('close-ticket-btn');
+                var reopenTicketBtn = document.getElementById('reopen-ticket-btn');
+                var loadingModal = document.getElementById('loading-modal');
+                var popup = document.getElementById('popup');
+                var popupText = document.getElementById('popup-text');
+                var closePopup = document.getElementById('close-popup');
+                
+                // Initialize Quill editor
+                var quill = new Quill('#quill-editor', {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            [{ 'header': '1' }, { 'header': '2' }],
+                            ['bold', 'italic', 'underline'],
+                            ['link', 'image'],
+                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                            [{ 'align': [] }],
+                        ]
+                    }
+                });
+        
+                // Handle file input change
+                fileInput.addEventListener('change', function () {
+                    var file = fileInput.files[0];
+                    if (file) {
+                        uploadFile(file).then(fileUrl => {
+                            fileUrlInput.value = fileUrl;
+                            fileUrlContainer.style.display = 'block';
+                        }).catch(error => {
+                            console.error('Error uploading file:', error);
+                            alert('Failed to upload file.');
+                        });
+                    } else {
+                        fileUrlContainer.style.display = 'none';
+                    }
+                });
+        
+                // Copy file URL to clipboard
+                copyFileUrlButton.addEventListener('click', function () {
+                    fileUrlInput.select();
+                    document.execCommand('copy');
+                    alert('File URL copied to clipboard!');
+                });
+        
+                // Handle form submission
+                messageForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    var messageContent = quill.root.innerHTML;
+                    var file = fileInput.files[0];
+                    var fileUrl = fileUrlInput.value;
+        
+                    sendMessage(messageContent, fileUrl);
+                });
+        
+                // Upload file
+                function uploadFile(file) {
+                    var formData = new FormData();
+                    formData.append('file', file);
+        
+                    return fetch('/send_message', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            return data.file_url;
+                        } else {
+                            throw new Error(data.error || 'File upload failed');
+                        }
+                    });
+                }
+        
+                // Send message
+                function sendMessage(messageContent, fileUrl) {
+                    var formData = new FormData();
+                    formData.append('message', messageContent);
+                    formData.append('ticket_id', "{{ ticket_details.id }}");
+                    formData.append('sender_id', "{{ current_admin_id }}");
+                    if (fileUrl) {
+                        formData.append('file_url', fileUrl);
+                    }
+        
+                    loadingModal.style.display = 'block';
+        
+                    fetch('/send_message', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        loadingModal.style.display = 'none';
+                        if (data.success) {
+                            appendMessage(messageContent, 'admin', 'you', new Date().toLocaleString(), fileUrl);
+                            quill.root.innerHTML = '';
+                            fileInput.value = '';
+                            fileUrlInput.value = '';
+                            fileUrlContainer.style.display = 'none';
+                            window.location.reload(); // Reload the page to show updates
+                        } else {
+                            console.error('Error sending message:', data.error);
+                        }
+                    })
+                    .catch(error => {
+                        loadingModal.style.display = 'none';
+                        console.error('Error sending message:', error);
+                    });
+                }
+        
+                // Append message to container
+                function appendMessage(messageContent, senderType, senderName, sentAt, fileUrl) {
+                    var messageElement = document.createElement('div');
+                    messageElement.classList.add('message');
+                    if (senderType === 'user') {
+                        messageElement.classList.add('user-message');
+                    } else if (senderType === 'admin') {
+                        messageElement.classList.add('admin-message');
+                    }
+        
+                    var messageHeader = document.createElement('div');
+                    messageHeader.classList.add('message-header');
+                    messageHeader.textContent = senderName + ' - ' + sentAt;
+        
+                    var messageContentElement = document.createElement('div');
+                    messageContentElement.classList.add('message-content');
+                    messageContentElement.innerHTML = messageContent;
+        
+                    messageElement.appendChild(messageHeader);
+                    messageElement.appendChild(messageContentElement);
+        
+                    if (fileUrl) {
+                        var fileAttachment = document.createElement('div');
+                        fileAttachment.classList.add('message-attachment');
+                        
+                        var fileLink = document.createElement('a');
+                        fileLink.href = fileUrl;
+                        fileLink.download = true;
+                        fileLink.textContent = 'Download file';
+                        
+                        fileAttachment.appendChild(fileLink);
+                        messageElement.appendChild(fileAttachment);
+                    }
+        
+                    messageContainer.appendChild(messageElement);
+                    messageContainer.scrollTop = messageContainer.scrollHeight;
+                }
+        
+                // Accept ticket
+                if (acceptTicketBtn) {
+                    acceptTicketBtn.addEventListener('click', function () {
+                        const ticketId = "{{ ticket_details.id }}";
+                        fetch(`/accept_ticket/${ticketId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ ticket_id: ticketId })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.reload();
+                            } else {
+                                console.error('Error accepting ticket:', data.message || 'Unknown error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error accepting ticket:', error);
+                        });
+                    });
+                }
+        
+                // Close ticket
+                if (closeTicketBtn) {
+                    closeTicketBtn.addEventListener('click', function () {
+                        const ticketId = "{{ ticket_details.id }}";
+                        fetch(`/close_ticket/${ticketId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ ticket_id: ticketId })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.reload();
+                            } else {
+                                console.error('Error closing ticket:', data.message || 'Unknown error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error closing ticket:', error);
+                        });
+                    });
+                }
+        
+                // Reopen ticket
+                if (reopenTicketBtn) {
+                    reopenTicketBtn.addEventListener('click', function () {
+                        const ticketId = "{{ ticket_details.id }}";
+                        fetch(`/reopen_ticket/${ticketId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ ticket_id: ticketId })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.reload();
+                            } else {
+                                console.error('Error reopening ticket:', data.message || 'Unknown error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error reopening ticket:', error);
+                        });
+                    });
+                }
+        
+                // Close popup
+                if (closePopup) {
+                    closePopup.addEventListener('click', function () {
+                        popup.style.display = 'none';
+                    });
+                }
+            });
+
+        
+        
+        
+        
+    </script>
+</body>
+</html>

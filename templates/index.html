@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helpdesk NIT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/basic.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        .button-container {
+            text-align: center;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 100px auto;
+        }
+
+        .logo-main {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+
+        .button-login, .button-download {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin-bottom: 10px; /* Added margin to create space between buttons */
+        }
+
+        .button-login:hover, .button-download:hover {
+            background-color: #0056b3;
+        }
+
+        .button-container h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .button-container h3 {
+            font-size: 20px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .button-container h4 {
+            font-size: 16px;
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+        .button-container p {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .button-container .button-login, .button-container .button-download {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <img src="{{ url_for('static', filename='images/NIT_logo.png') }}" alt="logo-main" class="logo-main">
+        <h2>Bem-vindo ao sistema de apoio do Núcleo de Informática e Telecomunicações.</h2>
+        <h3>Nesta plataforma pode solicitar apoio técnico do Núcleo de Informática e Telecomunicações da Secretaria Regional da Educação, Cultura e Desporto. </h3>
+        <p>Comprometemo-nos a responder com a maior brevidade possível, empregando todos os recursos ao nosso alcance para resolver o seu problema de forma eficiente e eficaz.</p>   
+        <a href="{{ url_for('static', filename='files/user_guide_helpdesk.pdf') }}" class="button-download" target="_blank"><i class="fa fa-download"></i> Manual de utilizador</a> 
+        <br> <!-- Added line break to separate buttons -->
+        <a href="/login" class="button-login">Login</a>
+    </div>
+</body>
+</html>

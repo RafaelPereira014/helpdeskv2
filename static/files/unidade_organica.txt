@@ -1,0 +1,23 @@
+-
+Conservatório Regional Ponta Delgada
+EBIA - Escola Básica Integrada Arrifes
+EBIAP - Escola Básica Integrada Água Pau
+EBICM - Escola Básica Integrada Canto Maia
+EBIG - Escola Básica Integrada Ginetes
+EBIL - Escola Básica Integrada Lagoa
+EBIM - Escola Básica Integrada Maia
+EBIPG - Escola Básica Integrada Ponta Garça
+EBIRG - Escola Básica Integrada Ribeira Grande
+EBIRP - Escola Básica Integrada Rabo Peixe
+EBIVC - Escola Básica Integrada Vila Capelas
+EBIVT - Escola Básica Integrada Vila Topo
+EBSN - Escola Básica Secundária Nordeste
+EBSP - Escola Básica Secundária Povoação
+EBSVFC - Escola Básica Secundária Vila Franca Campo
+EPC - Escola Profissional Capelas
+ESAQ - Escola Secundária Antero Quental
+ESBIRI - Escola Básica Integrada Roberto Ivens
+ESDR - Escola Secundária Domingos Rebelo
+ESL - Escola Secundária Lagoa
+ESL - Escola Secundária Laranjeiras
+ESRG - Escola Secundária Ribeira Grande

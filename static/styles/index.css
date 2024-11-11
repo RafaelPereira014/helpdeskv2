@@ -1,0 +1,324 @@
+body {
+    font-family: "Poppins", sans-serif;
+    background-color: #dde5f4;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.button-container {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.logo-main {
+    width: 150px;
+    margin-bottom: 20px;
+}
+
+.button-login {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.button-login:hover {
+    background-color: #0056b3;
+}
+
+.button-container h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.button-container h3 {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.button-container h4 {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 20px;
+}
+
+h1 {
+    color: #3e4684;
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+h3 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+h4 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+
+p {
+    color: #4d4d4d;
+    margin-bottom: 20px;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3e4684;
+    margin-top: 10px;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+.button-login {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bffe4;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    display: inline;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #2c314f;
+}
+
+.button-logout {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3e4684;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.ticket-info {
+    margin-bottom: 20px;
+}
+
+.ticket-info-item {
+    margin-bottom: 15px;
+    overflow: auto; /* Enable scrolling for overflow content */
+    max-height: 200px; /* Set a maximum height for the description */
+}
+
+.info-label {
+    font-weight: bold;
+    color: #555;
+}
+
+.info-value {
+    color: #333;
+    margin-left: 10px;
+}
+
+.message-container {
+    margin-top: 20px;
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+}
+
+.message-container .message {
+    margin-bottom: 20px;
+    padding: 0; /* Remove default padding */
+    border-radius: 10px;
+}
+
+.message-container .message .message-header {
+    padding: 10px 20px;
+    border-radius: 10px 10px 0 0;
+    border-color: #bf4e4e;
+    color: #272525;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.user-message,
+.admin-message {
+    margin-bottom: 20px;
+    overflow: auto; /* Enable scrolling for overflow content */
+    float: none;
+    clear: none;
+}
+
+.user-message .message-content,
+.admin-message .message-content {
+    padding: 15px 20px;
+}
+
+.user-message .message-header {
+    background-color: #4e84be;
+}
+
+.admin-message .message-header {
+    background-color: #8d8f91;
+}
+
+.user-message .message-header,
+.admin-message .message-header {
+    margin-bottom: 10px;
+}
+
+.user-message .message-content,
+.admin-message .message-content {
+    margin-top: 0;
+}
+
+.user-header {
+    color: #122d3f;
+}
+
+.admin-header {
+    color: #4e79bf;
+}
+
+#message {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.button {
+    padding: 10px 20px;
+    background-color: #007bffe4;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+}
+
+.button-accept {
+    padding: 10px 20px;
+    background-color: #007bffe4;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    border-radius: 5px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Loader styles */
+#loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white background */
+    display: flex; /* Display as flex container */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Ensure loader is on top of other elements */
+}
+
+#loader i {
+    font-size: 50px;
+    color: #3e4684; /* Your preferred color */
+}
+.file-label {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.file-upload {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.file-input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0); /* For IE8 and earlier */
+}
+
+.file-button {
+    background-color: #0056b3;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.file-button:hover {
+    background-color: #0056b3;
+}
+
+

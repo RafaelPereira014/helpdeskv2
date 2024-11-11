@@ -1,0 +1,27 @@
+Reconfiguração portas switch , 2
+Dados aluno, 1
+Criar novo utilizador,1
+Autenticação MFA, 1
+Criar grupo de distribuição, 1
+Licença 0365, 1
+Partilhas na rede, 1
+Apoio ao Utilizador, 1
+Atribuicao de computadores, 1
+Apoio a websites EDU, 1
+Pedido de Equipamento, 1
+Pedido de SUP individual, 1
+Pedido de Swicth - avaria, 2 
+Pedido de Switch - configuração, 2
+Pedido de VPN , 2
+Preparaçao de local para evento , 1
+Alteração de Redes , 2
+Pedido de parecer, 1
+Incidente de segurança, 2
+Configuração/problema de rede EDU, 2
+Pedido de parecer EDU, 1
+Configuração APs EDU, 2
+Manuais digitais, 1
+Pedido de VPN , 1
+Pedido de VPN - FSE , 1
+Reposição de Tablet, 1
+Registo de Tablet, 1

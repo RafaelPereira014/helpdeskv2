@@ -1,0 +1,56 @@
+/* Additional CSS for the database dump section */
+.dump-database {
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.dump-database h2 {
+    color: #333;
+}
+
+.dump-database form {
+    margin-top: 10px;
+}
+
+.dump-database label {
+    margin-right: 10px;
+}
+
+.dump-database input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.dump-database input[type="submit"] {
+    background-color: #007bffe4;
+    color: white;
+    padding: 5px 20px;
+    border: none;
+    border-radius: 3px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.dump-database input[type="submit"]:hover {
+    background-color: 007bffe4;
+}
+.checkbox-group {
+    margin-bottom: 10px;
+}
+
+.sub-checkboxes {
+    margin-left: 20px;
+}
+
+input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+legend {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
