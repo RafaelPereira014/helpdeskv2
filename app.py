@@ -3,9 +3,9 @@ import datetime
 import bleach
 from functools import wraps
 import secrets
+import pymysql
 import os
 import subprocess
-import mysql.connector
 from flask import Flask, flash, jsonify, render_template, request, redirect, send_from_directory, url_for
 from db_operations import *
 from flask import session
@@ -50,7 +50,7 @@ config = {
     'database': 'helpdesk4'
 }
 
-connection = mysql.connector.connect(**config)
+connection = pymysql.connect(**config)
 
 @app.route('/')
 def index():

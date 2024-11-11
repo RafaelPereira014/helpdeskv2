@@ -3,7 +3,7 @@
 from datetime import datetime
 from config import DB_CONFIG  # Import the database configuration
 from flask import session
-import mysql.connector  # Import MySQL Connector Python module
+import pymysql # Import MySQL Connector Python module
 from flask_mail import Message
 import hashlib
 import logging
@@ -15,7 +15,7 @@ import logging
 
 def connect_to_database():
     """Establishes a connection to the MySQL database."""
-    return mysql.connector.connect(**DB_CONFIG)
+    return pymysql.connect(**DB_CONFIG)
 
 
 # User Authentication and Authorization
@@ -135,7 +135,7 @@ def change_password(email):
 def get_ticket_details(ticket_id):
     """Fetches ticket details and associated messages from the database based on the ticket ID."""
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT id, description, date, state, created_by, attributed_to, contacto, title,closed_by,file,UnidadeOrg,attributed_to_name,accepted_at,closed_at FROM tickets WHERE id = %s", (ticket_id,))
     ticket_details = cursor.fetchone()
     
@@ -151,7 +151,7 @@ def get_ticket_details(ticket_id):
 def get_all_tickets():
     """Fetches all tickets from the database ordered by creation date (newest to oldest)."""
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT * FROM tickets ORDER BY id DESC")
     tickets = cursor.fetchall()
     cursor.close()
@@ -190,7 +190,7 @@ def update_ticket_close_time(ticket_id, close_time):
 def get_all_tickets_group(group_id):
     """Fetches all tickets from the database."""
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT * FROM tickets WHERE group_id = %s ORDER BY id DESC", (group_id,))
     tickets = cursor.fetchall()
     cursor.close()
@@ -200,7 +200,7 @@ def get_all_tickets_group(group_id):
 def get_all_tickets_user(user_id):
     """Fetches all tickets from the database."""
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT COUNT(*) AS all_tickets_count FROM tickets WHERE created_by = %s", (user_id,))
     all_tickets_count = cursor.fetchone()
     cursor.close()
@@ -210,7 +210,7 @@ def get_all_tickets_user(user_id):
 def get_opened_tickets_count_by_group(group_id):
     """Fetches the number of opened tickets for a specific group."""
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT COUNT(*) AS opened_tickets_count FROM tickets WHERE state = 'Aberto' AND group_id = %s", (group_id,))
     opened_tickets_count = cursor.fetchone()
     cursor.close()
@@ -220,7 +220,7 @@ def get_opened_tickets_count_by_group(group_id):
 def get_opened_tickets_count_by_user(user_id):
     """Fetches the number of opened tickets for a specific group."""
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT COUNT(*) AS opened_tickets_count FROM tickets WHERE state = 'Aberto' AND created_by = %s", (user_id,))
     opened_tickets_count = cursor.fetchone()
     cursor.close()
@@ -230,7 +230,7 @@ def get_opened_tickets_count_by_user(user_id):
 def get_closed_tickets_count_by_group(group_id):
     """Fetches the number of opened tickets for a specific group."""
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT COUNT(*) AS closed_tickets_count FROM tickets WHERE state = 'Fechado' AND group_id = %s", (group_id,))
     closed_tickets_count = cursor.fetchone()
     cursor.close()
@@ -240,7 +240,7 @@ def get_closed_tickets_count_by_group(group_id):
 def get_closed_tickets_count_by_user(user_id):
     """Fetches the number of opened tickets for a specific group."""
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT COUNT(*) AS closed_tickets_count FROM tickets WHERE state = 'Fechado' AND created_by = %s", (user_id,))
     closed_tickets_count = cursor.fetchone()
     cursor.close()
@@ -250,7 +250,7 @@ def get_closed_tickets_count_by_user(user_id):
 def get_executing_tickets_count_by_group(group_id):
     """Fetches the number of opened tickets for a specific group."""
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT COUNT(*) AS executing_tickets_count FROM tickets WHERE state = 'em execucao' AND group_id = %s", (group_id,))
     executing_tickets_count = cursor.fetchone()
     cursor.close()
@@ -260,7 +260,7 @@ def get_executing_tickets_count_by_group(group_id):
 def get_executing_tickets_count_by_user(user_id):
     """Fetches the number of opened tickets for a specific group."""
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT COUNT(*) AS executing_tickets_count FROM tickets WHERE state = 'em execucao' AND created_by = %s", (user_id,))
     executing_tickets_count = cursor.fetchone()
     cursor.close()
@@ -302,7 +302,7 @@ def create_ticket(topic_id, description, date, state, created_by, contacto, titl
 def get_user_tickets(user_id):
     """Fetches tickets associated with the given user ID."""
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT id, date, state, description, attributed_to, contacto, title FROM tickets WHERE created_by = %s ORDER BY id DESC", (user_id,))
     user_tickets = cursor.fetchall()
     cursor.close()
@@ -485,7 +485,7 @@ def assign_ticket_to_user(ticket_id,user_name):
 
 def get_open_tickets_count_by_admin(username):
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT COUNT(*) AS open_tickets_count FROM tickets WHERE created_by_user = %s", (username,))
     result = cursor.fetchone()
     cursor.close()
@@ -494,7 +494,7 @@ def get_open_tickets_count_by_admin(username):
 
 def get_closed_tickets_count_by_admin(username):
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT COUNT(*) AS closed_tickets_count FROM tickets WHERE closed_by = %s", (username,))
     result = cursor.fetchone()
     cursor.close()
@@ -503,7 +503,7 @@ def get_closed_tickets_count_by_admin(username):
 
 def get_executing_tickets_count_by_admin(username):
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT COUNT(*) AS executing_tickets_count FROM tickets WHERE state='Em execução' AND attributed_to_name = %s", (username,))
     result = cursor.fetchone()
     cursor.close()
@@ -539,7 +539,7 @@ def update_ticket_group(group_id, ticket_id):
 
 def get_tickets_for_user(user_id):
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     query = """
         SELECT * FROM tickets
         WHERE created_by = %s OR attributed_to = %s OR closed_by = %s
@@ -554,7 +554,7 @@ def get_tickets_for_user(user_id):
 
 def count_executing_tickets_admin(username):
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)  # Use dictionary cursor for better result handling
+    cursor = conn.cursor(pymysql.cursors.DictCursor)  # Use dictionary cursor for better result handling
     query = """
         SELECT COUNT(*) AS executing_tickets_count 
         FROM tickets 
@@ -569,7 +569,7 @@ def count_executing_tickets_admin(username):
 
 def search_tickets(keyword):
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT * FROM tickets WHERE title LIKE %s ORDER BY id DESC", ('%' + keyword + '%',))
     tickets = cursor.fetchall()
     cursor.close()
@@ -578,7 +578,7 @@ def search_tickets(keyword):
 
 def search_id(id):
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT * FROM tickets WHERE id LIKE %s ORDER BY id DESC", ('%' + id + '%',))
     tickets_id = cursor.fetchall()
     cursor.close()
@@ -588,7 +588,7 @@ def search_id(id):
 
 def search_unidadeorg(unidadeorg):
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT * FROM tickets WHERE UnidadeOrg LIKE %s ORDER BY id DESC", ('%' + unidadeorg + '%',))
     tickets_unidadeorg = cursor.fetchall()
     cursor.close()
@@ -597,7 +597,7 @@ def search_unidadeorg(unidadeorg):
 
 def search_for_user(user):
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT * FROM tickets WHERE created_by_user LIKE %s ORDER BY id DESC", ('%' + user + '%',))
     tickets_by_user = cursor.fetchall()
     cursor.close()
@@ -606,7 +606,7 @@ def search_for_user(user):
 
 def search_for_date(date):
     conn = connect_to_database()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT * FROM tickets WHERE date LIKE %s ORDER BY id DESC", ('%' + date + '%',))
     tickets_by_user = cursor.fetchall()
     cursor.close()
