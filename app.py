@@ -16,7 +16,7 @@ from flask_mail import Mail, Message
 from werkzeug.utils import secure_filename
 from flask import render_template
 from flask import send_file
-
+from config import DB_CONFIG
 
 
 
@@ -43,14 +43,9 @@ def allowed_file(filename):
 
 
 
-config = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'passroot',
-    'database': 'helpdesk4'
-}
 
-connection = pymysql.connect(**config)
+
+connection = pymysql.connect(**DB_CONFIG)
 
 @app.route('/')
 def index():
