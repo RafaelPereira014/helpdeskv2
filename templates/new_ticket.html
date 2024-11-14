@@ -33,6 +33,27 @@
             z-index: 1000;
         }
     </style>
+    <style>
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #333;
+        }
+        .popup p {
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
     <div class="sidenav">
@@ -91,7 +112,7 @@
         <div class="container">
             <h1>Abrir novo ticket</h1>
             <form method="POST" action="/new_ticket" id="ticket_form" enctype="multipart/form-data">
-                <div id="popup-message" class="popup" style="display: none;">Ticket criado com sucesso!</div>
+                <div id="popup-message" class="popup" style="display: none;"></div>
                 
                 {% if admin_status %}
                     <label for="assigned_to">Atribuir ticket a:</label>
@@ -166,6 +187,11 @@
                 <div id="loader">
                     <i class="fa fa-spinner fa-spin"></i>A submeter o ticket. Por favor aguarde...
                 </div>
+
+                <div id="waiting-popup" class="popup" style="display: none;">
+                    <i class="fa fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                    <p>Estamos a processar o seu pedido. Por favor aguarde...</p>
+                </div>
             </form>
         </div>
     </div>
@@ -231,6 +257,7 @@
             "SDIT",
             "SDISJ",
             "SDIP",
+            "SDIG",
             "SDIF",
             "SDIFLORES",
             "SDIC",
@@ -251,6 +278,7 @@
             "SDISJ",
             "SDIP",
             "SDIF",
+            "SDIG",
             "SDIFLORES",
             "SDIC",
             "DRAC",
@@ -351,6 +379,28 @@
                 });
             }
         }
+        // Show the waiting popup
+        function showWaitingPopup() {
+            var waitingPopup = document.getElementById('waiting-popup');
+            waitingPopup.style.display = 'block';
+        }
+
+        // Handle form submission
+        document.getElementById('ticket_form').addEventListener('submit', function (event) {
+            var quillEditorContent = quill.root.innerHTML;
+            var quillEditorText = quill.getText().trim();
+
+            if (quillEditorText === '') {
+                event.preventDefault(); // Prevent form submission
+                alert('Descrição é obrigatória!'); // Show error message
+            } else {
+                // Populate hidden description field with Quill content
+                document.getElementById('description').value = quillEditorContent;
+
+                // Show the waiting popup
+                showWaitingPopup();
+            }
+        });
 
         // Initialize Quill editor
         var quill = new Quill('#quill_editor', {

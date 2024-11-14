@@ -15,6 +15,8 @@
     <link href='https://unpkg.com/css.gg@2.0.0/icons/css/log-out.css' rel='stylesheet'>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         /* Hide the default file input */
         #file {
@@ -457,6 +459,20 @@
         </div>
     </div>
 
+    <div class="modal fade" id="processingModal" tabindex="-1" aria-labelledby="processingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="processingModalLabel">A processar...</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Por favor aguarde enquanto o ticket está a ser processado.
+            </div>
+          </div>
+        </div>
+      </div>
+
     <!---->
     <div id="loading-modal" class="modal">
         <div class="modal-content">
@@ -626,10 +642,25 @@
                     messageContainer.scrollTop = messageContainer.scrollHeight;
                 }
         
+                // Function to show the processing modal
+                function showProcessingModal() {
+                    const modal = new bootstrap.Modal(document.getElementById('processingModal'));
+                    modal.show();
+                }
+
+                // Function to hide the processing modal
+                function hideProcessingModal() {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('processingModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                }
+
                 // Accept ticket
                 if (acceptTicketBtn) {
                     acceptTicketBtn.addEventListener('click', function () {
                         const ticketId = "{{ ticket_details.id }}";
+                        showProcessingModal(); // Show modal
                         fetch(`/accept_ticket/${ticketId}`, {
                             method: 'POST',
                             headers: {
@@ -639,6 +670,7 @@
                         })
                         .then(response => response.json())
                         .then(data => {
+                            hideProcessingModal(); // Hide modal
                             if (data.success) {
                                 window.location.reload();
                             } else {
@@ -646,15 +678,17 @@
                             }
                         })
                         .catch(error => {
+                            hideProcessingModal(); // Hide modal
                             console.error('Error accepting ticket:', error);
                         });
                     });
                 }
-        
+
                 // Close ticket
                 if (closeTicketBtn) {
                     closeTicketBtn.addEventListener('click', function () {
                         const ticketId = "{{ ticket_details.id }}";
+                        showProcessingModal(); // Show modal
                         fetch(`/close_ticket/${ticketId}`, {
                             method: 'POST',
                             headers: {
@@ -664,6 +698,7 @@
                         })
                         .then(response => response.json())
                         .then(data => {
+                            hideProcessingModal(); // Hide modal
                             if (data.success) {
                                 window.location.reload();
                             } else {
@@ -671,6 +706,7 @@
                             }
                         })
                         .catch(error => {
+                            hideProcessingModal(); // Hide modal
                             console.error('Error closing ticket:', error);
                         });
                     });
