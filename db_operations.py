@@ -1,6 +1,7 @@
 # Database Operations
 
 from datetime import datetime
+import re
 from config import DB_CONFIG  # Import the database configuration
 from flask import session
 import pymysql # Import MySQL Connector Python module
@@ -134,19 +135,60 @@ def change_password(email):
 
 def get_ticket_details(ticket_id):
     """Fetches ticket details and associated messages from the database based on the ticket ID."""
+    if not ticket_id:
+        print("Error: ticket_id is None or invalid.")
+        return None
+
     conn = connect_to_database()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
-    cursor.execute("SELECT id, description, date, state, created_by, attributed_to, contacto, title,closed_by,file,UnidadeOrg,attributed_to_name,accepted_at,closed_at FROM tickets WHERE id = %s", (ticket_id,))
-    ticket_details = cursor.fetchone()
+    try:
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        # Fetch ticket details
+        cursor.execute("""
+            SELECT id, description, date, state, created_by, attributed_to, contacto, 
+                   title, closed_by, file, UnidadeOrg, attributed_to_name, accepted_at, closed_at 
+            FROM tickets 
+            WHERE id = %s
+        """, (ticket_id,))
+        ticket_details = cursor.fetchone()
+
+        if not ticket_details:
+            print(f"No ticket found with ID: {ticket_id}")
+            return None
+
+        # Fetch messages associated with the ticket
+        cursor.execute("""
+            SELECT message, sender_type, sent_at, sender_name 
+            FROM messages 
+            WHERE ticket_id = %s
+        """, (ticket_id,))
+        messages = cursor.fetchall()
+        ticket_details['messages'] = messages
+
+        return ticket_details
+
+    except Exception as e:
+        print(f"Error fetching ticket details: {e}")
+        return None
+
+    finally:
+        cursor.close()
+        conn.close()
+
+def clean_description(description):
+    """Remove unnecessary HTML tags, line breaks, and extra spaces."""
     
-    # Fetch messages associated with the ticket
-    cursor.execute("SELECT message, sender_type, sent_at,sender_name FROM messages WHERE ticket_id = %s", (ticket_id,))
-    messages = cursor.fetchall()
-    ticket_details['messages'] = messages
+    # Remove empty <p> tags (if there are any remaining)
+    description = re.sub(r'<p>\s*</p>', '', description)
     
-    cursor.close()
-    conn.close()
-    return ticket_details
+    # Remove any leading/trailing spaces from paragraphs
+    description = re.sub(r'<p>\s*|\s*</p>', '', description)
+    
+    # Collapse all other whitespace characters (spaces, newlines, etc.)
+    description = re.sub(r'\s+', ' ', description.strip())
+    
+    return description
+
 
 def get_all_tickets():
     """Fetches all tickets from the database ordered by creation date (newest to oldest)."""
@@ -478,20 +520,22 @@ def attributed_to(user_id):
     return user_attributed
 
 def attributed_to_by_ticket(ticket_id):
-    conn = connect_to_database()
-    cursor = conn.cursor()
-    cursor.execute("SELECT attributed_to FROM tickets WHERE id = %s", (ticket_id,))
-    user_attributed_id = cursor.fetchone()[0]
-    cursor.execute("SELECT name FROM users WHERE id = %s", (user_attributed_id,))
-    user_tuple = cursor.fetchone()
-    if user_tuple:
-        user_name = user_tuple[0]  # Access the first element of the tuple
-    else:
-        # Handle the case when no user is found
-        user_name = None  # or any default value you want
-    cursor.close()
-    conn.close()
-    return user_name
+    try:
+        conn = connect_to_database()
+        cursor = conn.cursor()
+        cursor.execute("SELECT attributed_to_name FROM tickets WHERE id = %s", (ticket_id,))
+        result = cursor.fetchone()
+        if result is None:
+            print(f"No data found for ticket_id: {ticket_id}")
+            return None
+        user_name = result[0]
+        return user_name
+    except Exception as e:
+        print(f"Error querying database: {e}")
+        return None
+    finally:
+        cursor.close()
+        conn.close()
 
 def get_user_id_by_name(user_name):
     conn = connect_to_database()

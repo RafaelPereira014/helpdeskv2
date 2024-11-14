@@ -3,9 +3,9 @@ import datetime
 import bleach
 from functools import wraps
 import secrets
-import pymysql
 import os
 import subprocess
+import mysql.connector
 from flask import Flask, flash, jsonify, render_template, request, redirect, send_from_directory, url_for
 from db_operations import *
 from flask import session
@@ -16,7 +16,7 @@ from flask_mail import Mail, Message
 from werkzeug.utils import secure_filename
 from flask import render_template
 from flask import send_file
-from config import DB_CONFIG
+
 
 
 
@@ -43,9 +43,14 @@ def allowed_file(filename):
 
 
 
+config = {
+    'host': 'localhost',
+    'user': 'root',
+    'password': 'passroot',
+    'database': 'helpdesk4'
+}
 
-
-connection = pymysql.connect(**DB_CONFIG)
+connection = mysql.connector.connect(**config)
 
 @app.route('/')
 def index():
@@ -97,7 +102,7 @@ def init_page():
 @app.route('/my_profile', methods=['GET', 'POST'])
 def profile_page():
     if 'user_id' not in session:
-        return redirect(url_for('login'))  
+        return redirect(url_for('login'))  # Redirect to login page if user is not logged in
 
     user_id = session['user_id']
     user_name = get_username(user_id)
@@ -189,6 +194,7 @@ def new_ticket():
         else:
             filename = "Sem ficheiro."
         
+        description = clean_description(description)
         
 
         create_ticket(topic_id, description, date, state, created_by, contacto, title, uni_org, filename)
@@ -689,23 +695,45 @@ def personal_panel():
 @app.route('/ticket_details/<int:ticket_id>')
 def ticket_details(ticket_id):
     user_id = session.get('user_id')
+    
     conn = connect_to_database()
     cursor = conn.cursor()
+
+    # Fetch the user who created the ticket
     cursor.execute("SELECT u.name FROM users u JOIN tickets t ON u.id = t.created_by WHERE t.id = %s", (ticket_id,))
     user_tuple = cursor.fetchone()
     if user_tuple:
         user_name = user_tuple[0]  # Access the first element of the tuple
     else:
-        # Handle the case when no user is found
         user_name = None  # or any default value you want
+
+    # Fetch ticket details
+    ticket_details = get_ticket_details(ticket_id)
+    #print((ticket_details['closed_by']))
+    print(ticket_details['description'])
+    
+    if ticket_details and ticket_details.get('description'):
+        ticket_details['description'] = clean_description(ticket_details['description'])
+        
+    print(ticket_details['description'])
+    
+    # # Get the username for closed_by field
+    # if ticket_details.get('closed_by'):
+    #     ticket_details['closed_by'] = get_username(ticket_details['closed_by'])
+
+    # # Handle other fields similarly if needed
+    # if ticket_details.get('accepted_by'):
+    #     ticket_details['accepted_by'] = get_username(ticket_details['accepted_by'])
+    
+    # if ticket_details.get('reopened_by'):
+    #     ticket_details['reopened_by'] = get_username(ticket_details['reopened_by'])
+
     cursor.close()
     conn.close()
+    
     admin_status = is_admin(user_id)
-    ticket_details = get_ticket_details(ticket_id)
-    id_topico = get_topic_id(ticket_id)
-    topico = get_topic_name(id_topico)
-    print(topico)
-    return render_template('ticket_details.html', ticket_details=ticket_details, is_admin=admin_status, user_name=user_name,topico=topico)
+
+    return render_template('ticket_details.html', ticket_details=ticket_details, is_admin=admin_status, user_name=user_name)
 
 
 @app.route('/close_ticket/<int:ticket_id>', methods=['POST'])
@@ -759,10 +787,6 @@ def close_ticket_route(ticket_id):
 
 @app.route('/reopen_ticket/<int:ticket_id>', methods=['POST'])
 def reopen_ticket_route(ticket_id):
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-
     reopen_ticket(ticket_id)
 
     return jsonify({'success': True})
@@ -884,5 +908,3 @@ def dump_database():
     return send_file(file_path, as_attachment=True)
 if __name__ == '__main__':
     app.run(debug=True)
-
-

@@ -108,11 +108,8 @@
 
         .ticket-info-item {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding: 12px 0;
-            border-bottom: 1px solid #e0e0e0;
-            transition: background 0.3s ease;
+            flex-wrap: wrap;
+            margin-bottom: 8px; /* Adjust to reduce space between items */
         }
 
         .ticket-info-item:hover {
@@ -124,16 +121,16 @@
         }
 
         .info-label {
-            font-weight: 600;
-            color: #333;
-            font-size: 15px;
+            font-weight: bold;
+            margin-right: 5px; /* Space between label and value */
         }
+
 
         .info-value {
             font-size: 15px;
             color: #555;
-            word-wrap: break-word;
         }
+        
 
         .info-value a {
             color: #007bff;
@@ -509,7 +506,7 @@
                         toolbar: [
                             [{ 'header': '1' }, { 'header': '2' }],
                             ['bold', 'italic', 'underline'],
-                            ['link', 'image'],
+                            ['link'],
                             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
                             [{ 'align': [] }],
                         ]
