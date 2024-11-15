@@ -97,6 +97,7 @@
         }
 
         /* Ticket Info Styles */
+        /* Ticket Info Styles */
         .ticket-info {
             margin-top: 40px;
             padding: 20px;
@@ -104,34 +105,43 @@
             border-radius: 12px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
             border: 1px solid #e0e0e0;
+            height:400px;
         }
 
+        /* Each item adapts to content */
         .ticket-info-item {
             display: flex;
             flex-wrap: wrap;
             margin-bottom: 8px; /* Adjust to reduce space between items */
+            align-items: flex-start;
         }
 
+        /* Hover effect for better UX */
         .ticket-info-item:hover {
-            background: #f1f1f1; /* Light hover effect */
+            background: #f1f1f1;
         }
 
-        .ticket-info-item:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            font-weight: bold;
-            margin-right: 5px; /* Space between label and value */
-        }
-
-
+        /* Remove any height restrictions on content */
         .info-value {
             font-size: 15px;
             color: #555;
+            white-space: normal; /* Allow text to wrap naturally */
+            word-break: break-word; /* Ensure long words break into new lines */
         }
-        
 
+        /* Description spans full width if needed */
+        .ticket-info-item .info-label {
+            font-weight: bold;
+            margin-right: 5px; /* Space between label and value */
+            white-space: nowrap; /* Prevent the label from breaking lines */
+        }
+
+        .ticket-info-item .info-value {
+            flex: 1; /* Allow the value to take the remaining width */
+            min-width: 0; /* Prevent layout overflow */
+        }
+
+        /* Links styling */
         .info-value a {
             color: #007bff;
             text-decoration: none;

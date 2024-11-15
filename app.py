@@ -188,7 +188,7 @@ def new_ticket():
         else:
             filename = "Sem ficheiro."
         
-        description = clean_description(description)
+        #description = clean_description(description)
         
 
         create_ticket(topic_id, description, date, state, created_by, contacto, title, uni_org, filename)
@@ -704,12 +704,12 @@ def ticket_details(ticket_id):
     # Fetch ticket details
     ticket_details = get_ticket_details(ticket_id)
     #print((ticket_details['closed_by']))
-    print(ticket_details['description'])
+    # print(ticket_details['description'])
     
-    if ticket_details and ticket_details.get('description'):
-        ticket_details['description'] = clean_description(ticket_details['description'])
+    # # if ticket_details and ticket_details.get('description'):
+    # #     ticket_details['description'] = clean_description(ticket_details['description'])
         
-    print(ticket_details['description'])
+    # print(ticket_details['description'])
     
     # # Get the username for closed_by field
     # if ticket_details.get('closed_by'):
@@ -726,8 +726,10 @@ def ticket_details(ticket_id):
     conn.close()
     
     admin_status = is_admin(user_id)
+    id_topico = get_topic_id(ticket_id)
+    topico = get_topic_name(id_topico)
 
-    return render_template('ticket_details.html', ticket_details=ticket_details, is_admin=admin_status, user_name=user_name)
+    return render_template('ticket_details.html', ticket_details=ticket_details, is_admin=admin_status, user_name=user_name,topico=topico)
 
 
 @app.route('/close_ticket/<int:ticket_id>', methods=['POST'])

@@ -178,9 +178,6 @@ def get_ticket_details(ticket_id):
 def clean_description(description):
     """Remove unnecessary HTML tags, line breaks, and extra spaces."""
     
-    # Remove empty <p> tags (if there are any remaining)
-    description = re.sub(r'<p>\s*</p>', '', description)
-    
     # Remove any leading/trailing spaces from paragraphs
     description = re.sub(r'<p>\s*|\s*</p>', '', description)
     
