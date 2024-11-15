@@ -50,7 +50,7 @@ config = {
     'database': 'helpdesk4'
 }
 
-connection = mysql.connector.connect(**config)
+connection = pymysql.connect(**config)
 
 @app.route('/')
 def index():
