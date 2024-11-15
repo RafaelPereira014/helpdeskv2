@@ -5,7 +5,6 @@ from functools import wraps
 import secrets
 import os
 import subprocess
-import mysql.connector
 from flask import Flask, flash, jsonify, render_template, request, redirect, send_from_directory, url_for
 from db_operations import *
 from flask import session
@@ -16,6 +15,7 @@ from flask_mail import Mail, Message
 from werkzeug.utils import secure_filename
 from flask import render_template
 from flask import send_file
+from config import DB_CONFIG
 
 
 
@@ -43,14 +43,8 @@ def allowed_file(filename):
 
 
 
-config = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'passroot',
-    'database': 'helpdesk4'
-}
 
-connection = pymysql.connect(**config)
+connection = pymysql.connect(**DB_CONFIG)
 
 @app.route('/')
 def index():
