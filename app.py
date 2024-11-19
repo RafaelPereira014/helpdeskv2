@@ -152,6 +152,7 @@ def new_ticket():
     
     user_id = session['user_id']
     is_edu = check_email_contains_edu(user_id) 
+    print(is_edu)
     admin_status = is_admin(user_id)
     all_users = get_all_users()
     all_unidades = get_all_unidades()

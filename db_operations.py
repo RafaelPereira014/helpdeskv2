@@ -90,15 +90,26 @@ def update_password(user_id, password):
 def check_email_contains_edu(user_id):
     conn = connect_to_database()
     cursor = conn.cursor()
-    cursor.execute("SELECT email FROM users WHERE id = %s", (user_id,))
-    user_email = cursor.fetchone()
-    cursor.close()
-    conn.close()
-
-    if "@edu" in user_email or "@inforpereira" in user_email:
-        return True
-    else:
+    try:
+        # Fetch the email for the given user_id
+        cursor.execute("SELECT email FROM users WHERE id = %s", (user_id,))
+        result = cursor.fetchone()
+        
+        if result:  # Check if a result was returned
+            user_email = result[0]  # Extract the email string from the tuple
+            print(f"User email: {user_email}")
+            
+            # Check if "@edu" or "@inforpereira" is in the email string
+            return "@edu" in user_email or "@inforpereira" in user_email
+        else:
+            print("No email found for the given user ID.")
+            return False
+    except Exception as e:
+        print(f"Error: {e}")
         return False
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def get_all_users():
