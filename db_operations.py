@@ -253,6 +253,29 @@ def send_ticket_message(ticket_id, message_content, sender_type, sender_name,sen
     
     connection.commit()
     cursor.close()
+    
+def insert_files_ticket(ticket_id,user_id,date,file_url):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO anexos (ticket_id,anexed_by,anexed_at,file_url) VALUES (%s,%s,%s,%s)",(ticket_id,user_id,date,file_url,))
+    connection.commit()
+    cursor.close()
+    
+def count_files_ticket(ticket_id):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    
+    # Execute the SELECT query to count the files
+    cursor.execute("SELECT COUNT(*) FROM anexos WHERE ticket_id=%s", (ticket_id,))
+    
+    # Fetch the result and extract the count
+    result = cursor.fetchone()  # fetchone() returns a tuple (count,)
+    
+    cursor.close()
+    connection.close()
+    
+    # Return the count of files
+    return result[0] if result else 0
 
 
 

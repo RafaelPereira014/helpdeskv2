@@ -358,28 +358,13 @@ def send_message():
     sender_type = user_type[0] if user_type else 'user'
     sender_name = get_username(user_id)
 
-    file_url = None
-    if 'file' in request.files:
-        file = request.files['file']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(file_path)
-            app.logger.info(f"File saved to {file_path}")
-            file_url = url_for('uploaded_file', filename=filename, _external=True)
-            app.logger.info(f"File URL generated: {file_url}")
+    
 
     cursor = connection.cursor()
-    if file_url:
-        cursor.execute(
-            "INSERT INTO messages (ticket_id, message, sender_type, sender_name, file) VALUES (%s, %s, %s, %s, %s)",
-            (ticket_id, message, sender_type, sender_name, file_url)
-        )
-    else:
-        cursor.execute(
-            "INSERT INTO messages (ticket_id, message, sender_type, sender_name) VALUES (%s, %s, %s, %s)",
-            (ticket_id, message, sender_type, sender_name)
-        )
+    cursor.execute(
+        "INSERT INTO messages (ticket_id, message, sender_type, sender_name) VALUES (%s, %s, %s, %s)",
+        (ticket_id, message, sender_type, sender_name)
+    )
 
     connection.commit()
     cursor.close()
@@ -496,38 +481,89 @@ def send_message():
                     """
                     mail.send(msg)
 
-    return jsonify({'success': True, 'file_url': file_url if file_url else ''})
+    return jsonify({'success': True})
 
 
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    user_id = session.get('user_id')
+    ticket_id = request.form.get('ticket_id')  # Get the ticket ID from the form submission
+
+    # Ensure user is authenticated
+    if not user_id:
+        return {"success": False, "message": "Unauthorized"}, 401
+
+    # Validate and process the uploaded file
+    file = request.files.get('uploaded_file')
+    if not file:
+        return {"success": False, "message": "No file uploaded"}, 400
+
+    if file and allowed_file(file.filename):  # Validate file type
+        filename = secure_filename(file.filename)
+        file_path = os.path.join('static/uploads', filename)  # Define your upload folder
+        file.save(file_path)  # Save the file
+
+        # Insert file metadata into the database
+        insert_files_ticket(ticket_id, user_id, datetime.now(), filename)
+
+        return {"success": True, "message": "File uploaded successfully"}, 200
+    else:
+        return {"success": False, "message": "Invalid file type"}, 400
+    
+@app.route('/get_files/<int:ticket_id>')
+def get_files(ticket_id):
+    # Connect to the database
+    conn = connect_to_database()
+    cursor = conn.cursor()
+
+    # Fetch stored files for the specific ticket
+    cursor.execute("SELECT file_url FROM anexos WHERE ticket_id = %s", (ticket_id,))
+    files = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    # Return the file list as JSON
+    return {"files": [file[0] for file in files]}  # Assuming filename is the first column
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
-@app.route('/uploads/<filename>')
-def download_file(filename):
-    # Safely join the upload folder and filename to prevent directory traversal
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
-
-@app.route('/upload_file', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file part'}), 400
-
-    file = request.files['file']
-
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
-
-    if file:
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        file_url = url_for('static', filename='uploads/' + filename)
-        return jsonify({'file_url': file_url}), 200
-
+@app.route('/remove_file/<int:ticket_id>', methods=['POST'])
+def remove_file(ticket_id):
+    user_id = session.get('user_id')
     
+    if not user_id:
+        return jsonify({"success": False, "message": "Unauthorized"}), 401
+    
+    data = request.get_json()
+    filename = data.get('filename')
+    
+    if not filename:
+        return jsonify({"success": False, "message": "No filename provided"}), 400
 
+    # Remove file from the file system
+    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    else:
+        return jsonify({"success": False, "message": "File not found"}), 404
+
+    # Remove the file entry from the database
+    try:
+        conn = connect_to_database()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM anexos WHERE ticket_id = %s AND file_url = %s", (ticket_id, filename))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({"success": True, "message": "File removed successfully"})
+    
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
 
 
 def admin_required(f):
@@ -707,8 +743,8 @@ def ticket_details(ticket_id):
     #print((ticket_details['closed_by']))
     # print(ticket_details['description'])
     
-    # # if ticket_details and ticket_details.get('description'):
-    # #     ticket_details['description'] = clean_description(ticket_details['description'])
+    if ticket_details and ticket_details.get('description'):
+        ticket_details['description'] = clean_description(ticket_details['description'])
         
     # print(ticket_details['description'])
     
@@ -722,6 +758,8 @@ def ticket_details(ticket_id):
     
     # if ticket_details.get('reopened_by'):
     #     ticket_details['reopened_by'] = get_username(ticket_details['reopened_by'])
+    no_anexos = count_files_ticket(ticket_id)
+    
 
     cursor.close()
     conn.close()
@@ -730,7 +768,7 @@ def ticket_details(ticket_id):
     id_topico = get_topic_id(ticket_id)
     topico = get_topic_name(id_topico)
 
-    return render_template('ticket_details.html', ticket_details=ticket_details, is_admin=admin_status, user_name=user_name,topico=topico)
+    return render_template('ticket_details.html', ticket_details=ticket_details, is_admin=admin_status, user_name=user_name,topico=topico,no_anexos=no_anexos)
 
 
 @app.route('/close_ticket/<int:ticket_id>', methods=['POST'])

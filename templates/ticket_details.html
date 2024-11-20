@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/popup.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/side_menu.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/ticket_details.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    
     <link href='https://unpkg.com/css.gg@2.0.0/icons/css/check.css' rel='stylesheet'>
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -17,229 +21,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        /* Hide the default file input */
-        #file {
-            display: none;
-        }
-
-        /* Style the custom button */
-        .custom-file-upload {
-            display: inline-block;
-            padding: 8px 16px;
-            cursor: pointer;
-            background-color: #007bff; /* Change to match your design */
-            color: white;
-            border: none;
-            border-radius: 4px;
-            text-align: center;
-        }
-
-        /* Quill editor style */
-        #quill-editor {
-            height: 300px;
-        }
-
-    </style>
-    <style>
-        /* General Container Styles */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f4f4f9; /* Light background for a clean look */
-        }
-
-        /* Timeline Styles */
-        .timeline-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            background: #ffffff; /* Clean white background */
-            border: 1px solid #e0e0e0;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for a floating effect */
-        }
-
-        .timeline-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #007bff, #00d4ff); /* Gradient for a modern touch */
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            font-size: 18px;
-            color: #fff;
-        }
-
-        .timeline-content {
-            background: #ffffff;
-            padding: 15px;
-            border-radius: 10px;
-            width: calc(100% - 50px); /* Adjust width to account for icon */
-            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05); /* Subtle inner shadow */
-        }
-
-        .timeline-date {
-            font-size: 12px;
-            color: #888;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .timeline-action {
-            font-size: 16px;
-            color: #333;
-            line-height: 1.5;
-        }
-
-        /* Ticket Info Styles */
-        /* Ticket Info Styles */
-        .ticket-info {
-            margin-top: 40px;
-            padding: 20px;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e0e0e0;
-        }
-
-        /* Each item adapts to content */
-        .ticket-info-item {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 8px; /* Adjust to reduce space between items */
-            align-items: flex-start;
-        }
-
-        /* Hover effect for better UX */
-        .ticket-info-item:hover {
-            background: #f1f1f1;
-        }
-
-        /* Remove any height restrictions on content */
-        .info-value {
-            font-size: 15px;
-            color: #555;
-            white-space: normal; /* Allow text to wrap naturally */
-            word-break: break-word; /* Ensure long words break into new lines */
-        }
-
-        /* Description spans full width if needed */
-        .ticket-info-item .info-label {
-            font-weight: bold;
-            margin-right: 5px; /* Space between label and value */
-            white-space: nowrap; /* Prevent the label from breaking lines */
-        }
-
-        .ticket-info-item .info-value {
-            flex: 1; /* Allow the value to take the remaining width */
-            min-width: 0; /* Prevent layout overflow */
-        }
-
-        /* Links styling */
-        .info-value a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .info-value a:hover {
-            text-decoration: underline;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .timeline-item, .ticket-info-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-
-        .message-attachment {
-            margin-top: 15px;
-        }
-
-        .message-attachment a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .message-attachment a:hover {
-            text-decoration: underline;
-        }
-
-        
-
-    </style>
-    <style>
-        #file-url-container {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border: 1px solid #e0e0e0;
-            border-radius: 5px;
-            display: none; /* Initially hidden */
-            align-items: center;
-        }
-        
-        #file-url-container label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
-            margin-right: 10px;
-        }
-        
-        #file-url-container input[type="text"] {
-            width: calc(100% - 100px); /* Adjusted width to accommodate the button */
-            padding: 6px 10px;
-            font-size: 14px;
-            color: #555;
-            border: 1px solid #dcdcdc;
-            border-radius: 4px;
-            background-color: #fff;
-            margin-right: 10px;
-        }
-        
-        #file-url-container button {
-            padding: 6px 12px;
-            font-size: 14px;
-            color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        
-        #file-url-container button:hover {
-            background-color: #0056b3;
-        }
-        
-        #file-url-container button:active {
-            background-color: #003f7f;
-        }
-        
-        @media (max-width: 768px) {
-            #file-url-container {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        
-            #file-url-container input[type="text"] {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-        
-            #file-url-container button {
-                width: 100%;
-            }
-        }
-    </style>        
+    
 </head>
 <body>
     <!-- Side Navigation Menu -->
@@ -399,9 +181,6 @@
                     </div>
                 </div>
                 {%endif%}
-
-            
-                
             </div>
             
             
@@ -432,6 +211,30 @@
                 {% endfor %}
 
             </div>
+
+            <!-- Button to show file modal -->
+            <button id="show-files-btn" class="button">Ver Anexos ({{no_anexos}}) </button>
+
+            <!-- Modal for displaying ticket files and uploading new files -->
+            <div id="files-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close-btn" id="close-files-modal">&times;</span>
+                    <h2>Ficheiros Atribuídos ao Ticket</h2>
+
+                    <!-- Display uploaded files -->
+                    <ul id="file-list">
+                        <!-- Files will be dynamically loaded here -->
+                    </ul>
+
+                    <!-- File upload form -->
+                    <h3>Carregar Novo Ficheiro</h3>
+                    <form id="upload-file-form" enctype="multipart/form-data">
+                        <input type="file" name="uploaded_file" id="uploaded_file" required>
+                        <button type="submit" class="button">Carregar Ficheiro</button>
+                        <input type="hidden" id="ticket-id" value="{{ ticket_details.id }}">
+                    </form>
+                </div>
+            </div>
     
             <form id="message-form" enctype="multipart/form-data">
                 <!-- Quill editor container -->
@@ -439,17 +242,19 @@
             
                 
             
-                <!-- File URL display area -->
+                <!-- File URL display area 
                 <div id="file-url-container" style="margin-top: 10px; display: none;">
                     <label for="file-url">URL ficheiro:</label>
                     <input type="text" id="file-url" readonly>
                     <button type="button" id="copy-file-url">Copiar URL</button>
                 </div>
+                -->
             
                 <button type="submit" class="button">Publicar resposta</button>
-                <!-- File input -->
+                <!-- File input 
                 <label for="file" class="custom-file-upload">Escolher ficheiro</label>
                 <input type="file" name="file" id="file">
+                -->
             </form>
             
             
@@ -493,268 +298,295 @@
 
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                var messageForm = document.getElementById('message-form');
-                var fileInput = document.getElementById('file');
-                var fileUrlContainer = document.getElementById('file-url-container');
-                var fileUrlInput = document.getElementById('file-url');
-                var copyFileUrlButton = document.getElementById('copy-file-url');
-                var messageContainer = document.getElementById('message-container');
-                var acceptTicketBtn = document.getElementById('accept-ticket-btn');
-                var closeTicketBtn = document.getElementById('close-ticket-btn');
-                var reopenTicketBtn = document.getElementById('reopen-ticket-btn');
-                var loadingModal = document.getElementById('loading-modal');
-                var popup = document.getElementById('popup');
-                var popupText = document.getElementById('popup-text');
-                var closePopup = document.getElementById('close-popup');
-                
-                // Initialize Quill editor
-                var quill = new Quill('#quill-editor', {
-                    theme: 'snow',
-                    modules: {
-                        toolbar: [
-                            [{ 'header': '1' }, { 'header': '2' }],
-                            ['bold', 'italic', 'underline'],
-                            ['link'],
-                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                            [{ 'align': [] }],
-                        ]
-                    }
-                });
-        
-                // Handle file input change
-                fileInput.addEventListener('change', function () {
-                    var file = fileInput.files[0];
-                    if (file) {
-                        uploadFile(file).then(fileUrl => {
-                            fileUrlInput.value = fileUrl;
-                            fileUrlContainer.style.display = 'block';
-                        }).catch(error => {
-                            console.error('Error uploading file:', error);
-                            alert('Failed to upload file.');
-                        });
-                    } else {
-                        fileUrlContainer.style.display = 'none';
-                    }
-                });
-        
-                // Copy file URL to clipboard
-                copyFileUrlButton.addEventListener('click', function () {
-                    fileUrlInput.select();
-                    document.execCommand('copy');
-                    alert('File URL copied to clipboard!');
-                });
-        
-                // Handle form submission
-                messageForm.addEventListener('submit', function (event) {
-                    event.preventDefault();
-                    var messageContent = quill.root.innerHTML;
-                    var file = fileInput.files[0];
-                    var fileUrl = fileUrlInput.value;
-        
-                    sendMessage(messageContent, fileUrl);
-                });
-        
-                // Upload file
-                function uploadFile(file) {
-                    var formData = new FormData();
-                    formData.append('file', file);
-        
-                    return fetch('/send_message', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            return data.file_url;
-                        } else {
-                            throw new Error(data.error || 'File upload failed');
-                        }
-                    });
+        document.addEventListener('DOMContentLoaded', function () {
+            var messageForm = document.getElementById('message-form');
+            var messageContainer = document.getElementById('message-container');
+            var acceptTicketBtn = document.getElementById('accept-ticket-btn');
+            var closeTicketBtn = document.getElementById('close-ticket-btn');
+            var reopenTicketBtn = document.getElementById('reopen-ticket-btn');
+            var loadingModal = document.getElementById('loading-modal');
+            var popup = document.getElementById('popup');
+            var popupText = document.getElementById('popup-text');
+            var closePopup = document.getElementById('close-popup');
+            
+            // Initialize Quill editor
+            var quill = new Quill('#quill-editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'header': '1' }, { 'header': '2' }],
+                        ['bold', 'italic', 'underline'],
+                        ['link'],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        [{ 'align': [] }],
+                    ]
                 }
-        
-                // Send message
-                function sendMessage(messageContent, fileUrl) {
-                    var formData = new FormData();
-                    formData.append('message', messageContent);
-                    formData.append('ticket_id', "{{ ticket_details.id }}");
-                    formData.append('sender_id', "{{ current_admin_id }}");
-                    if (fileUrl) {
-                        formData.append('file_url', fileUrl);
+            });
+    
+            // Handle form submission
+            messageForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                var messageContent = quill.root.innerHTML;
+    
+                sendMessage(messageContent);
+            });
+    
+            // Send message
+            function sendMessage(messageContent) {
+                var formData = new FormData();
+                formData.append('message', messageContent);
+                formData.append('ticket_id', "{{ ticket_details.id }}");
+                formData.append('sender_id', "{{ current_admin_id }}");
+    
+                loadingModal.style.display = 'block';
+    
+                fetch('/send_message', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loadingModal.style.display = 'none';
+                    if (data.success) {
+                        appendMessage(messageContent, 'admin', 'you', new Date().toLocaleString());
+                        quill.root.innerHTML = '';
+                        window.location.reload(); // Reload the page to show updates
+                    } else {
+                        console.error('Error sending message:', data.error);
                     }
-        
-                    loadingModal.style.display = 'block';
-        
-                    fetch('/send_message', {
+                })
+                .catch(error => {
+                    loadingModal.style.display = 'none';
+                    console.error('Error sending message:', error);
+                });
+            }
+    
+            // Append message to container
+            function appendMessage(messageContent, senderType, senderName, sentAt) {
+                var messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+                if (senderType === 'user') {
+                    messageElement.classList.add('user-message');
+                } else if (senderType === 'admin') {
+                    messageElement.classList.add('admin-message');
+                }
+    
+                var messageHeader = document.createElement('div');
+                messageHeader.classList.add('message-header');
+                messageHeader.textContent = senderName + ' - ' + sentAt;
+    
+                var messageContentElement = document.createElement('div');
+                messageContentElement.classList.add('message-content');
+                messageContentElement.innerHTML = messageContent;
+    
+                messageElement.appendChild(messageHeader);
+                messageElement.appendChild(messageContentElement);
+    
+                messageContainer.appendChild(messageElement);
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+            }
+    
+            // Function to show the processing modal
+            function showProcessingModal() {
+                const modal = new bootstrap.Modal(document.getElementById('processingModal'));
+                modal.show();
+            }
+    
+            // Function to hide the processing modal
+            function hideProcessingModal() {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('processingModal'));
+                if (modal) {
+                    modal.hide();
+                }
+            }
+    
+            // Accept ticket
+            if (acceptTicketBtn) {
+                acceptTicketBtn.addEventListener('click', function () {
+                    const ticketId = "{{ ticket_details.id }}";
+                    showProcessingModal(); // Show modal
+                    fetch(`/accept_ticket/${ticketId}`, {
                         method: 'POST',
-                        body: formData
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ ticket_id: ticketId })
                     })
                     .then(response => response.json())
                     .then(data => {
-                        loadingModal.style.display = 'none';
+                        hideProcessingModal(); // Hide modal
                         if (data.success) {
-                            appendMessage(messageContent, 'admin', 'you', new Date().toLocaleString(), fileUrl);
-                            quill.root.innerHTML = '';
-                            fileInput.value = '';
-                            fileUrlInput.value = '';
-                            fileUrlContainer.style.display = 'none';
-                            window.location.reload(); // Reload the page to show updates
+                            window.location.reload();
                         } else {
-                            console.error('Error sending message:', data.error);
+                            console.error('Error accepting ticket:', data.message || 'Unknown error');
                         }
                     })
                     .catch(error => {
-                        loadingModal.style.display = 'none';
-                        console.error('Error sending message:', error);
+                        hideProcessingModal(); // Hide modal
+                        console.error('Error accepting ticket:', error);
                     });
-                }
+                });
+            }
+    
+            // Close ticket
+            if (closeTicketBtn) {
+                closeTicketBtn.addEventListener('click', function () {
+                    const ticketId = "{{ ticket_details.id }}";
+                    showProcessingModal(); // Show modal
+                    fetch(`/close_ticket/${ticketId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ ticket_id: ticketId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        hideProcessingModal(); // Hide modal
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            console.error('Error closing ticket:', data.message || 'Unknown error');
+                        }
+                    })
+                    .catch(error => {
+                        hideProcessingModal(); // Hide modal
+                        console.error('Error closing ticket:', error);
+                    });
+                });
+            }
+    
+            // Reopen ticket
+            if (reopenTicketBtn) {
+                reopenTicketBtn.addEventListener('click', function () {
+                    const ticketId = "{{ ticket_details.id }}";
+                    fetch(`/reopen_ticket/${ticketId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ ticket_id: ticketId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            console.error('Error reopening ticket:', data.message || 'Unknown error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error reopening ticket:', error);
+                    });
+                });
+            }
+    
+            // Close popup
+            if (closePopup) {
+                closePopup.addEventListener('click', function () {
+                    popup.style.display = 'none';
+                });
+            }
+        });
+    </script>
+    <script>
+        document.getElementById("show-files-btn").addEventListener("click", function() {
+            const ticketId = {{ ticket_details.id }};  // Ticket ID from Flask context
+            
+            // Fetch files for this ticket
+            fetch(`/get_files/${ticketId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const fileList = document.getElementById("file-list");
+                    fileList.innerHTML = '';  // Clear existing list
+                    
+                    // Populate file list in modal
+                    data.files.forEach(file => {
+                        const listItem = document.createElement("li");
         
-                // Append message to container
-                function appendMessage(messageContent, senderType, senderName, sentAt, fileUrl) {
-                    var messageElement = document.createElement('div');
-                    messageElement.classList.add('message');
-                    if (senderType === 'user') {
-                        messageElement.classList.add('user-message');
-                    } else if (senderType === 'admin') {
-                        messageElement.classList.add('admin-message');
-                    }
+                        const fileLink = document.createElement("a");
+                        fileLink.href = `/uploads/${file}`;
+                        fileLink.download = file;
+                        fileLink.textContent = file;
         
-                    var messageHeader = document.createElement('div');
-                    messageHeader.classList.add('message-header');
-                    messageHeader.textContent = senderName + ' - ' + sentAt;
-        
-                    var messageContentElement = document.createElement('div');
-                    messageContentElement.classList.add('message-content');
-                    messageContentElement.innerHTML = messageContent;
-        
-                    messageElement.appendChild(messageHeader);
-                    messageElement.appendChild(messageContentElement);
-        
-                    if (fileUrl) {
-                        var fileAttachment = document.createElement('div');
-                        fileAttachment.classList.add('message-attachment');
-                        
-                        var fileLink = document.createElement('a');
-                        fileLink.href = fileUrl;
-                        fileLink.download = true;
-                        fileLink.textContent = 'Download file';
-                        
-                        fileAttachment.appendChild(fileLink);
-                        messageElement.appendChild(fileAttachment);
-                    }
-        
-                    messageContainer.appendChild(messageElement);
-                    messageContainer.scrollTop = messageContainer.scrollHeight;
-                }
-        
-                // Function to show the processing modal
-                function showProcessingModal() {
-                    const modal = new bootstrap.Modal(document.getElementById('processingModal'));
-                    modal.show();
-                }
-
-                // Function to hide the processing modal
-                function hideProcessingModal() {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('processingModal'));
-                    if (modal) {
-                        modal.hide();
-                    }
-                }
-
-                // Accept ticket
-                if (acceptTicketBtn) {
-                    acceptTicketBtn.addEventListener('click', function () {
-                        const ticketId = "{{ ticket_details.id }}";
-                        showProcessingModal(); // Show modal
-                        fetch(`/accept_ticket/${ticketId}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ ticket_id: ticketId })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            hideProcessingModal(); // Hide modal
-                            if (data.success) {
-                                window.location.reload();
-                            } else {
-                                console.error('Error accepting ticket:', data.message || 'Unknown error');
-                            }
-                        })
-                        .catch(error => {
-                            hideProcessingModal(); // Hide modal
-                            console.error('Error accepting ticket:', error);
+                        // Create trash can icon
+                        const trashIcon = document.createElement("i");
+                        trashIcon.classList.add("fas", "fa-trash-alt", "remove-btn");  // Add FontAwesome trash icon classes
+                        trashIcon.style.cursor = "pointer";  // Make the icon clickable
+                        trashIcon.addEventListener("click", function() {
+                            removeFile(ticketId, file, listItem);  // Trigger file removal
                         });
-                    });
-                }
-
-                // Close ticket
-                if (closeTicketBtn) {
-                    closeTicketBtn.addEventListener('click', function () {
-                        const ticketId = "{{ ticket_details.id }}";
-                        showProcessingModal(); // Show modal
-                        fetch(`/close_ticket/${ticketId}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ ticket_id: ticketId })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            hideProcessingModal(); // Hide modal
-                            if (data.success) {
-                                window.location.reload();
-                            } else {
-                                console.error('Error closing ticket:', data.message || 'Unknown error');
-                            }
-                        })
-                        .catch(error => {
-                            hideProcessingModal(); // Hide modal
-                            console.error('Error closing ticket:', error);
-                        });
-                    });
-                }
         
-                // Reopen ticket
-                if (reopenTicketBtn) {
-                    reopenTicketBtn.addEventListener('click', function () {
-                        const ticketId = "{{ ticket_details.id }}";
-                        fetch(`/reopen_ticket/${ticketId}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ ticket_id: ticketId })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                window.location.reload();
-                            } else {
-                                console.error('Error reopening ticket:', data.message || 'Unknown error');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error reopening ticket:', error);
-                        });
+                        // Append elements to list item
+                        listItem.appendChild(fileLink);
+                        listItem.appendChild(trashIcon);  // Append trash can icon next to the file link
+                        fileList.appendChild(listItem);
                     });
-                }
         
-                // Close popup
-                if (closePopup) {
-                    closePopup.addEventListener('click', function () {
-                        popup.style.display = 'none';
-                    });
+                    // Show the modal
+                    document.getElementById("files-modal").style.display = "block";
+                })
+                .catch(error => {
+                    console.error("Error fetching files:", error);
+                });
+        });
+        
+        // Handle file upload in the modal
+        document.getElementById("upload-file-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+        
+            const formData = new FormData();
+            const fileInput = document.getElementById("uploaded_file");
+            const ticketId = document.getElementById("ticket-id").value;
+            
+            formData.append("uploaded_file", fileInput.files[0]);
+            formData.append("ticket_id", ticketId);
+        
+            // Send the file to the server using fetch
+            fetch("/upload", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();  // This will reload the current page
+                } else {
+                    alert("Erro ao carregar o ficheiro: " + data.message);
                 }
+            })
+            .catch(error => {
+                console.error("Erro ao carregar o ficheiro:", error);
             });
-
+        });
         
+        // Close the modal when the user clicks the "X"
+        document.getElementById("close-files-modal").addEventListener("click", function() {
+            document.getElementById("files-modal").style.display = "none";
+        });
         
-        
-        
+        // Function to remove a file
+        function removeFile(ticketId, filename, listItem) {
+            fetch(`/remove_file/${ticketId}`, {
+                method: 'POST',
+                body: JSON.stringify({ filename: filename }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the file from the list
+                    listItem.remove();
+                } else {
+                    alert("Erro ao remover o ficheiro: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error removing file:", error);
+            });
+        }
     </script>
 </body>
 </html>
