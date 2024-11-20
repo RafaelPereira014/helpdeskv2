@@ -186,6 +186,30 @@ def get_ticket_details(ticket_id):
         cursor.close()
         conn.close()
 
+
+def get_latest_ticket_message(ticket_id):
+    connection = connect_to_database()  # Assuming you have a function to connect to your DB
+    cursor = connection.cursor(pymysql.cursors.DictCursor)  # Use dictionary cursor for easier result handling
+
+    try:
+        # Query to get the latest ticket message by the highest ID
+        query = """
+            SELECT * 
+            FROM messages
+            WHERE ticket_id = %s
+            ORDER BY id DESC
+            LIMIT 1
+        """
+        cursor.execute(query, (ticket_id,))
+        latest_message = cursor.fetchone()  # Fetch a single result
+        return latest_message
+    except Exception as e:
+        print(f"Error retrieving latest ticket message: {e}")
+        return None
+    finally:
+        cursor.close()
+        connection.close()
+    
 def clean_description(description):
     """Remove unnecessary HTML tags, line breaks, and extra spaces."""
     

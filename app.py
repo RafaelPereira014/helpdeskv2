@@ -579,10 +579,8 @@ def admin_required(f):
 def admin_panel():
     search_keyword = request.args.get('search')
     
-    
     if search_keyword:
         tickets = search_tickets(search_keyword)  # Search for tickets matching the keyword
-        print(tickets)
     else:
         tickets = get_all_tickets()  # Fetch all tickets from the database
 
@@ -591,10 +589,19 @@ def admin_panel():
     executing_tickets = no_execution_tickets()
     
     for ticket in tickets:
+        # Retrieve attributed name
         ticket['attributed_name'] = attributed_to_by_ticket(ticket['id'])
+
         
 
-    return render_template('admin_pannel.html', tickets=tickets, open_tickets=open_tickets, closed_tickets=closed_tickets, executing_tickets=executing_tickets)
+        
+    return render_template(
+        'admin_pannel.html',
+        tickets=tickets,
+        open_tickets=open_tickets,
+        closed_tickets=closed_tickets,
+        executing_tickets=executing_tickets
+    )
 
 @app.route('/update_group_id/<int:ticket_id>', methods=['POST'])
 def update_group_id(ticket_id):
@@ -716,6 +723,19 @@ def personal_panel():
     user_id = session['user_id']
     # Fetch the group_id associated with the user
     tickets = get_tickets_for_user(user_id)
+    
+    for ticket in tickets:
+        # Get the latest ticket message
+        info = get_latest_ticket_message(ticket['id'])
+
+        # Add sent_from_user property to the ticket
+        ticket['sent_from_user'] = False  # Default value
+
+        # Check if info exists and sender_type is 'user'
+        if info and info.get('sender_type') == 'user':
+            ticket['sent_from_user'] = True
+        
+        print(ticket['sent_from_user'])
     user_name = get_username(user_id)
     closed_tickets = get_closed_tickets_count_by_admin(user_name)
     opened_tickets = get_opened_tickets_count_by_user(user_id)

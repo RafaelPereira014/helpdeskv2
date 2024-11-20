@@ -14,8 +14,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Painel de grupo - Tickets</title>
+    <style>
+        .state-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .state-container span {
+            margin-right: 10px; /* Space between the state text and the dot */
+        }
+        
+        .rod {
+            width: 0; /* No width initially */
+            height: 0; /* No height initially */
+            background-color: transparent;
+            border-radius: 50%; /* Makes it a circle */
+            transition: background-color 0.3s ease;
+        }
+        
+        .red-rod {
+            width: 10px;   /* Size of the dot */
+            height: 10px;  /* Size of the dot */
+            background-color: red;  /* Red color */
+            margin-left: 5px; /* Adds some space between the state text and the dot */
+        }
+    </style>
 </head>
-<body>
+
     <div class="sidenav">
         <img src="{{ url_for('static', filename='images/NIT_logo.png') }}" alt="logo-main" class="logo-main">
         <div class="sidenav">
@@ -99,15 +125,16 @@
                     title: "{{ ticket.title }}",
                     state: "{{ ticket.state }}",
                     closed_by: "{{ ticket.closed_by }}",
-                    attributed_to_name: "{{ ticket.attributed_to_name }}"
+                    attributed_to_name: "{{ ticket.attributed_to_name }}",
+                    sent_from_user: {{ ticket.sent_from_user | tojson }} // Add sent_from_user status
                 },
                 {% endfor %}
             ];
-
+        
             var currentPage = 1;
             var ticketsPerPage = 10; // Number of tickets to display per page
             var currentFilter = 'all'; // Default filter option
-        
+            
             var tableBody = document.getElementById('ticket-table-body');
             var prevButton = document.getElementById('prev-btn');
             var nextButton = document.getElementById('next-btn');
@@ -125,7 +152,6 @@
                 } else if (currentFilter === 'fechado') {
                     filteredTickets = tickets.filter(ticket => ticket.state === 'Fechado');
                 } else if (currentFilter === 'em execucao') {
-                    // Adjusted filter condition for "em execução"
                     filteredTickets = tickets.filter(ticket => ticket.state.toLowerCase().includes('execucao'));
                 } else {
                     filteredTickets = tickets;
@@ -138,6 +164,8 @@
         
                 for (var i = startIdx; i < endIdx; i++) {
                     var ticket = filteredTickets[i];
+                    var rodClass = ticket.sent_from_user ? 'red-rod' : ''; // Conditionally apply the red rod class
+        
                     var row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${ticket.id}</td>
@@ -145,12 +173,16 @@
                         <td>${ticket.created_by_user}</td>
                         <td>${ticket.UnidadeOrg}</td>
                         <td><a href="/ticket_details/${ticket.id}">${ticket.title}</a></td>
-                        <td>${ticket.state}</td>
+                        <td>
+                            <div class="state-container">
+                                <span>${ticket.state}</span>
+                                <div class="rod ${rodClass}"></div> <!-- Red rod indicator -->
+                            </div>
+                        </td>
                         <td>${ticket.state === 'Fechado' ? ticket.closed_by : ticket.state === 'em execucao' ? ticket.attributed_to_name : '-'}</td>
                     `;
                     tableBody.appendChild(row);
                 }
-                
         
                 pageNumSpan.textContent = currentPage;
             }
