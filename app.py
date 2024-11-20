@@ -32,7 +32,7 @@ app.config['MAIL_USERNAME'] = 's0204helpdesk'
 app.config['MAIL_PASSWORD'] = 'RL3kieLAziocp7iK'
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
-app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx','zip'}
+app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx','zip','drawio','xlsx','csv'}
 
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
