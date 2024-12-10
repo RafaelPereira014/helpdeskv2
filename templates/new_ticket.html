@@ -54,6 +54,44 @@
             margin: 0;
         }
     </style>
+    <style>
+        /* Container styling */
+        .requisition-link {
+            display: none; /* Hidden by default */
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9; /* Light background for contrast */
+            border: 1px solid #ddd; /* Subtle border for separation */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+            text-align: center; /* Center-align the content */
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* Smooth transition for appearance */
+            opacity: 0; /* Hidden state */
+            transform: scale(0.95); /* Slightly shrink when hidden */
+            margin-bottom: 10px;
+
+        }
+    
+        /* Make the container visible */
+        .requisition-link.show {
+            display: block;
+            opacity: 1;
+            transform: scale(1); /* Scale back to normal */
+        }
+    
+        /* Link styling */
+        .requisition-link a {
+            color: #007bff; /* Blue link color */
+            font-weight: bold;
+            text-decoration: none; /* Remove underline */
+            font-size: 13px; /* Slightly larger font size */
+        }
+    
+        .requisition-link a:hover {
+            text-decoration: underline; /* Add underline on hover */
+            color: #0056b3; /* Darker blue on hover */
+        }
+    </style>
 </head>
 <body>
     <div class="sidenav">
@@ -126,8 +164,8 @@
                 {% endif %}
 
                 <label for="topic">Tópico de ajuda:</label>
-                <select id="topic_id" name="topic_id" required>
-                <option value="">-Selecione um tópico de ajuda-</option> <!-- Updated default option -->
+                <select id="topic_id" name="topic_id" required onchange="checkRequisitionTopic()">
+                    <option value="">-Selecione um tópico de ajuda-</option>
 
                     {% if admin_status %}
                         {% for topic in all_topics %}
@@ -144,6 +182,12 @@
                     {% endif %}
                 </select>
 
+                <div id="requisitionLink" class="requisition-link">
+                    <a href="https://itcontrol.edu.azores.gov.pt/formulario_requisicao" target="_blank">
+                        Aceder ao formulário de requisição
+                    </a>
+                </div>
+                
                 <label for="title">Sumário do problema:</label>
                 <input type="text" id="title" name="title" required>
                 
@@ -420,6 +464,22 @@
                 showPopup();  // Show popup and redirect after 3 seconds
             }
         });
+    </script>
+    <script>
+        function checkRequisitionTopic() {
+            const selectElement = document.getElementById('topic_id');
+            const requisitionLink = document.getElementById('requisitionLink');
+            
+            // Get the selected text
+            const selectedOption = selectElement.options[selectElement.selectedIndex].text;
+    
+            // Check if "Requisição" is in the selected option
+            if (selectedOption.includes("Requisição")) {
+                requisitionLink.classList.add("show"); // Add show class to display
+            } else {
+                requisitionLink.classList.remove("show"); // Remove show class to hide
+            }
+        }
     </script>
 </body>
 </html>
