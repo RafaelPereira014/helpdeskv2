@@ -79,17 +79,79 @@
             transform: scale(1); /* Scale back to normal */
         }
     
-        /* Link styling */
-        .requisition-link a {
-            color: #007bff; /* Blue link color */
-            font-weight: bold;
-            text-decoration: none; /* Remove underline */
-            font-size: 13px; /* Slightly larger font size */
+        #requisicao_fields {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;  /* Hidden by default */
         }
-    
-        .requisition-link a:hover {
-            text-decoration: underline; /* Add underline on hover */
-            color: #0056b3; /* Darker blue on hover */
+        
+        #requisicao_fields label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        #requisicao_fields input[type="checkbox"] {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        #requisicao_fields input[type="text"],
+        #requisicao_fields input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        #requisicao_fields input[type="text"]:focus,
+        #requisicao_fields input[type="date"]:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+        
+        #requisicao_fields .checkbox-container {
+            margin-bottom: 15px;
+        }
+        
+        #requisicao_fields .checkbox-container label {
+            font-weight: normal;
+            font-size: 14px;
+            display: inline-block;
+            margin-right: 20px;
+        }
+        
+        #requisicao_fields button[type="submit"] {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        #requisicao_fields button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        
+        #requisicao_fields .form-section {
+            margin-bottom: 20px;
+        }
+        
+        #requisicao_fields h3 {
+            color: #007BFF;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -162,11 +224,11 @@
                         {% endfor %}
                     </select>
                 {% endif %}
-
+    
                 <label for="topic">Tópico de ajuda:</label>
                 <select id="topic_id" name="topic_id" required onchange="checkRequisitionTopic()">
                     <option value="">-Selecione um tópico de ajuda-</option>
-
+    
                     {% if admin_status %}
                         {% for topic in all_topics %}
                             <option value="{{ topic[0] }}">{{ topic[1] }}</option>
@@ -181,15 +243,53 @@
                         {% endfor %}
                     {% endif %}
                 </select>
-
+    
                 <div id="requisitionLink" class="requisition-link">
                     <a href="https://itcontrol.edu.azores.gov.pt/formulario_requisicao" target="_blank">
                         Aceder ao formulário de requisição
                     </a>
                 </div>
-                
+
                 <label for="title">Sumário do problema:</label>
                 <input type="text" id="title" name="title" required>
+                
+                <div id="requisicao_fields" style="display: none;">
+                    <div class="form-section">
+                        <label for="material_type">Tipo de Material:</label>
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="material_computador" name="material_type" value="Computador" >
+                            <label for="material_computador">Computador</label>
+
+                            <input type="checkbox" id="material_monitor" name="material_type" value="Monitor" >
+                            <label for="material_monitor">Monitor</label>
+
+                            <input type="checkbox" id="material_camera" name="material_type" value="Camera" >
+                            <label for="material_camera">Camera</label>
+
+                            <input type="checkbox" id="material_voip" name="material_type" value="Voip" >
+                            <label for="material_voip">Voip</label>
+
+                            <input type="checkbox" id="material_headset" name="material_type" value="Headset" >
+                            <label for="material_headset">Headset</label>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <label for="quantity">Quantidade:</label>
+                        <input type="text" id="quantity" name="quantity" required>
+
+                        <label for="reason">Motivo:</label>
+                        <input type="text" id="reason" name="reason" required>
+
+                        <label for="start_date">Data Início:</label>
+                        <input type="date" id="start_date" name="start_date" required>
+
+                        <label for="end_date">Data Fim:</label>
+                        <input type="date" id="end_date" name="end_date" required>
+                    </div>
+                </div>
+    
+                
                 
                 {% if is_edu %}
                     <label for="ilha">Ilha:</label>
@@ -209,21 +309,20 @@
                 
                 <label for="UnidadeOrg">Unidade orgânica:</label>
                 <select id="UnidadeOrg" name="UnidadeOrg" required></select>
-
+    
                 <!-- Div for description -->
                 <div id="description_div">
                     <label for="description">Descrição:</label>
-                    <!-- Replace textarea with div for Quill -->
                     <div id="quill_editor" style="height: 200px;"></div>
                     <input type="hidden" name="description" id="description" required>
                 </div>
-
+    
                 <label for="contacto">Contacto (VOIP ou outro):</label>
                 <input type="text" id="contacto" name="contacto" required>
-
+    
                 <label for="file">Anexar ficheiro:</label>
                 <input type="file" id="file" name="file" accept=".png, .jpg, .jpeg, .pdf, .xlsx, .zip, .rar">
-
+    
                 <div style="margin-top: 10px;">
                     <button type="submit" id="submit_button">Submeter ticket</button>
                 </div>
@@ -231,7 +330,7 @@
                 <div id="loader">
                     <i class="fa fa-spinner fa-spin"></i>A submeter o ticket. Por favor aguarde...
                 </div>
-
+    
                 <div id="waiting-popup" class="popup" style="display: none;">
                     <i class="fa fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
                     <p>Estamos a processar o seu pedido. Por favor aguarde...</p>
@@ -254,6 +353,9 @@
                 document.getElementById('ilha').addEventListener('change', fetchUnidadeOrganica);
             }
             document.getElementById('topic_id').addEventListener('change', fetchUnidadeOrganica);
+
+            // Check if topic is pre-selected and handle additional fields visibility
+            checkRequisitionTopic();  // Check topic on page load
         };
         
         var ilhaOptions = {
@@ -466,18 +568,19 @@
         });
     </script>
     <script>
+        // Function to toggle the visibility of additional fields based on selected topic
         function checkRequisitionTopic() {
             const selectElement = document.getElementById('topic_id');
-            const requisitionLink = document.getElementById('requisitionLink');
+            const requisicaoFields = document.getElementById('requisicao_fields');
             
-            // Get the selected text
+            // Get the selected option text
             const selectedOption = selectElement.options[selectElement.selectedIndex].text;
-    
+            
             // Check if "Requisição" is in the selected option
             if (selectedOption.includes("Requisição")) {
-                requisitionLink.classList.add("show"); // Add show class to display
+                requisicaoFields.style.display = 'block'; // Show the additional fields
             } else {
-                requisitionLink.classList.remove("show"); // Remove show class to hide
+                requisicaoFields.style.display = 'none'; // Hide the additional fields
             }
         }
     </script>

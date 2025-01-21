@@ -6,6 +6,7 @@ import secrets
 import os
 import subprocess
 from flask import Flask, flash, jsonify, render_template, request, redirect, send_from_directory, url_for
+import requests
 from db_operations import *
 from flask import session
 from flask import redirect
@@ -152,7 +153,6 @@ def new_ticket():
     
     user_id = session['user_id']
     is_edu = check_email_contains_edu(user_id) 
-    print(is_edu)
     admin_status = is_admin(user_id)
     all_users = get_all_users()
     all_unidades = get_all_unidades()
@@ -169,6 +169,11 @@ def new_ticket():
         contacto = request.form['contacto']
         title = request.form['title']
         assigned_to = request.form.get('assigned_to')
+        material_type = request.form.getlist('material_type')
+        quantidade = request.form.get('quantity')
+        motivo = request.form.get('reason')
+        data_inicio = request.form.get('start_date')
+        data_fim = request.form.get('end_date')
         
         if assigned_to:
             created_by = get_user_id_by_name(assigned_to)
@@ -190,6 +195,7 @@ def new_ticket():
             filename = "Sem ficheiro."
         
         #description = clean_description(description)
+       
         
 
         create_ticket(topic_id, description, date, state, created_by, contacto, title, uni_org, filename)
@@ -197,7 +203,31 @@ def new_ticket():
         ticket_id = get_ticketid(description)
         user_email = get_user_email_by_user(created_by)
         admin_emails = get_emails_by_group(ticket_id)
+        
+         
+        # Constructing the data dictionary
+        data_to_send = {
+            'ID': ticket_id,
+            'User': user_name,
+            'User email': user_email,
+            'material_type': material_type,
+            'quantidade': quantidade,
+            'motivo': motivo,
+            'data_inicio': data_inicio,
+            'data_fim': data_fim
+        }
 
+        # Make an HTTP POST request to the /receive-data endpoint
+        api_url = 'http://127.0.0.1:8081/receive-data'  # Replace with the actual URL of the Flask app
+        try:
+            response = requests.post(api_url, json=data_to_send)
+            if response.status_code == 200:
+                print("Data successfully sent to /receive-data")
+            else:
+                print(f"Error sending data: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            print(f"Error: {e}")
+        
         # Email notifications
         if user_email:
         # Send email notification to user
@@ -274,7 +304,7 @@ def new_ticket():
                                     <p>Criado por: {user_name}</p>
                                     <p>Unidade organica: {uni_org}</p>
                                     <hr></hr>                           
-                                    <p>Foi recebido um novo ticket com o número #<strong>{ticket_id}</strong> e com assunto <strong>{title}</strong>.</p>
+                                    <p>Foi recebido um novo ticket com o número #<strong><a href="https://helpdesk.edu.azores.gov.pt/ticket_details/{ticket_id}" target="_blank">{ticket_id}</a></strong> e com assunto <strong>{title}</strong>.</p>
                                     <p>Descrição: {description}</p>
                                 </td>
                             </tr>

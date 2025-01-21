@@ -15,6 +15,53 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Painel de grupo - Tickets</title>
     <style>
+        /* Styles for search form */
+        #searchForm {
+
+            margin-top: 5px;
+            display: flex; /* Use flexbox for alignment */
+            flex-wrap: wrap; /* Allow inputs to wrap to the next line */
+            gap: 2px; /* Add space between inputs */
+            margin-bottom: 10px; /* Adds some space below the form */
+        }
+
+        /* Styles for search input */
+        #searchInput {
+            padding: 6px; /* Reduced padding for smaller boxes */
+            font-size: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 200px; /* Smaller width for input boxes */
+        }
+
+        /* Styles for search and clear buttons */
+        #searchForm button {
+            padding: 6px 6px; /* Reduced padding for buttons */
+            font-size: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+        }
+
+        #searchForm button[type="submit"] {
+            background-color: #007BFF; /* Blue color for search button */
+        }
+
+        #searchForm button[type="submit"]:hover {
+            background-color: #0056b3; /* Darker blue color on hover */
+        }
+
+        #searchForm button[type="button"] {
+            background-color: #DC3545; /* Red color for clear button */
+        }
+
+        #searchForm button[type="button"]:hover {
+            background-color: #c82333; /* Darker red color on hover */
+        }
+
+    </style>
+    <style>
         .state-container {
             display: flex;
             align-items: center;
@@ -88,6 +135,18 @@
         <button id="fechado-btn"  class="button-filter">Fechado({{ closed_tickets }})</button>
         <button id="executing-btn"  class="button-filter">Em execucao({{ executing_tickets }})</button>
 
+        <form id="searchForm" class="search-form" method="GET" action="{{ url_for('personal_panel') }}">
+            <input type="text" id="search_id" name="search_id" class="search-input" placeholder="Procurar por ID..." value="{{ search_id }}">
+            <input type="text" id="search_date" name="search_date" class="search-input" placeholder="Procurar por data..." value="{{ search_date }}">
+            <input type="text" id="search_user" name="search_user" class="search-input" placeholder="Procurar por utilizador..." value="{{ search_user }}">
+            <input type="text" id="search_unidade" name="search_unidade" class="search-input" placeholder="Procurar por UO..." value="{{ search_unidade }}">
+            <input type="text" id="search_title" name="search_title" class="search-input" placeholder="Procurar por título..." value="{{ search_title }}">
+            <input type="text" id="search_estado" name="search_estado" class="search-input" placeholder="Procurar por estado..." value="{{ search_estado }}">
+        
+            <button type="submit">Procurar</button>
+            <button type="button" id="clearSearchBtn">Limpar</button>
+        </form>
+
         <table id="ticket-table">
             <thead>
                 <tr>
@@ -134,28 +193,37 @@
             var currentPage = 1;
             var ticketsPerPage = 10; // Number of tickets to display per page
             var currentFilter = 'all'; // Default filter option
-            
+        
             var tableBody = document.getElementById('ticket-table-body');
             var prevButton = document.getElementById('prev-btn');
             var nextButton = document.getElementById('next-btn');
             var pageNumSpan = document.getElementById('page-num');
-            var abertoButton = document.getElementById('aberto-btn');
-            var fechadoButton = document.getElementById('fechado-btn');
-            var executingButton = document.getElementById('executing-btn');
-            var allButton = document.getElementById('all-btn');
+            var searchForm = document.getElementById('searchForm');
+            var clearSearchBtn = document.getElementById('clearSearchBtn');
+        
+            // Function to get filtered tickets based on search criteria
+            function getFilteredTickets() {
+                var searchId = document.getElementById('search_id').value.toLowerCase();
+                var searchDate = document.getElementById('search_date').value.toLowerCase();
+                var searchUser = document.getElementById('search_user').value.toLowerCase();
+                var searchUnidade = document.getElementById('search_unidade').value.toLowerCase();
+                var searchTitle = document.getElementById('search_title').value.toLowerCase();
+                var searchEstado = document.getElementById('search_estado').value.toLowerCase();
+        
+                return tickets.filter(ticket => {
+                    return (
+                        (searchId === '' || ticket.id.toString().toLowerCase().includes(searchId)) &&
+                        (searchDate === '' || ticket.date.toLowerCase().includes(searchDate)) &&
+                        (searchUser === '' || ticket.created_by_user.toLowerCase().includes(searchUser)) &&
+                        (searchUnidade === '' || ticket.UnidadeOrg.toLowerCase().includes(searchUnidade)) &&
+                        (searchTitle === '' || ticket.title.toLowerCase().includes(searchTitle)) &&
+                        (searchEstado === '' || ticket.state.toLowerCase().includes(searchEstado))   );
+                });
+            }
         
             // Function to display tickets for the current page
             function displayTickets() {
-                var filteredTickets;
-                if (currentFilter === 'aberto') {
-                    filteredTickets = tickets.filter(ticket => ticket.state === 'Aberto');
-                } else if (currentFilter === 'fechado') {
-                    filteredTickets = tickets.filter(ticket => ticket.state === 'Fechado');
-                } else if (currentFilter === 'em execucao') {
-                    filteredTickets = tickets.filter(ticket => ticket.state.toLowerCase().includes('execucao'));
-                } else {
-                    filteredTickets = tickets;
-                }
+                var filteredTickets = getFilteredTickets();
         
                 var startIdx = (currentPage - 1) * ticketsPerPage;
                 var endIdx = Math.min(startIdx + ticketsPerPage, filteredTickets.length);
@@ -197,7 +265,8 @@
         
             // Function to navigate to the next page
             function goToNextPage() {
-                var totalPages = Math.ceil(tickets.length / ticketsPerPage);
+                var filteredTickets = getFilteredTickets();
+                var totalPages = Math.ceil(filteredTickets.length / ticketsPerPage);
                 if (currentPage < totalPages) {
                     currentPage++;
                     displayTickets();
@@ -208,28 +277,18 @@
             prevButton.addEventListener('click', goToPrevPage);
             nextButton.addEventListener('click', goToNextPage);
         
-            // Event listeners for filter buttons
-            abertoButton.addEventListener('click', function () {
-                currentFilter = 'aberto';
-                currentPage = 1; // Reset page number when changing filter
+            // Event listener for the search form submission
+            searchForm.addEventListener('submit', function (e) {
+                e.preventDefault(); // Prevent actual form submission
+                currentPage = 1; // Reset to the first page when performing a search
                 displayTickets();
             });
         
-            fechadoButton.addEventListener('click', function () {
-                currentFilter = 'fechado';
-                currentPage = 1; // Reset page number when changing filter
-                displayTickets();
-            });
-        
-            executingButton.addEventListener('click', function () {
-                currentFilter = 'em execucao';
-                currentPage = 1; // Reset page number when changing filter
-                displayTickets();
-            });
-        
-            allButton.addEventListener('click', function () {
-                currentFilter = 'all';
-                currentPage = 1; // Reset page number when changing filter
+            // Event listener for the "Clear" button
+            clearSearchBtn.addEventListener('click', function () {
+                var inputs = searchForm.querySelectorAll('input.search-input');
+                inputs.forEach(input => input.value = '');
+                currentPage = 1; // Reset to the first page when clearing the search
                 displayTickets();
             });
         
