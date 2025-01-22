@@ -218,7 +218,7 @@ def new_ticket():
         }
 
         # Make an HTTP POST request to the /receive-data endpoint
-        api_url = 'http://127.0.0.1:8081/receive-data'  # Replace with the actual URL of the Flask app
+        api_url = 'https://itcontrol.edu.azores.gov.pt/receive-data'  # Replace with the actual URL of the Flask app
         try:
             response = requests.post(api_url, json=data_to_send)
             if response.status_code == 200:
