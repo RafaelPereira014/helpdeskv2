@@ -622,9 +622,6 @@ def admin_panel():
         # Retrieve attributed name
         ticket['attributed_name'] = attributed_to_by_ticket(ticket['id'])
 
-        
-
-        
     return render_template(
         'admin_pannel.html',
         tickets=tickets,
