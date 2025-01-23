@@ -205,7 +205,7 @@ def new_ticket():
         admin_emails = get_emails_by_group(ticket_id)
         
          
-        # Constructing the data dictionary
+       
         data_to_send = {
             'ID': ticket_id,
             'User': user_name,
@@ -217,8 +217,8 @@ def new_ticket():
             'data_fim': data_fim
         }
 
-        # Make an HTTP POST request to the /receive-data endpoint
-        api_url = 'https://itcontrol.edu.azores.gov.pt/receive-data'  # Replace with the actual URL of the Flask app
+        
+        api_url = 'http://172.22.130.12:8081/receive-data'  
         try:
             response = requests.post(api_url, json=data_to_send)
             if response.status_code == 200:
