@@ -12,6 +12,98 @@
     <link href='https://unpkg.com/css.gg@2.0.0/icons/css/log-out.css' rel='stylesheet'>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .container {
+            text-align: center;
+        }
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            width: 300px;
+            text-align: left;
+        }
+        .card h2, .card h3 {
+            margin-top: 0;
+        }
+        .card p {
+            margin: 10px 0;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .btn-submit {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+            border: none;
+            cursor: pointer;
+            
+        }
+        .btn-submit:hover, .btn:hover {
+            background: #0056b3;
+        }
+        .cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .checkbox-group {
+            margin-bottom: 15px;
+        }
+        .sub-checkboxes {
+            padding-left: 20px;
+        }
+        /* Add styles for the latest changes panel */
+        .latest-changes {
+            margin-top: 40px;
+            background-color: #f8f9fa; /* Light gray background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+        }
+
+        .latest-changes h2 {
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 20px;
+            text-align: left;
+            
+        }
+
+        .latest-changes ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .latest-changes li {
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .latest-changes li strong {
+            color: #007bff; /* Blue color */
+        }
+    </style>
 </head>
 <body>
     <div class="sidenav">
@@ -135,72 +227,33 @@
                     </div>
                 </div>
                 {% endif %}
-                <footer>
-                    <p>Versão: v2.0.1</p>
-                </footer>
             </div>
+            <div class="latest-changes">
+                <h2>Últimos updates</h2>
+                <ul>
+                    <li>
+                        <strong>2.0.1:</strong> Correções na plataforma.Adição de pesquisas nos tickets.
+                    </li>
+                    <li>
+                        <strong>2.0.0:</strong> Correções na plataforma.
+                    </li>
+                    <li>
+                        <strong>1.0.2:</strong> Correções na plataforma.
+                    </li>
+                    <li>
+                        <strong>1.0.1:</strong> Possibilidade de adicionar ficheiros à mensagem, após o ticket estar aberto.
+                        Correções na plataforma.
+                    </li>
+                    <li>
+                        <strong>1.0.0:</strong> Lançamento inicial do sistema de tickets.
+                    </li>
+                </ul>
+            </div>
+            <footer>
+                <p>Versão: v2.0.1</p>
+            </footer>
         </div>
     </div>
-    <style>
-        .container {
-            text-align: center;
-        }
-        .dashboard {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-        }
-        .card {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            padding: 20px;
-            width: 300px;
-            text-align: left;
-        }
-        .card h2, .card h3 {
-            margin-top: 0;
-        }
-        .card p {
-            margin: 10px 0;
-        }
-        .btn {
-            background: #007bff;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            display: inline-block;
-            margin-top: 10px;
-        }
-        .btn-submit {
-            background: #007bff;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            display: inline-block;
-            margin-top: 10px;
-            border: none;
-            cursor: pointer;
-            
-        }
-        .btn-submit:hover, .btn:hover {
-            background: #0056b3;
-        }
-        .cards {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-        }
-        .checkbox-group {
-            margin-bottom: 15px;
-        }
-        .sub-checkboxes {
-            padding-left: 20px;
-        }
-    </style>
+    
 </body>
 </html>
