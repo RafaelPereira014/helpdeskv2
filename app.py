@@ -218,7 +218,7 @@ def new_ticket():
         }
 
         
-        api_url = 'http://172.22.130.12:8081/receive-data'  
+        api_url = 'http://127.0.0.1:8081/receive-data'  
         try:
             response = requests.post(api_url, json=data_to_send)
             if response.status_code == 200:
