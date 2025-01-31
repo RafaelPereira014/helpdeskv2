@@ -199,7 +199,8 @@ def new_ticket():
         
 
         create_ticket(topic_id, description, date, state, created_by, contacto, title, uni_org, filename)
-
+        
+        
         ticket_id = get_ticketid(description)
         user_email = get_user_email_by_user(created_by)
         admin_emails = get_emails_by_group(ticket_id)

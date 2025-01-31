@@ -408,7 +408,7 @@ def create_ticket(topic_id, description, date, state, created_by, contacto, titl
         """, (topic_id, description, date, state, created_by, contacto, title, group_id, created_by_user,UnidadeOrg,file))
         conn.commit()
         print("Ticket created successfully")
-    except mysql.connector.Error as e:
+    except pymysql.connector.Error as e:
         print("Error creating ticket:", e)
     finally:
         cursor.close()
@@ -487,7 +487,10 @@ def no_execution_tickets():
 def get_ticketid(description):
     conn = connect_to_database()
     cursor = conn.cursor()
-    cursor.execute("SELECT id FROM tickets WHERE description = %s LIMIT 1", (description,))
+    cursor.execute(
+        "SELECT id FROM tickets WHERE description = %s ORDER BY date DESC LIMIT 1",
+        (description,)
+    )
     ticket_id = cursor.fetchone()  # Fetch the first row
     cursor.close()
     conn.close()
@@ -495,6 +498,7 @@ def get_ticketid(description):
         return ticket_id[0]  # Return the first ticket ID if found
     else:
         return None  # Return None if no ticket is found with the given description
+    
 def get_title(ticket_id):
     conn = connect_to_database()
     cursor = conn.cursor()
