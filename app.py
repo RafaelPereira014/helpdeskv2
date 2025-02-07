@@ -50,6 +50,13 @@ connection = pymysql.connect(**DB_CONFIG)
 @app.route('/')
 def index():
     return render_template('index.html')
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get('user_type') != 'admin':
+            return redirect(url_for('index'))  # Redirect non-admin users to the homepage
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -563,6 +570,7 @@ def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
 @app.route('/remove_file/<int:ticket_id>', methods=['POST'])
+@admin_required
 def remove_file(ticket_id):
     user_id = session.get('user_id')
     
@@ -597,13 +605,7 @@ def remove_file(ticket_id):
         return jsonify({"success": False, "message": str(e)}), 500
 
 
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if session.get('user_type') != 'admin':
-            return redirect(url_for('index'))  # Redirect non-admin users to the homepage
-        return f(*args, **kwargs)
-    return decorated_function
+
 
 @app.route('/admin_pannel')
 @admin_required
