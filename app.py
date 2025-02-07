@@ -33,7 +33,7 @@ app.config['MAIL_USERNAME'] = 's0204helpdesk'
 app.config['MAIL_PASSWORD'] = 'RL3kieLAziocp7iK'
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
-app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx','zip','drawio','xlsx','csv'}
+app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx','zip','drawio','xlsx','csv','txt','zip'}
 
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -211,7 +211,7 @@ def new_ticket():
         ticket_id = get_ticketid(description)
         user_email = get_user_email_by_user(created_by)
         admin_emails = get_emails_by_group(ticket_id)
-        
+        topico = get_topic_name(topic_id)
          
        
         data_to_send = {
@@ -251,7 +251,7 @@ def new_ticket():
                     <h1>Caro(a) {user_name}</h1>
                     <p>O seu pedido de apoio foi registado e foi-lhe atribuída a referência #{ticket_id}.</p>
                     <p>Logo que possível um dos técnicos do Núcleo de Informática e Telecomunicações fará o despiste e irá apoiar na resolução da situação.</p>
-                    <p>Poderá, a qualquer momento, acompanhar em <a href="https://helpdesk.edu.azores.gov.pt">https://helpdesk.edu.azores.gov.pt</a> a evolução do seu pedido:</p>
+                    <p>Poderá, a qualquer momento, acompanhar em <a href="https://helpdesk.edu.azores.gov.pt/{ticket_id}">https://helpdesk.edu.azores.gov.pt/{ticket_id}</a> a evolução do seu pedido:</p>
                     <p>Assunto: {title}</p>
                     <p>{description}</p>
                     <hr></hr>
@@ -309,11 +309,12 @@ def new_ticket():
                         <table role="presentation" border="0" cellpadding="0" cellspacing="10px" style="padding: 30px 30px 30px 60px;">
                             <tr>
                                 <td>
-                                    <p>Criado por: {user_name}</p>
-                                    <p>Unidade organica: {uni_org}</p>
+                                    <p><strong>Criado por:</strong> {user_name}</p>
+                                    <p><strong>Tópico:</strong> {topico}</p>
+                                    <p><strong>Unidade orgânica:</strong> {uni_org}</p>
                                     <hr></hr>                           
                                     <p>Foi recebido um novo ticket com o número #<strong><a href="https://helpdesk.edu.azores.gov.pt/ticket_details/{ticket_id}" target="_blank">{ticket_id}</a></strong> e com assunto <strong>{title}</strong>.</p>
-                                    <p>Descrição: {description}</p>
+                                    <p><strong>Descrição:</strong> {description}</p>
                                 </td>
                             </tr>
                         </table>
@@ -428,6 +429,7 @@ def send_message():
                 msg.html = f"""
                     <p>Foi registada a seguinte atualização no seu ticket com o numero #<strong>{ticket_id}|{title}</strong>.</p>
                     <p>Mensagem: {message}</p>
+                    <p>Poderá, a qualquer momento, acompanhar em <a href="https://helpdesk.edu.azores.gov.pt/{ticket_id}">https://helpdesk.edu.azores.gov.pt/{ticket_id}</a> a evolução do seu pedido:</p>
                     <hr></hr>
                     <p><strong>Núcleo de Informática e Telecomunicações</strong></p>
                     <p><strong>Secretaria Regional da Educação, Cultura e Desporto</strong></p>
