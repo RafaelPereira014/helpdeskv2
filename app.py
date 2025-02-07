@@ -177,7 +177,7 @@ def new_ticket():
         title = request.form['title']
         assigned_to = request.form.get('assigned_to')
         material_type = request.form.getlist('material_type')
-        quantidade = request.form.get('quantity')
+        quantidade = '1'
         motivo = request.form.get('reason')
         data_inicio = request.form.get('start_date')
         data_fim = request.form.get('end_date')
