@@ -388,14 +388,17 @@ def create_ticket(topic_id, description, date, state, created_by, contacto, titl
     conn = connect_to_database()
     cursor = conn.cursor()
     try:
-        # Fetch the group_id associated with the provided topic_id
-        cursor.execute("SELECT group_id FROM Topics WHERE id = %s", (topic_id,))
-        group_id_row = cursor.fetchone()
-        if group_id_row is not None:
-            group_id = group_id_row[0]
+        if UnidadeOrg=='DRAC':
+            group_id=5
         else:
-            # Handle the case when no result is found
-            group_id = None  # or raise an exception, depending on your application logic
+            # Fetch the group_id associated with the provided topic_id
+            cursor.execute("SELECT group_id FROM Topics WHERE id = %s", (topic_id,))
+            group_id_row = cursor.fetchone()
+            if group_id_row is not None:
+                group_id = group_id_row[0]
+            else:
+                # Handle the case when no result is found
+                group_id = None  # or raise an exception, depending on your application logic
 
         # Fetch the name of the user based on the created_by ID
         cursor.execute("SELECT name FROM users WHERE id = %s", (created_by,))

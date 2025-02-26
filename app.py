@@ -17,23 +17,14 @@ from werkzeug.utils import secure_filename
 from flask import render_template
 from flask import send_file
 from config import DB_CONFIG
-
-
-
-
+from config import Config
 
 app = Flask(__name__)
 # Generate a secure secret key
 
 
 app.secret_key = secrets.token_bytes(16)
-app.config['MAIL_SERVER']='pegasus.azores.gov.pt'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USERNAME'] = 's0204helpdesk'
-app.config['MAIL_PASSWORD'] = 'RL3kieLAziocp7iK'
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
-app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx','zip','drawio','xlsx','csv','txt','zip'}
+app.config.from_object(Config)
 
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -226,7 +217,7 @@ def new_ticket():
         }
 
         
-        api_url = 'http://172.22.130.12:8081/receive-data'  
+        api_url = 'http://127.0.0.1:8081/receive-data'  
         try:
             response = requests.post(api_url, json=data_to_send)
             if response.status_code == 200:
