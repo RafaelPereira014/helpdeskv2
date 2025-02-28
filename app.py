@@ -5,6 +5,7 @@ from functools import wraps
 import secrets
 import os
 import subprocess
+from flask_caching import Cache
 from flask import Flask, flash, jsonify, render_template, request, redirect, send_from_directory, url_for
 import requests
 from db_operations import *
@@ -19,12 +20,14 @@ from flask import send_file
 from config import DB_CONFIG
 from config import Config
 
+
 app = Flask(__name__)
 # Generate a secure secret key
 
 
 app.secret_key = secrets.token_bytes(16)
 app.config.from_object(Config)
+cache = Cache(app)
 
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -37,6 +40,12 @@ def allowed_file(filename):
 
 
 connection = pymysql.connect(**DB_CONFIG)
+
+def cache_ticket_count(cache_key, func):
+    count = func()
+    cache.set(cache_key, count, timeout=7200)  # Cache for 2 hours
+
+    return count
 
 @app.route('/')
 def index():
@@ -169,7 +178,7 @@ def new_ticket():
         assigned_to = request.form.get('assigned_to')
         material_type = request.form.getlist('material_type')
         quantidade = '1'
-        motivo = request.form.get('reason')
+        motivo = 'Requisição'
         data_inicio = request.form.get('start_date')
         data_fim = request.form.get('end_date')
         
@@ -610,9 +619,10 @@ def admin_panel():
     else:
         tickets = get_all_tickets()  # Fetch all tickets from the database
 
-    open_tickets = no_open_tickets()
-    closed_tickets = no_closed_tickets()
-    executing_tickets = no_execution_tickets()
+    # Compute and cache ticket counts
+    open_tickets = cache_ticket_count('open_tickets', no_open_tickets)
+    closed_tickets = cache_ticket_count('closed_tickets', no_closed_tickets)
+    executing_tickets = cache_ticket_count('executing_tickets', no_execution_tickets)
     
     for ticket in tickets:
         # Retrieve attributed name
@@ -679,35 +689,43 @@ def new_user():
     if 'user_id' not in session:
         return redirect(url_for('login'))  # Redirect to login page if user is not logged in
 
+    error_message = None
+
     if request.method == 'POST':
         # Extract user details from the form
         name = request.form['name']
         password = request.form['password']
-        type = request.form['type']
-        if type == 'user':
-            group = None  # For user type, group is set to None
-        else:
-            group = request.form.get('group_id', None)  # For admin type, group is set to the selected value
+        user_type = request.form['type']
+        group = request.form.get('group_id', None) if user_type == 'admin' else None
         email = request.form['email']
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
-        # Here, you would add code to insert the new user into the database
+        # Check if the user already exists
         try:
             conn = connect_to_database()
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO users (name, password, type, group_id, email) VALUES (%s, %s, %s, %s, %s)",
-                            (name, hashed_password, type, group, email))
-            conn.commit()
+            cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+            existing_user = cursor.fetchone()
+
+            if existing_user:
+                error_message = "Atenção,o utilizador já existe com este email!"
+            else:
+                # Insert the new user into the database
+                cursor.execute(
+                    "INSERT INTO users (name, password, type, group_id, email) VALUES (%s, %s, %s, %s, %s)",
+                    (name, hashed_password, user_type, group, email)
+                )
+                conn.commit()
+                return redirect(url_for('admin_init'))  # Redirect to dashboard after user creation
+
             cursor.close()
             conn.close()
-            return redirect(url_for('admin_init'))  # Redirect to dashboard after user creation
         except Exception as e:
             print("Error creating user:", e)
-            return "Error creating user. Please try again later."
+            error_message = "Erro ao criar utilizador. Tente novamente mais tarde."
 
-    # Render the form for adding a new user
-    return render_template('new_forms/novo_utilizador.html')
-
+    # Render the form for adding a new user, passing the error message (if any)
+    return render_template('new_forms/novo_utilizador.html', error_message=error_message)
 
 @app.route('/change_password', methods=['POST'])
 def change_user_password():

@@ -113,6 +113,19 @@
                 }
                 
             </script>
+
+            <script>
+                // Function to show a popup with the error message
+                function showErrorPopup(message) {
+                    alert(message); // Replace with a modal for better styling
+                }
+            
+                // Check if there's a valid error message passed from the backend
+                {% if error_message %}
+                const errorMessage = "{{ error_message }}";
+                showErrorPopup(errorMessage);
+                {% endif %}
+            </script>
         </div>
     </div>
 </body>
