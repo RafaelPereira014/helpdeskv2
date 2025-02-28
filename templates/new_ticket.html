@@ -294,22 +294,18 @@
                 
                 {% if is_edu %}
                     <label for="ilha">Ilha:</label>
-                    <select id="ilha" name="ilha" required>
-                        <option>-Selecione uma opção-</option>
-                        <option>Santa Maria</option>
-                        <option>São Miguel</option>
-                        <option>Terceira</option>
-                        <option>Faial</option>
-                        <option>Pico</option>
-                        <option>São Jorge</option>
-                        <option>Graciosa</option>
-                        <option>Flores</option>
-                        <option>Corvo</option>
+                    <select id="ilha" name="ilha" required onchange="updateUnidades()">
+                        <option value="">-Selecione uma opção-</option>
+                        {% for ilha in all_ilhas %}
+                            <option value="{{ ilha[0] }}">{{ ilha[1] }}</option> <!-- ilha[0]: id, ilha[1]: nome -->
+                        {% endfor %}
                     </select>
                 {% endif %}
                 
                 <label for="UnidadeOrg">Unidade orgânica:</label>
-                <select id="UnidadeOrg" name="UnidadeOrg" required></select>
+                <select id="UnidadeOrg" name="UnidadeOrg" required>
+                    <option value="">-Selecione uma opção-</option>
+                </select>
     
                 <!-- Div for description -->
                 <div id="description_div">
@@ -359,120 +355,12 @@
             checkRequisitionTopic();  // Check topic on page load
         };
         
-        var ilhaOptions = {
-            "São Miguel": [
-                "Conservatório Regional Ponta Delgada",
-                "EBIA - Escola Básica Integrada Arrifes",
-                "EBIAP - Escola Básica Integrada Água Pau",
-                "EBICM - Escola Básica Integrada Canto Maia",
-                "EBIG - Escola Básica Integrada Ginetes",
-                "EBIL - Escola Básica Integrada Lagoa",
-                "EBIM - Escola Básica Integrada Maia",
-                "EBIPG - Escola Básica Integrada Ponta Garça",
-                "EBIRG - Escola Básica Integrada Ribeira Grande",
-                "EBIRP - Escola Básica Integrada Rabo Peixe",
-                "EBIVC - Escola Básica Integrada Vila Capelas",
-                "EBIVT - Escola Básica Integrada Vila Topo",
-                "EBSN - Escola Básica Secundária Nordeste",
-                "EBSP - Escola Básica Secundária Povoação",
-                "EBSVFC - Escola Básica Secundária Vila Franca Campo",
-                "EPC - Escola Profissional Capelas",
-                "ESAQ - Escola Secundária Antero Quental",
-                "ESBIRI - Escola Básica Integrada Roberto Ivens",
-                "ESDR - Escola Secundária Domingos Rebelo",
-                "ESL - Escola Secundária Lagoa",
-                "ESL - Escola Secundária Laranjeiras",
-                "ESRG - Escola Secundária Ribeira Grande"
-            ],
-            "Santa Maria": ["EBS Santa Maria"],
-            "São Jorge": ["EBS das Velas","EBS da Calheta","EBS Topo"],
-            "Terceira": ["EBI da Praia da Vitória","EBI de Angra do Heroísmo","EBI dos Biscoitos","EBI Francisco Ferreira Drummond","ES Jerónimo Emiliano Andrade","EBS Tomás de Borba","ES Vitorino Nemésio"],
-            "Faial": ["EBI Horta","ES Manuel Arriaga"],
-            "Pico": ["EBS da Madalena","EBS Lajes do Pico","EBS S.Roque do Pico"],
-            "Graciosa": ["EBS da Graciosa"],
-            "Flores": ["EBS das Flores","EBS Lajes Flores"],
-            "Corvo": ["EBS Mouzinho Silveira"]
-        };
         
-        var graUnidades = [
-            ".",
-            "Gabinete SRECD",
-            "DREAE",
-            "DRD",
-            "SDISMA",
-            "SDISM",
-            "SDIT",
-            "SDISJ",
-            "SDIP",
-            "SDIG",
-            "SDIF",
-            "SDIFLORES",
-            "SDIC",
-            "SDIG",
-            "DRAC",
-            "IRE"
-        ];
+        
+        var graUnidades = {{ gra_divisoes|tojson }};
 
         
-        var adminUnidades = [
-            ".",
-            "Gabinete SRECD",
-            "DREAE",
-            "DRD",
-            "SDISMA",
-            "SDISM",
-            "SDIT",
-            "SDISJ",
-            "SDIP",
-            "SDIF",
-            "SDIG",
-            "SDIFLORES",
-            "SDIC",
-            "DRAC",
-            "IRE",
-            "Conservatório Regional Ponta Delgada",
-            "EBI Arrifes",
-            "EBI Canto Maia",
-            "EBI Francisco Ferreira Drummond",
-            "EBI Ginetes",
-            "EBI Horta",
-            "EBI Lagoa",
-            "EBI Maia",
-            "EBI Ponta Garça",
-            "EBI Rabo Peixe",
-            "EBI Ribeira Grande",
-            "EBI Roberto Ivens",
-            "EBI Vila Capelas",
-            "EBI Vila Topo",
-            "EBI da Praia da Vitória",
-            "EBI de Angra do Heroísmo",
-            "EBI dos Biscoitos",
-            "EBI Água Pau",
-            "EBS Lajes Flores",
-            "EBS Lajes do Pico",
-            "EBS Mouzinho Silveira",
-            "EBS Nordeste",
-            "EBS Povoação",
-            "EBS S.Roque do Pico",
-            "EBS Santa Maria",
-            "EBS Tomás de Borba",
-            "EBS Topo",
-            "EBS Armando Côrtes-Rodrigues",
-            "EBS da Calheta",
-            "EBS da Graciosa",
-            "EBS da Madalena",
-            "EBS das Flores",
-            "EBS das Velas",
-            "ES Antero Quental",
-            "ES Domingos Rebelo",
-            "ES Jerónimo Emiliano Andrade",
-            "ES Lagoa",
-            "ES Laranjeiras",
-            "ES Manuel Arriaga",
-            "ES Ribeira Grande",
-            "ES Vitorino Nemésio",
-            "Escola Profissional Capelas"
-        ];
+        var adminUnidades = {{ admin_unidades | tojson}}
 
         function showPopup() {
             var popup = document.getElementById('popup-message');
@@ -567,6 +455,32 @@
                 showPopup();  // Show popup and redirect after 3 seconds
             }
         });
+    </script>
+
+    <script>
+        function updateUnidades() {
+            const ilhaId = document.getElementById('ilha').value;
+            const unidadeDropdown = document.getElementById('UnidadeOrg');
+            
+            // Clear existing options
+            unidadeDropdown.innerHTML = '<option value="">-Selecione uma opção-</option>';
+            
+            if (ilhaId) {
+                // Fetch unidades organicas for the selected ilha
+                fetch(`/get_unidades/${ilhaId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Populate the UnidadeOrg dropdown with fetched data
+                        data.forEach(unidade => {
+                            const option = document.createElement('option');
+                            option.value = unidade.id;
+                            option.textContent = unidade.name;
+                            unidadeDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching unidades:', error));
+            }
+        }
     </script>
     <script>
         // Function to toggle the visibility of additional fields based on selected topic

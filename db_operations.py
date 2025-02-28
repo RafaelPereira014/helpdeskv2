@@ -126,11 +126,31 @@ def get_all_unidades():
     conn = connect_to_database()
     cursor = conn.cursor()
     cursor.execute("SELECT name FROM unidadesorganicas ORDER BY name ASC")
-    unidades = cursor.fetchall()
+    unidades = [row[0] for row in cursor.fetchall()]
     cursor.close()
     conn.close()
     
     return unidades;
+
+def get_all_gra():
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    cursor.execute("SELECT nome FROM divisoesGra ORDER BY nome ASC")
+    unidades = [row[0] for row in cursor.fetchall()]
+    cursor.close()
+    conn.close()
+    
+    return unidades;
+
+def get_all_ilhas():
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM ilhas ORDER BY nome ASC")  # Fetch all fields
+    ilhas = cursor.fetchall()  # Fetch all rows
+    cursor.close()
+    conn.close()
+    
+    return ilhas  # Return the entire list of rows
 
 def change_password(email):
     conn = connect_to_database()
@@ -1084,6 +1104,15 @@ def is_super_admin(user_id):
     else:
         return False
 
+def get_unidade_name_by_id(uni_org_id):
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM unidadesorganicas WHERE id = %s", (uni_org_id,))
+    result = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    
+    return result[0] if result else None
 
 
 #Database ADMIN actions 

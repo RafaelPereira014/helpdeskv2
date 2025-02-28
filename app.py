@@ -49,7 +49,7 @@ def cache_ticket_count(cache_key, func):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('maintenance.html')
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -151,7 +151,23 @@ def admin_init():
     
     return render_template('admin_init.html',super_admin=super_admin,tickets_created_today=tickets_created_today,tickets_solved=tickets_solved)
 
-
+@app.route('/get_unidades/<ilha_id>', methods=['GET'])
+def get_unidades(ilha_id):
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    query = """
+        SELECT id, name 
+        FROM unidadesorganicas 
+        WHERE ilha_id = %s 
+        ORDER BY name ASC
+    """
+    cursor.execute(query, (ilha_id,))
+    unidades = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    # Return data as JSON for the frontend to use
+    return jsonify([{'id': unidade[0], 'name': unidade[1]} for unidade in unidades])
 
 @app.route('/new_ticket', methods=['GET', 'POST'])
 def new_ticket():
@@ -166,12 +182,19 @@ def new_ticket():
     edu_topics_list = edu_topics()
     gra_topics_list = gra_topics()
     all_topics = get_topics()
+    all_ilhas = get_all_ilhas()
+    gra_divisoes = get_all_gra()
+    admin_unidades = sorted(all_unidades + gra_divisoes)
+    
 
     if request.method == 'POST':
         topic_id = request.form['topic_id']
         description = request.form['description']
         state = "Aberto"
         uni_org = request.form['UnidadeOrg']
+        if uni_org.isdigit():
+            uni_org = get_unidade_name_by_id(int(uni_org))  # Convert to integer to query the DB
+            
         date = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
         contacto = request.form['contacto']
         title = request.form['title']
@@ -226,7 +249,7 @@ def new_ticket():
         }
 
         
-        api_url = 'http://127.0.0.1:8081/receive-data'  
+        api_url = 'http://172.22.130.12:8081/receive-data'  
         try:
             response = requests.post(api_url, json=data_to_send)
             if response.status_code == 200:
@@ -331,7 +354,17 @@ def new_ticket():
         else:
             return redirect(url_for('my_tickets'))
 
-    return render_template('new_ticket.html', is_edu=is_edu,admin_status=admin_status,all_users=all_users,edu_topics_list=edu_topics_list,gra_topics_list=gra_topics_list,all_topics=all_topics,all_unidades=all_unidades)
+    return render_template('new_ticket.html', 
+            is_edu=is_edu,
+            admin_status=admin_status,
+            all_users=all_users,
+            edu_topics_list=edu_topics_list,
+            gra_topics_list=gra_topics_list,
+            all_topics=all_topics,
+            all_unidades=all_unidades,
+            all_ilhas=all_ilhas,
+            gra_divisoes=gra_divisoes,
+            admin_unidades=admin_unidades)
 
 
 
@@ -801,24 +834,11 @@ def ticket_details(ticket_id):
 
     # Fetch ticket details
     ticket_details = get_ticket_details(ticket_id)
-    #print((ticket_details['closed_by']))
-    # print(ticket_details['description'])
+    
     
     if ticket_details and ticket_details.get('description'):
         ticket_details['description'] = clean_description(ticket_details['description'])
         
-    # print(ticket_details['description'])
-    
-    # # Get the username for closed_by field
-    # if ticket_details.get('closed_by'):
-    #     ticket_details['closed_by'] = get_username(ticket_details['closed_by'])
-
-    # # Handle other fields similarly if needed
-    # if ticket_details.get('accepted_by'):
-    #     ticket_details['accepted_by'] = get_username(ticket_details['accepted_by'])
-    
-    # if ticket_details.get('reopened_by'):
-    #     ticket_details['reopened_by'] = get_username(ticket_details['reopened_by'])
     no_anexos = count_files_ticket(ticket_id)
     
 
