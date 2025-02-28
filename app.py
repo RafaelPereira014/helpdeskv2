@@ -49,7 +49,7 @@ def cache_ticket_count(cache_key, func):
 
 @app.route('/')
 def index():
-    return render_template('maintenance.html')
+    return render_template('login.html')
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
