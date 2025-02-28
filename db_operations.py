@@ -408,7 +408,7 @@ def create_ticket(topic_id, description, date, state, created_by, contacto, titl
     conn = connect_to_database()
     cursor = conn.cursor()
     try:
-        if UnidadeOrg=='DRAC':
+        if 'DRAC' in UnidadeOrg:
             group_id=5
         else:
             # Fetch the group_id associated with the provided topic_id
