@@ -407,6 +407,7 @@ def create_ticket(topic_id, description, date, state, created_by, contacto, titl
     """Creates a new ticket in the database."""
     conn = connect_to_database()
     cursor = conn.cursor()
+    print(UnidadeOrg)
     try:
         if 'DRAC' in UnidadeOrg:
             group_id=5
