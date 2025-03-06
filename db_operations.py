@@ -785,7 +785,7 @@ def search_for_date(date):
 def get_topics():
     conn = connect_to_database()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM Topics ORDER BY key_word ASC")
+    cursor.execute("SELECT * FROM Topics where visible='1' ORDER BY key_word ASC")
     topics = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -869,7 +869,7 @@ def edu_topics():
     keyword = 'EDU'
     
     # Query to select topics containing the keyword 'EDU'
-    cursor.execute("SELECT id,key_word FROM Topics WHERE key_word LIKE %s ORDER BY key_word ASC", ('%' + keyword + '%',))
+    cursor.execute("SELECT id,key_word FROM Topics WHERE key_word LIKE %s AND visible='1' ORDER BY key_word ASC", ('%' + keyword + '%',))
     
     # Fetch all matching rows
     edu_tickets = cursor.fetchall()
@@ -888,7 +888,7 @@ def gra_topics():
     keyword = 'EDU'
     
     # Query to select topics containing the keyword 'EDU'
-    cursor.execute("SELECT id,key_word FROM Topics WHERE key_word NOT LIKE %s ORDER BY key_word ASC", ('%' + keyword + '%',))
+    cursor.execute("SELECT id,key_word FROM Topics WHERE key_word NOT LIKE %s AND visible='1' ORDER BY key_word ASC", ('%' + keyword + '%',))
     
     # Fetch all matching rows
     gra_tickets = cursor.fetchall()
