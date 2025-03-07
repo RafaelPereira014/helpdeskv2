@@ -216,7 +216,7 @@ def new_ticket():
         # Check if file is uploaded
         if 'file' in request.files:
             file = request.files['file']
-            if file.filename != '':
+            if file.filename != '' and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 file_path = os.path.join('static/uploads', filename)  # Define your upload folder
                 file.save(file_path)
