@@ -218,7 +218,9 @@ def new_ticket():
             file = request.files['file']
             if file.filename != '':
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                file_path = os.path.join('static/uploads', filename)  # Define your upload folder
+                file.save(file_path)
+                
             else:
                 filename = "Sem ficheiro."
         else:
