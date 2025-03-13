@@ -16,6 +16,16 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     
     <style>
+        .material-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .material-item input[type="number"] {
+            width: 60px;
+        }
         p {
             margin: 0;
             padding: 0;
@@ -143,8 +153,26 @@
             background-color: #0056b3;
         }
         
-        #requisicao_fields .form-section {
-            margin-bottom: 20px;
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping for responsiveness */
+            gap: 20px; /* Space between items */
+        }
+        
+        .material-item {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between elements in each item */
+        }
+        
+        .material-item input[type="number"] {
+            width: 40px; /* Adjust width of the quantity field */
         }
         
         #requisicao_fields h3 {
@@ -257,23 +285,41 @@
                     <div class="form-section">
                         <label for="material_type">Tipo de Material:</label>
                         <div class="checkbox-container">
-                            <input type="checkbox" id="material_computador" name="material_type" value="Computador" >
-                            <label for="material_computador">Computador</label>
-
-                            <input type="checkbox" id="material_monitor" name="material_type" value="Monitor" >
-                            <label for="material_monitor">Monitor</label>
-
-                            <input type="checkbox" id="material_camera" name="material_type" value="Camera" >
-                            <label for="material_camera">Camera</label>
-
-                            <input type="checkbox" id="material_voip" name="material_type" value="Voip" >
-                            <label for="material_voip">Voip</label>
-
-                            <input type="checkbox" id="material_headset" name="material_type" value="Headset" >
-                            <label for="material_headset">Headset</label>
-
-                            <input type="checkbox" id="material_leitor" name="material_type" value="Leitor de cartões" >
-                            <label for="material_leitor">Leitor de cartões</label>
+                            <div class="material-item">
+                                <input type="checkbox" id="material_computador" name="material_type" value="Computador">
+                                <label for="material_computador">Computador</label>
+                                <input type="number" id="quantity_computador" name="quantity_type" min="1" placeholder="Qtd" disabled>
+                            </div>
+                    
+                            <div class="material-item">
+                                <input type="checkbox" id="material_monitor" name="material_type" value="Monitor">
+                                <label for="material_monitor">Monitor</label>
+                                <input type="number" id="quantity_monitor" name="quantity_type" min="1" placeholder="Qtd" disabled>
+                            </div>
+                    
+                            <div class="material-item">
+                                <input type="checkbox" id="material_camera" name="material_type" value="Camera">
+                                <label for="material_camera">Camera</label>
+                                <input type="number" id="quantity_camera" name="quantity_type" min="1" placeholder="Qtd" disabled>
+                            </div>
+                    
+                            <div class="material-item">
+                                <input type="checkbox" id="material_voip" name="material_type" value="Voip">
+                                <label for="material_voip">Voip</label>
+                                <input type="number" id="quantity_voip" name="quantity_type" min="1" placeholder="Qtd" disabled>
+                            </div>
+                    
+                            <div class="material-item">
+                                <input type="checkbox" id="material_headset" name="material_type" value="Headset">
+                                <label for="material_headset">Headset</label>
+                                <input type="number" id="quantity_headset" name="quantity_type" min="1" placeholder="Qtd" disabled>
+                            </div>
+                    
+                            <div class="material-item">
+                                <input type="checkbox" id="material_leitor" name="material_type" value="Leitor de cartões">
+                                <label for="material_leitor">Leitor de cartões</label>
+                                <input type="number" id="quantity_leitor" name="quantity_type" min="1" placeholder="Qtd" disabled>
+                            </div>
                         </div>
                     </div>
 
@@ -483,6 +529,19 @@
         }
     </script>
     <script>
+
+        document.querySelectorAll('.material-item input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', (event) => {
+                const quantityInput = document.querySelector(`#quantity_${event.target.id.split('_')[1]}`);
+                if (checkbox.checked) {
+                    quantityInput.value = 1; // Automatically set quantity to 1
+                    quantityInput.removeAttribute('disabled');
+                } else {
+                    quantityInput.value = ''; // Clear the quantity when unchecking
+                    quantityInput.setAttribute('disabled', 'disabled');
+                }
+            });
+        });
         // Function to toggle the visibility of additional fields based on selected topic
         function checkRequisitionTopic() {
             const selectElement = document.getElementById('topic_id');
@@ -492,7 +551,7 @@
             const selectedOption = selectElement.options[selectElement.selectedIndex].text;
             
             // Check if "Requisição" is in the selected option
-            if (selectedOption.includes("Requisição")) {
+            if (selectedOption.includes("Apenas DREAE")) {
                 requisicaoFields.style.display = 'block'; // Show the additional fields
             } else {
                 requisicaoFields.style.display = 'none'; // Hide the additional fields

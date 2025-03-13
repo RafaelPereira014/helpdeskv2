@@ -200,6 +200,7 @@ def new_ticket():
         title = request.form['title']
         assigned_to = request.form.get('assigned_to')
         material_type = request.form.getlist('material_type')
+        material_quantity = request.form.getlist('quantity_type')
         quantidade = '1'
         motivo = 'Requisição'
         data_inicio = request.form.get('start_date')
@@ -244,14 +245,17 @@ def new_ticket():
             'User': user_name,
             'User email': user_email,
             'material_type': material_type,
+            'quantity': material_quantity,
             'quantidade': quantidade,
             'motivo': motivo,
             'data_inicio': data_inicio,
             'data_fim': data_fim
         }
+        print(data_to_send)
 
         
         api_url = 'http://172.22.130.12:8081/receive-data'  
+        #api_url = 'http://127.0.0.1:8081/receive-data'  
         try:
             response = requests.post(api_url, json=data_to_send)
             if response.status_code == 200:
