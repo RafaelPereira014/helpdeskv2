@@ -9,6 +9,7 @@ from flask_caching import Cache
 from flask import Flask, flash, jsonify, render_template, request, redirect, send_from_directory, url_for
 import requests
 from db_operations import *
+from more_operations import *
 from flask import session
 from flask import redirect
 from datetime import datetime
@@ -19,7 +20,6 @@ from flask import render_template
 from flask import send_file
 from config import DB_CONFIG
 from config import Config
-
 
 app = Flask(__name__)
 # Generate a secure secret key
@@ -687,17 +687,62 @@ def update_group_id(ticket_id):
         print(f"Error updating group_id for ticket {ticket_id}: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
-@app.route('/gerirtopicos', methods=['GET', 'POST'])
+@app.route('/gerirhelpdesk', methods=['GET', 'POST'])
 @admin_required
 def topicos():
-    if request.method == 'POST':
-        keyword = request.form.get('keyword')
-        topics = search_topics(keyword)
-        return render_template('new_forms/gerirtopicos.html', topics=topics)
+    if request.method == 'GET':
+        visible_topics = get_topics(visible=True)
+        invisible_topics = get_topics(visible=False)
+        visible_users = get_users(visible=True)
+        invisible_users = get_users(visible=False)
+    
+        return render_template('new_forms/gerirtopicos.html', 
+                               visible_topics=visible_topics, 
+                               invisible_topics=invisible_topics, 
+                               visible_users=visible_users, 
+                               invisible_users=invisible_users)
     else:
-        # Return None or simply render the template without passing any topics data
-        return render_template('new_forms/gerirtopicos.html')
+        visible_topics = get_topics(visible=True)
+        invisible_topics = get_topics(visible=False)
+        visible_users = get_users(visible=True)
+        invisible_users = get_users(visible=False)
+    
+        return render_template('new_forms/gerirtopicos.html', 
+                               visible_topics=visible_topics, 
+                               invisible_topics=invisible_topics, 
+                               visible_users=visible_users, 
+                               invisible_users=invisible_users)
 
+@app.route('/toggle_topic_visibility_on/<int:topic_id>', methods=['POST'])
+def toggle_visibility_on(topic_id):
+    if request.method == 'POST':
+        visible(topic_id)
+    return redirect(url_for('topicos'))  
+
+@app.route('/toggle_topic_visibility_off/<int:topic_id>', methods=['POST'])
+def toggle_visibility_off(topic_id):
+    if request.method == 'POST':
+        invisible(topic_id)
+    return redirect(url_for('topicos')) 
+
+@app.route('/toggle_user_visibility_on/<int:user_id>', methods=['POST'])
+def toggle_user_visibility_on(user_id):
+    if request.method == 'POST':
+        user_visible(user_id)
+    return redirect(url_for('topicos'))  
+
+@app.route('/toggle_user_visibility_off/<int:user_id>', methods=['POST'])
+def toggle_user_visibility_off(user_id):
+    if request.method == 'POST':
+        user_invisible(user_id)
+    return redirect(url_for('topicos')) 
+
+@app.route('/edit_user_name/<int:user_id>', methods=['POST'])
+def edit_user_name(user_id):
+    if request.method == 'POST':
+        new_name = request.form['new_name']  
+        update_user_name(new_name, user_id)
+    return redirect(url_for('topicos'))
 
 @app.route('/delete_topic/<int:topic_id>', methods=['POST'])
 def delete_topic_route(topic_id):

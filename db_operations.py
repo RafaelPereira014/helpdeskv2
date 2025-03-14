@@ -9,11 +9,6 @@ from flask_mail import Message
 import hashlib
 import logging
 
-
-
-
-
-
 def connect_to_database():
     """Establishes a connection to the MySQL database."""
     return pymysql.connect(**DB_CONFIG)
@@ -115,7 +110,7 @@ def check_email_contains_edu(user_id):
 def get_all_users():
     conn = connect_to_database()
     cursor = conn.cursor()
-    cursor.execute("SELECT name FROM users ORDER BY name ASC")
+    cursor.execute("SELECT name FROM users where visible='1' ORDER BY name ASC")
     users = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -839,6 +834,46 @@ def delete_topic(topic_id):
     conn = connect_to_database()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM Topics WHERE id = %s", (topic_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    
+def visible(topic_id):
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE Topics set visible='1' WHERE id = %s", (topic_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    
+def invisible(topic_id):
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE Topics set visible='0' WHERE id = %s", (topic_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    
+def user_visible(user_id):
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users set visible='1' WHERE id = %s", (user_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    
+def user_invisible(user_id):
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users set visible='0' WHERE id = %s", (user_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    
+def update_user_name(name,user_id):
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users set name=%s WHERE id = %s", (name,user_id,))
     conn.commit()
     cursor.close()
     conn.close()

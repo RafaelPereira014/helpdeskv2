@@ -13,6 +13,50 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/side_menu.css') }}">
     <link href='https://unpkg.com/css.gg@2.0.0/icons/css/log-out.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- CSS -->
+
+    <!-- CSS -->
+    <style>
+        .toggle-buttons {
+            margin-bottom: 20px;
+        }
+        .toggle-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+        .toggle-btn:hover {
+            background-color: #0056b3;
+        }
+        .toggle-btn:focus {
+            outline: none;
+        }
+        .container {
+            padding: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        form button {
+            margin-top: 10px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+    
     <style>
 
         .container {
@@ -93,7 +137,7 @@
         </div>
 
         <div class="menu-item">
-            <a href="/gerirtopicos"><i class="fa fa-list-alt"></i>Gerir tópicos</a>
+            <a href="/gerirhelpdesk"><i class="fa fa-list-alt"></i>Gerir Helpdesk</a>
         </div>
         
         <div class="menu-item">
@@ -109,49 +153,184 @@
 
     <div class="main">
         <div class="container">
-            <h1>Gerir tópicos</h1>
             
-            <!-- Search form -->
-            <form method="POST" action="{{ url_for('topicos') }}">
-                <input type="text" name="keyword" id="searchInput" placeholder="Palavras chave">
-                <button type="submit">Procurar
-                </button>
+            <!-- Manage Topics -->
+            <h2>Gerir Tópicos</h2>
+    
+            <!-- Toggle Buttons for Topics Visibility -->
+            <div class="toggle-buttons">
+                <button id="showVisibleTopics" class="toggle-btn" onclick="toggleView('visible', 'topics')">Ver Tópicos Visíveis</button>
+                <button id="showInvisibleTopics" class="toggle-btn" onclick="toggleView('invisible', 'topics')">Ver Tópicos Invisíveis</button>
+            </div>
+    
+            <div id="visibleTopics" style="display:none;">
+                <h3>Tópicos Visíveis</h3>
+                <input type="text" id="topicSearch" placeholder="Pesquisar tópicos..." onkeyup="searchTopics()">
+                <ul id="visibleTopicList">
+                    {% if visible_topics %}
+                        {% for topic in visible_topics %}
+                            <li class="topic-item" data-id="{{ topic[0] }}" data-keyword="{{ topic[1] }}">
+                                <strong>ID:</strong> {{ topic[0] }} - 
+                                <strong>Palavras-chave:</strong> {{ topic[1] }} - 
+                                <strong>ID Grupo:</strong> {{ topic[2] }}
+                                <form method="POST" action="/toggle_topic_visibility_off/{{ topic[0] }}">
+                                    <button type="submit">Tornar Invisível</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <p>Nenhum tópico visível encontrado</p>
+                    {% endif %}
+                </ul>
+            </div>
+    
+            <div id="invisibleTopics" style="display:none;">
+                <h3>Tópicos Invisíveis</h3>
+                <input type="text" id="topicSearchInvisible" placeholder="Pesquisar tópicos..." onkeyup="searchTopics()">
+                <ul id="invisibleTopicList">
+                    {% if invisible_topics %}
+                        {% for topic in invisible_topics %}
+                            <li class="topic-item" data-id="{{ topic[0] }}" data-keyword="{{ topic[1] }}">
+                                <strong>ID:</strong> {{ topic[0] }} - 
+                                <strong>Palavras-chave:</strong> {{ topic[1] }} - 
+                                <strong>ID Grupo:</strong> {{ topic[2] }}
+                                <form method="POST" action="/toggle_topic_visibility_on/{{ topic[0] }}">
+                                    <button type="submit">Tornar Visível</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <p>Nenhum tópico invisível encontrado</p>
+                    {% endif %}
+                </ul>
+            </div>
+    
+            <!-- Add new topic -->
+            <h3>Adicionar Novo Tópico</h3>
+            <form method="POST" action="/add_topic">
+                <label for="new_keyword">Palavras-chave:</label>
+                <input type="text" name="new_keyword" id="new_keyword" required>
+                <label for="new_group_id">ID Grupo:</label>
+                <input type="text" name="new_group_id" id="new_group_id" required>
+                <button type="submit">Adicionar Tópico</button>
             </form>
-
-            <!-- Display topics -->
-            <h3>Resultados</h3>
-            <ul>
-                {% if topics %}
-                    {% for topic in topics %}
-                        <li>
-                            <strong>ID:</strong> {{ topic.id }} - 
-                            <strong>Palavras-chave:</strong> {{ topic.key_word }} - 
-                            <strong>ID Grupo:</strong> {{ topic.group_id }}
-                            <form method="POST" action="/delete_topic/{{ topic.id }}"> <!-- Corrected action attribute -->
-                                <button type="submit">Delete</button>
-                            </form>
-                        </li>              
-                        <script>
-                            console.log("Topic ID: {{ topic.id }} - Keyword: {{ topic.key_word }} - Group ID: {{ topic.group_id }}");
-                        </script>
-                    {% endfor %}
-                {% else %}
-                    <p>Nenhum tópico encontrado</p>
-                {% endif %}
-            </ul>
-            
-             <!-- Add new topic form -->
-             <h2>Adicionar novo tópico</h2>
-             <form method="POST" action="/add_topic">
-               
-                 <label for="new_keyword">Palavras-chave:</label>
-                 <input type="text" name="new_keyword" id="new_keyword">
-                 <label for="new_group_id">ID Grupo:</label>
-                 <input type="text" name="new_group_id" id="new_group_id">
-                 <button type="submit">Adicionar Tópico</button>
-             </form>
-            
+    
+            <hr>
+    
+            <!-- Manage Users -->
+            <h2>Gerir Utilizadores</h2>
+    
+            <!-- Toggle Buttons for Users Visibility -->
+            <div class="toggle-buttons">
+                <button id="showVisibleUsers" class="toggle-btn" onclick="toggleView('visible', 'users')">Ver Utilizadores Visíveis</button>
+                <button id="showInvisibleUsers" class="toggle-btn" onclick="toggleView('invisible', 'users')">Ver Utilizadores Invisíveis</button>
+            </div>
+    
+            <div id="visibleUsers" style="display:none;">
+                <h3>Utilizadores Visíveis</h3>
+                <input type="text" id="userSearch" placeholder="Pesquisar utilizadores..." onkeyup="searchUsers()">
+                <ul id="visibleUserList">
+                    {% if visible_users %}
+                        {% for user in visible_users %}
+                            <li class="user-item" data-id="{{ user[0] }}" data-name="{{ user[1] }}">
+                                <strong>ID:</strong> {{ user[0] }} 
+                                <strong>Nome:</strong> {{ user[1] }}
+                                <form method="POST" action="/toggle_user_visibility_off/{{ user[0] }}">
+                                    <button type="submit">Tornar Invisível</button>
+                                </form>
+                                <form method="POST" action="/edit_user_name/{{ user[0] }}">
+                                    <input type="text" name="new_name" placeholder="Novo Nome" required>
+                                    <button type="submit">Editar Nome</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <p>Nenhum utilizador visível encontrado</p>
+                    {% endif %}
+                </ul>
+            </div>
+    
+            <div id="invisibleUsers" style="display:none;">
+                <h3>Utilizadores Invisíveis</h3>
+                <input type="text" id="userSearchInvisible" placeholder="Pesquisar utilizadores..." onkeyup="searchUsers()">
+                <ul id="invisibleUserList">
+                    {% if invisible_users %}
+                        {% for user in invisible_users %}
+                            <li class="user-item" data-id="{{ user[0] }}" data-name="{{ user[1] }}">
+                                <strong>ID:</strong> {{ user[0] }} - 
+                                <strong>Nome:</strong> {{ user[1] }} 
+                                <form method="POST" action="/toggle_user_visibility_on/{{ user[0] }}">
+                                    <button type="submit">Tornar Visível</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <p>Nenhum utilizador invisível encontrado</p>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
     </div>
+    
+    
+    
+    <script>
+        // Toggle between visible and invisible sections
+        function toggleView(viewType, entity) {
+            const visibleSection = document.getElementById(`visible${capitalizeFirstLetter(entity)}`);
+            const invisibleSection = document.getElementById(`invisible${capitalizeFirstLetter(entity)}`);
+            
+            if (viewType === 'visible') {
+                visibleSection.style.display = 'block';
+                invisibleSection.style.display = 'none';
+            } else {
+                invisibleSection.style.display = 'block';
+                visibleSection.style.display = 'none';
+            }
+        }
+    
+        // Capitalize the first letter of the entity
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+    
+        // Search function for topics
+        function searchTopics() {
+            let input, filter, ul, li, keyword, txtValue;
+            input = document.getElementById("topicSearch") || document.getElementById("topicSearchInvisible");
+            filter = input.value.toUpperCase();
+            ul = input.closest('div').getElementsByTagName("ul")[0];
+            li = ul.getElementsByTagName("li");
+    
+            for (let i = 0; i < li.length; i++) {
+                keyword = li[i].getAttribute("data-keyword");
+                txtValue = keyword || '';
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
+        }
+    
+        // Search function for users
+        function searchUsers() {
+            let input, filter, ul, li, name, txtValue;
+            input = document.getElementById("userSearch") || document.getElementById("userSearchInvisible");
+            filter = input.value.toUpperCase();
+            ul = input.closest('div').getElementsByTagName("ul")[0];
+            li = ul.getElementsByTagName("li");
+    
+            for (let i = 0; i < li.length; i++) {
+                name = li[i].getAttribute("data-name");
+                txtValue = name || '';
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
+        }
+    </script>
 </body>
 </html>
