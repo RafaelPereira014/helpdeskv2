@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/side_menu.css') }}">
     <link href='https://unpkg.com/css.gg@2.0.0/icons/css/log-out.css' rel='stylesheet'>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
@@ -121,8 +122,16 @@
         <div class="menu-item">
             <a href="/pannel_group"><i class="fa fa-users"></i> Painel de grupo</a>
         </div>
-        <div class="menu-item">
-            <a href="/gerirhelpdesk"><i class="fa fa-list-alt"></i>Gerir Helpdesk</a>
+        <div class="menu-item dropdown">
+            <a href="#" class="dropdown-toggle" id="helpdeskMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-list-alt"></i> Gerir Helpdesk
+            </a>
+            <div class="dropdown-menu" aria-labelledby="helpdeskMenu">
+                <a class="dropdown-item" href="/new_user">Adicionar Utilizadores</a>
+                <a class="dropdown-item" href="/change_password">Alterar Password</a>
+                <a class="dropdown-item" href="/gerirtopicos">Gerir Tópicos</a>
+                <a class="dropdown-item" href="/gerir_utilizadores">Gerir Utilizadores</a>
+            </div>
         </div>
         <div class="menu-item">
             <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>

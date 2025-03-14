@@ -147,13 +147,30 @@ def get_all_ilhas():
     
     return ilhas  # Return the entire list of rows
 
+
 def change_password(email):
-    conn = connect_to_database()
-    cursor = conn.cursor()
-    cursor.execute("UPDATE users SET password='59886fe3e4a390d23717ffc12004fdf754df4084ff23d7be65130205b865926e' WHERE email = %s",  (email,))
-    conn.commit()
-    cursor.close()
-    conn.close()
+    try:
+        conn = connect_to_database()
+        cursor = conn.cursor()
+        
+        query = "UPDATE users SET password='59886fe3e4a390d23717ffc12004fdf754df4084ff23d7be65130205b865926e' WHERE email = %s"
+        values = (email,)
+        
+        cursor.execute(query, values)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        # Check if any rows were affected
+        if cursor.rowcount > 0:
+            return True
+        else:
+            return False
+    except Exception as e:
+        # Log the exception for debugging
+        print(f"Error changing password for {email}: {e}")
+        return False
+    
+
 
 
 

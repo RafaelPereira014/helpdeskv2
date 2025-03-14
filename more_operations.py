@@ -25,12 +25,12 @@ def execute_query(query, params=None):
         connection.close()  # Ensure the connection is always closed
 
 def get_topics(visible=True):
-    query = "SELECT id,key_word,group_id FROM Topics WHERE visible = %s"
+    query = "SELECT id,key_word,group_id FROM Topics WHERE visible = %s ORDER BY key_word ASC"
     return execute_query(query, (visible,))
 
 def get_users(visible=True):
     # Query to fetch id and name from the users table where the 'visible' column matches the given value
-    query = "SELECT id, name FROM users WHERE visible = %s"
+    query = "SELECT id, name FROM users WHERE visible = %s ORDER BY name ASC"
     
     # Execute the query and return the result
     return execute_query(query, (visible,))

@@ -687,29 +687,40 @@ def update_group_id(ticket_id):
         print(f"Error updating group_id for ticket {ticket_id}: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
-@app.route('/gerirhelpdesk', methods=['GET', 'POST'])
+@app.route('/gerirtopicos', methods=['GET', 'POST'])
 @admin_required
 def topicos():
     if request.method == 'GET':
         visible_topics = get_topics(visible=True)
         invisible_topics = get_topics(visible=False)
-        visible_users = get_users(visible=True)
-        invisible_users = get_users(visible=False)
-    
+        
         return render_template('new_forms/gerirtopicos.html', 
                                visible_topics=visible_topics, 
-                               invisible_topics=invisible_topics, 
-                               visible_users=visible_users, 
-                               invisible_users=invisible_users)
+                               invisible_topics=invisible_topics)
     else:
         visible_topics = get_topics(visible=True)
         invisible_topics = get_topics(visible=False)
-        visible_users = get_users(visible=True)
-        invisible_users = get_users(visible=False)
+        
     
         return render_template('new_forms/gerirtopicos.html', 
                                visible_topics=visible_topics, 
-                               invisible_topics=invisible_topics, 
+                               invisible_topics=invisible_topics)
+        
+@app.route('/gerir_utilizadores', methods=['GET', 'POST'])
+@admin_required
+def gerir_utilizadores():
+    if request.method == 'GET':
+        visible_users = get_users(visible=True)
+        invisible_users = get_users(visible=False)
+    
+        return render_template('new_forms/gerir_utilizadores.html', 
+                               visible_users=visible_users, 
+                               invisible_users=invisible_users)
+    else:
+        visible_users = get_users(visible=True)
+        invisible_users = get_users(visible=False)
+    
+        return render_template('new_forms/gerir_utilizadores.html', 
                                visible_users=visible_users, 
                                invisible_users=invisible_users)
 
@@ -729,20 +740,22 @@ def toggle_visibility_off(topic_id):
 def toggle_user_visibility_on(user_id):
     if request.method == 'POST':
         user_visible(user_id)
-    return redirect(url_for('topicos'))  
+    return redirect(url_for('gerir_utilizadores'))  
 
 @app.route('/toggle_user_visibility_off/<int:user_id>', methods=['POST'])
 def toggle_user_visibility_off(user_id):
     if request.method == 'POST':
         user_invisible(user_id)
-    return redirect(url_for('topicos')) 
+    return redirect(url_for('gerir_utilizadores')) 
 
 @app.route('/edit_user_name/<int:user_id>', methods=['POST'])
 def edit_user_name(user_id):
     if request.method == 'POST':
-        new_name = request.form['new_name']  
-        update_user_name(new_name, user_id)
-    return redirect(url_for('topicos'))
+        new_name = request.form['new_name']  # Get the new name from the form
+        update_user_name(new_name, user_id)  # Update the user's name in the database
+
+    
+    return redirect(url_for('gerir_utilizadores'))
 
 @app.route('/delete_topic/<int:topic_id>', methods=['POST'])
 def delete_topic_route(topic_id):
@@ -809,19 +822,24 @@ def new_user():
             error_message = "Erro ao criar utilizador. Tente novamente mais tarde."
 
     # Render the form for adding a new user, passing the error message (if any)
-    return render_template('new_forms/novo_utilizador.html', error_message=error_message)
+    return render_template('new_forms/adicionar_utilizador.html', error_message=error_message)
 
-@app.route('/change_password', methods=['POST'])
+@app.route('/change_password', methods=['GET', 'POST'])
+@admin_required
 def change_user_password():
-    email = request.form['email_change']
-    
-    # Call the change_password function to update the user's password
-    change_pass = change_password(email)
-    
-    # Provide feedback to the user
-    flash('Password alterada para password%100 para o utilizador com o email: {}'.format(email))
-    
-    return redirect(url_for('new_user'))
+    if request.method == 'GET':
+        return render_template('new_forms/alterar_password.html')  # Serve the form page
+
+    if request.method == 'POST':
+        email = request.form.get('email_change')
+        success = change_password(email)
+        if success:
+            flash(f'✅ Password do utilizador com o email: {email} alterada com sucesso.', 'success')
+        else:
+            flash(f'❌ Não foi possível alterar a password do utilizador com o email: {email}', 'error')
+        
+        return render_template('new_forms/alterar_password.html')
+
 
 
 @app.route('/pannel_group')

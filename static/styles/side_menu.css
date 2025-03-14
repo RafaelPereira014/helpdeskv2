@@ -1,10 +1,8 @@
-/* side_menu.css */
-
+/* Sidebar Styles */
 .sidenav {
     height: 100%;
     width: 270px;
     position: fixed;
-    z-index: 1;
     top: 0;
     left: 0;
     background-color: #333333;
@@ -13,31 +11,43 @@
     display: flex;
     flex-direction: column;
     gap: 10px; /* Spacing between menu items */
+    z-index: 2;
 }
 
+/* Logo Styles */
+.logo-main {
+    margin-left: 15px;
+    margin-bottom: 20px;
+    width: 100%; /* Make sure the logo fits well */
+    max-width: 220px; /* Restrict logo size */
+}
+
+/* Main Content Styles */
+.main {
+    margin-left: 270px; /* Adjust to match side menu width */
+    padding: 16px;
+    transition: margin-left 0.3s ease; /* Smooth transition when side nav is hidden on mobile */
+}
+
+/* Menu Item Styles */
 .menu-item {
     padding: 10px 16px;
     transition: background-color 0.3s; /* Smooth transition */
 }
 
+/* Menu Item Links */
 .menu-item a {
     display: flex;
     align-items: center;
     color: #ccc;
     text-decoration: none;
-    transition: color 0.3s; /* Smooth transition */
+    transition: color 0.3s, background-color 0.3s; /* Smooth transition */
 }
 
+/* Hover Effects for Menu Items */
 .menu-item a:hover {
     background-color: #444; /* Highlight on hover */
-}
-
-.menu-item a:hover span {
     color: #fff; /* Change text color on hover */
-}
-
-.menu-item a span {
-    margin-left: 10px; /* Adjust as needed */
 }
 
 .menu-item a i {
@@ -45,17 +55,142 @@
     margin-right: 10px; /* Spacing between icon and text */
 }
 
+/* Icon and Text Spacing */
+.menu-item a span {
+    margin-left: 10px; /* Adjust as needed */
+}
+
+/* Logout Button Styles */
 #logout-button {
-    margin-top: 380px; /* Aligns the button to the bottom */
+    margin-top: auto; /* Aligns the button to the bottom */
     padding: 10px 16px;
+    background-color: #444; /* Add background color */
+    color: #fff; /* Text color */
+    border: none;
+    transition: background-color 0.3s ease;
 }
 
-.main {
-    margin-left: 250px; /* Adjust to match side menu width */
-    padding: 16px;
+/* Hover effect for logout button */
+#logout-button:hover {
+    background-color: #555;
 }
 
-.logo-main {
-    margin-left: 15px; /* Adjust as needed */
-    margin-bottom: 20px; /* Adjust as needed */
+/* Dropdown Styles */
+.menu-item.dropdown {
+    position: relative;
+}
+
+/* Dropdown Toggle Button */
+.dropdown-toggle {
+    display: flex;
+    align-items: right;
+    font-size: 16px;
+    padding: -4px 16px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Hover Effects for Dropdown Toggle */
+.dropdown-toggle:hover {
+    color: #007bff; /* Highlight color */
+    background-color: #fdfdfd73; /* Light background on hover */
+}
+
+/* FontAwesome Downward Arrow */
+.dropdown-toggle::after {
+    content: "\f107"; /* FontAwesome downward arrow */
+    font-family: 'FontAwesome';
+    padding-left: 8px;
+    font-size: 18px;
+}
+
+/* Dropdown Menu Styles */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    z-index: 1;
+    min-width: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Show the Dropdown on Hover */
+.menu-item:hover .dropdown-menu {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Dropdown Item Styles */
+.dropdown-item {
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    color: #333;
+    font-size: 14px;
+    border-bottom: 1px solid #f1f1f1;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Remove Bottom Border for Last Item */
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+/* Hover Effect for Dropdown Items */
+.dropdown-item:hover {
+    background-color: #007bff; /* Highlight background */
+    color: #fff; /* Change text color on hover */
+}
+
+/* Active State for Clicked Items */
+.dropdown-item:active {
+    background-color: #0056b3;
+    color: #fff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidenav {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding-top: 10px;
+    }
+
+    .main {
+        margin-left: 0;
+        padding: 10px;
+    }
+
+    /* Hide the sidebar on small screens */
+    .sidenav {
+        display: none; /* By default, hide sidebar */
+    }
+
+    .sidenav.show {
+        display: flex; /* Show sidebar when toggled */
+    }
+
+    /* Hamburger menu (toggle) */
+    #menu-toggle {
+        display: block;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 30px;
+        cursor: pointer;
+    }
+
+    #logout-button {
+        margin-top: 20px;
+    }
 }

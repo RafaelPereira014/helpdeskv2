@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerir tópicos - Helpdesk NIT</title>
+    <title>Gerir Utilizadores - Helpdesk NIT</title>
     <!-- Include your CSS links here -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/basic.css') }}">
@@ -54,6 +54,21 @@
             margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 4px;
+        }
+
+        /* Style the 'Guardar' button */
+        .success {
+            background-color: #28a745; /* Green color */
+            color: white; /* White text */
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .success:hover {
+            background-color: #218838; /* Darker green on hover */
         }
     </style>
     
@@ -115,6 +130,8 @@
             border-radius: 5px;
             cursor: pointer;
         }
+        
+
     </style>
 </head>
 <body>
@@ -141,8 +158,8 @@
                 <i class="fa fa-list-alt"></i> Gerir Helpdesk
             </a>
             <div class="dropdown-menu" aria-labelledby="helpdeskMenu">
-                <a class="dropdown-item" href="/adicionar_utilizadores">Adicionar Utilizadores</a>
-                <a class="dropdown-item" href="/alterar_password">Alterar Password</a>
+                <a class="dropdown-item" href="/new_user">Adicionar Utilizadores</a>
+                <a class="dropdown-item" href="/change_password">Alterar Password</a>
                 <a class="dropdown-item" href="/gerirtopicos">Gerir Tópicos</a>
                 <a class="dropdown-item" href="/gerir_utilizadores">Gerir Utilizadores</a>
             </div>
@@ -162,68 +179,63 @@
     <div class="main">
         <div class="container">
             
-            <!-- Manage Topics -->
-            <h2>Gerir Tópicos</h2>
+            <!-- Manage Users -->
+            <h2>Gerir Utilizadores</h2>
     
-            <!-- Toggle Buttons for Topics Visibility -->
+            <!-- Toggle Buttons for Users Visibility -->
             <div class="toggle-buttons">
-                <button id="showVisibleTopics" class="toggle-btn" onclick="toggleView('visible', 'topics')">Ver Tópicos Visíveis</button>
-                <button id="showInvisibleTopics" class="toggle-btn" onclick="toggleView('invisible', 'topics')">Ver Tópicos Invisíveis</button>
+                <button id="showVisibleUsers" class="toggle-btn" onclick="toggleView('visible', 'users')">Ver Utilizadores Visíveis</button>
+                <button id="showInvisibleUsers" class="toggle-btn" onclick="toggleView('invisible', 'users')">Ver Utilizadores Invisíveis</button>
             </div>
     
-            <div id="visibleTopics" style="display:none;">
-                <h3>Tópicos Visíveis</h3>
-                <input type="text" id="topicSearch" placeholder="Pesquisar tópicos..." onkeyup="searchTopics()">
-                <ul id="visibleTopicList">
-                    {% if visible_topics %}
-                        {% for topic in visible_topics %}
-                            <li class="topic-item" data-id="{{ topic[0] }}" data-keyword="{{ topic[1] }}">
-                                <strong>Palavras-chave:</strong> {{ topic[1] }} - 
-                                <strong>ID Grupo:</strong> {{ topic[2] }}
-                                <form method="POST" action="/toggle_topic_visibility_off/{{ topic[0] }}">
-                                    <button type="submit">Tornar Invisível</button>
+            <div id="visibleUsers" style="display:none;">
+                <h3>Utilizadores Visíveis</h3>
+                <input type="text" id="userSearch" placeholder="Pesquisar utilizadores..." onkeyup="searchUsers()">
+                <ul id="visibleUserList">
+                    {% if visible_users %}
+                        {% for user in visible_users %}
+                            <li class="user-item" data-id="{{ user[0] }}" data-name="{{ user[1] }}">
+                                <div class="user-info">
+                                    <strong>Nome:</strong> {{ user[1] }}
+                                    <div class="user-actions">
+                                        <button class="toggle-btn" onclick="toggleEditForm({{ user[0] }})">Editar Nome</button>
+                                        <form method="POST" action="/toggle_user_visibility_off/{{ user[0] }}" style="display:inline;">
+                                            <button class="toggle-btn" type="submit">Tornar Invisível</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- Edit User Form (Hidden initially) -->
+                                <form method="POST" action="/edit_user_name/{{ user[0] }}" id="edit-form-{{ user[0] }}" style="display:none;">
+                                    <input type="text" name="new_name" id="new-name-{{ user[0] }}" placeholder="Novo Nome" required>
+                                    <button type="submit" style="background-color: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Guardar</button>
                                 </form>
+                                <hr>
                             </li>
-                            <hr>
                         {% endfor %}
                     {% else %}
-                        <p>Nenhum tópico visível encontrado</p>
+                        <p>Nenhum utilizador visível encontrado</p>
                     {% endif %}
                 </ul>
             </div>
     
-            <div id="invisibleTopics" style="display:none;">
-                <h3>Tópicos Invisíveis</h3>
-                <input type="text" id="topicSearchInvisible" placeholder="Pesquisar tópicos..." onkeyup="searchTopics()">
-                <ul id="invisibleTopicList">
-                    {% if invisible_topics %}
-                        {% for topic in invisible_topics %}
-                            <li class="topic-item" data-id="{{ topic[0] }}" data-keyword="{{ topic[1] }}">
-                                <strong>Palavras-chave:</strong> {{ topic[1] }} - 
-                                <strong>ID Grupo:</strong> {{ topic[2] }}
-                                <form method="POST" action="/toggle_topic_visibility_on/{{ topic[0] }}">
+            <div id="invisibleUsers" style="display:none;">
+                <h3>Utilizadores Invisíveis</h3>
+                <input type="text" id="userSearchInvisible" placeholder="Pesquisar utilizadores..." onkeyup="searchUsers()">
+                <ul id="invisibleUserList">
+                    {% if invisible_users %}
+                        {% for user in invisible_users %}
+                            <li class="user-item" data-id="{{ user[0] }}" data-name="{{ user[1] }}">
+                                <strong>Nome:</strong> {{ user[1] }} 
+                                <form method="POST" action="/toggle_user_visibility_on/{{ user[0] }}">
                                     <button type="submit">Tornar Visível</button>
                                 </form>
                             </li>
                         {% endfor %}
                     {% else %}
-                        <p>Nenhum tópico invisível encontrado</p>
+                        <p>Nenhum utilizador invisível encontrado</p>
                     {% endif %}
                 </ul>
             </div>
-    
-            <!-- Add new topic -->
-            <h3>Adicionar Novo Tópico</h3>
-            <form method="POST" action="/add_topic">
-                <label for="new_keyword">Palavras-chave:</label>
-                <input type="text" name="new_keyword" id="new_keyword" required>
-                <label for="new_group_id">ID Grupo:</label>
-                <input type="text" name="new_group_id" id="new_group_id" required>
-                <button type="submit">Adicionar Tópico</button>
-            </form>
-    
-    
-            
         </div>
     </div>
     
@@ -258,23 +270,36 @@
                 }
             }
         }
-    
+        
+        // Function to toggle the edit form visibility
+        function toggleEditForm(userId) {
+            var form = document.getElementById('edit-form-' + userId);
+            var input = document.getElementById('new-name-' + userId);
+            
+            // Toggle form visibility
+            if (form.style.display === "none" || form.style.display === "") {
+                form.style.display = "block"; // Show form
+                input.focus(); // Focus the input field
+            } else {
+                form.style.display = "none"; // Hide form if already visible
+            }
+        }
         
         function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
     
-        // Search function for topics
-        function searchTopics() {
-            let input, filter, ul, li, keyword, txtValue;
-            input = document.getElementById("topicSearch") || document.getElementById("topicSearchInvisible");
+        // Search function for users
+        function searchUsers() {
+            let input, filter, ul, li, name, txtValue;
+            input = document.getElementById("userSearch") || document.getElementById("userSearchInvisible");
             filter = input.value.toUpperCase();
             ul = input.closest('div').getElementsByTagName("ul")[0];
             li = ul.getElementsByTagName("li");
     
             for (let i = 0; i < li.length; i++) {
-                keyword = li[i].getAttribute("data-keyword");
-                txtValue = keyword || '';
+                name = li[i].getAttribute("data-name");
+                txtValue = name || '';
                 if (txtValue.toUpperCase().indexOf(filter) > -1) {
                     li[i].style.display = "";
                 } else {
@@ -282,7 +307,6 @@
                 }
             }
         }
-
     </script>
 </body>
 </html>
