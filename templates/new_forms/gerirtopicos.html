@@ -280,16 +280,31 @@
             const visibleSection = document.getElementById(`visible${capitalizeFirstLetter(entity)}`);
             const invisibleSection = document.getElementById(`invisible${capitalizeFirstLetter(entity)}`);
             
+            // Check if the section is already displayed
             if (viewType === 'visible') {
-                visibleSection.style.display = 'block';
-                invisibleSection.style.display = 'none';
-            } else {
-                invisibleSection.style.display = 'block';
-                visibleSection.style.display = 'none';
+                if (visibleSection.style.display === 'block') {
+                    // If it's already showing, hide both
+                    visibleSection.style.display = 'none';
+                    invisibleSection.style.display = 'none';
+                } else {
+                    // If it's not showing, show visible and hide invisible
+                    visibleSection.style.display = 'block';
+                    invisibleSection.style.display = 'none';
+                }
+            } else if (viewType === 'invisible') {
+                if (invisibleSection.style.display === 'block') {
+                    // If it's already showing, hide both
+                    visibleSection.style.display = 'none';
+                    invisibleSection.style.display = 'none';
+                } else {
+                    // If it's not showing, show invisible and hide visible
+                    invisibleSection.style.display = 'block';
+                    visibleSection.style.display = 'none';
+                }
             }
         }
     
-        // Capitalize the first letter of the entity
+        
         function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
