@@ -25,7 +25,7 @@ def execute_query(query, params=None):
         connection.close()  # Ensure the connection is always closed
 
 def get_topics(visible=True):
-    query = "SELECT id,key_word,group_id FROM topics WHERE visible = %s"
+    query = "SELECT id,key_word,group_id FROM Topics WHERE visible = %s"
     return execute_query(query, (visible,))
 
 def get_users(visible=True):
@@ -36,7 +36,7 @@ def get_users(visible=True):
     return execute_query(query, (visible,))
 
 def search_topics(keyword, visible=True):
-    query = "SELECT * FROM topics WHERE key_word LIKE %s AND visible = %s"
+    query = "SELECT * FROM Topics WHERE key_word LIKE %s AND visible = %s"
     return execute_query(query, (f"%{keyword}%", visible))
 
 def search_users(keyword, visible=True):
