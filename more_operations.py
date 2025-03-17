@@ -42,3 +42,23 @@ def search_topics(keyword, visible=True):
 def search_users(keyword, visible=True):
     query = "SELECT * FROM users WHERE name LIKE %s AND visible = %s"
     return execute_query(query, (f"%{keyword}%", visible))
+
+def get_material_types():
+    """Fetches all material types from the database."""
+    try:
+        connection = connect_to_database()
+        cursor = connection.cursor()
+
+        # Query to fetch all material types from tipo_material table
+        cursor.execute("SELECT nome FROM tipo_material")
+        material_types = cursor.fetchall()
+
+        return material_types
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'connection' in locals():
+            connection.close()

@@ -9,7 +9,10 @@ def connect_to_database():
     return pymysql.connect(**CONTAINER_DB_CONFIG)
 
 def update_names_from_csv(csv_file_path, table_name, column_name):
-    
+    """
+    Updates rows in a table based on a CSV file.
+    Expects the CSV file to have 'id' as the first column, 'nome1' as the second, and 'nome2' as the third.
+    """
     try:
         # Establish database connection
         connection = connect_to_database()
@@ -23,16 +26,24 @@ def update_names_from_csv(csv_file_path, table_name, column_name):
             for row in reader:
                 if len(row) != 3:
                     print(f"Skipping invalid row: {row}")
-                    continue  # Skip rows that don't have exactly two values
+                    continue  # Skip rows that don't have exactly three values
                 
-                id,nome1,nome2 = row  # Extract `nome1` and `nome2` from each row
+                record_id, nome1, nome2 = row  # Extract `id`, `nome1`, and `nome2` from each row
+                
+                # Convert `record_id` to an integer
+                try:
+                    record_id = int(record_id)
+                except ValueError:
+                    print(f"Invalid ID value: {record_id}, skipping row.")
+                    continue
+                
                 cursor.execute(
                     f"""
                     UPDATE {table_name}
                     SET {column_name} = %s
                     WHERE id = %s
                     """,
-                    (nome2, id)
+                    (nome2, record_id)
                 )
 
         # Commit the changes to the database
@@ -49,7 +60,6 @@ def update_names_from_csv(csv_file_path, table_name, column_name):
             cursor.close()
         if 'connection' in locals():
             connection.close()
-
 
 if __name__ == "__main__":
     # Configuration

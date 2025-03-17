@@ -291,41 +291,13 @@
                     <div class="form-section">
                         <label for="material_type">Tipo de Material:</label>
                         <div class="checkbox-container">
-                            <div class="material-item">
-                                <input type="checkbox" id="material_computador" name="material_type" value="Computador">
-                                <label for="material_computador">Computador</label>
-                                <input type="number" id="quantity_computador" name="quantity_type" min="1" placeholder="Qtd" disabled>
-                            </div>
-                    
-                            <div class="material-item">
-                                <input type="checkbox" id="material_monitor" name="material_type" value="Monitor">
-                                <label for="material_monitor">Monitor</label>
-                                <input type="number" id="quantity_monitor" name="quantity_type" min="1" placeholder="Qtd" disabled>
-                            </div>
-                    
-                            <div class="material-item">
-                                <input type="checkbox" id="material_camera" name="material_type" value="Camera">
-                                <label for="material_camera">Camera</label>
-                                <input type="number" id="quantity_camera" name="quantity_type" min="1" placeholder="Qtd" disabled>
-                            </div>
-                    
-                            <div class="material-item">
-                                <input type="checkbox" id="material_voip" name="material_type" value="Voip">
-                                <label for="material_voip">Voip</label>
-                                <input type="number" id="quantity_voip" name="quantity_type" min="1" placeholder="Qtd" disabled>
-                            </div>
-                    
-                            <div class="material-item">
-                                <input type="checkbox" id="material_headset" name="material_type" value="Headset">
-                                <label for="material_headset">Headset</label>
-                                <input type="number" id="quantity_headset" name="quantity_type" min="1" placeholder="Qtd" disabled>
-                            </div>
-                    
-                            <div class="material-item">
-                                <input type="checkbox" id="material_leitor" name="material_type" value="Leitor de cartões">
-                                <label for="material_leitor">Leitor de cartões</label>
-                                <input type="number" id="quantity_leitor" name="quantity_type" min="1" placeholder="Qtd" disabled>
-                            </div>
+                            {% for material in material_types %}
+                                <div class="material-item">
+                                    <input type="checkbox" id="material_{{ material[0]}}" name="material_type" value="{{ material[0] }}">
+                                    <label for="material_{{ material[0]}}">{{ material[0] }}</label>
+                                    <input type="number" id="quantity_{{ material[0]}}" name="quantity_type" min="1" placeholder="Qtd" disabled>
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>
 

@@ -185,6 +185,8 @@ def new_ticket():
     all_ilhas = get_all_ilhas()
     gra_divisoes = get_all_gra()
     admin_unidades = sorted(all_unidades + gra_divisoes)
+    material_types = get_material_types()
+
     
 
     if request.method == 'POST':
@@ -254,8 +256,8 @@ def new_ticket():
         print(data_to_send)
 
         
-        api_url = 'http://172.22.130.12:8081/receive-data'  
-        #api_url = 'http://127.0.0.1:8081/receive-data'  
+        #api_url = 'http://172.22.130.12:8081/receive-data'  
+        api_url = 'http://127.0.0.1:8081/receive-data'  
         try:
             response = requests.post(api_url, json=data_to_send)
             if response.status_code == 200:
@@ -370,7 +372,8 @@ def new_ticket():
             all_unidades=all_unidades,
             all_ilhas=all_ilhas,
             gra_divisoes=gra_divisoes,
-            admin_unidades=admin_unidades)
+            admin_unidades=admin_unidades,
+            material_types = material_types)
 
 
 
