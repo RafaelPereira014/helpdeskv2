@@ -286,16 +286,15 @@
 
                 <label for="title">Sumário do problema:</label>
                 <input type="text" id="title" name="title" required>
-                
                 <div id="requisicao_fields" style="display: none;">
                     <div class="form-section">
                         <label for="material_type">Tipo de Material:</label>
                         <div class="checkbox-container">
                             {% for material in material_types %}
                                 <div class="material-item">
-                                    <input type="checkbox" id="material_{{ material[0]}}" name="material_type" value="{{ material[0] }}">
-                                    <label for="material_{{ material[0]}}">{{ material[0] }}</label>
-                                    <input type="number" id="quantity_{{ material[0]}}" name="quantity_type" min="1" placeholder="Qtd" disabled>
+                                    <input type="checkbox" id="material_{{ material[0].replace(' ', '_') }}" name="material_type" value="{{ material[0] }}">
+                                    <label for="material_{{ material[0].replace(' ', '_') }}">{{ material[0] }}</label>
+                                    <input type="number" id="quantity_{{ material[0].replace(' ', '_') }}" name="quantity_type" min="1" placeholder="Qtd" disabled>
                                 </div>
                             {% endfor %}
                         </div>
@@ -342,7 +341,7 @@
                 <input type="text" id="contacto" name="contacto" required>
     
                 <label for="file">Anexar ficheiro:</label>
-                <input type="file" id="file" name="file" accept=".png, .jpg, .jpeg, .pdf, .xlsx, .zip, .rar">
+                <input type="file" id="file" name="file" accept=".png,.jpg,.jpeg,.pdf,.docx,.zip,.txt,.rar,.drawio,.xlsx,.msg,.csv">
     
                 <div style="margin-top: 10px;">
                     <button type="submit" id="submit_button">Submeter ticket</button>
@@ -508,10 +507,18 @@
     </script>
     <script>
 
-        document.querySelectorAll('.material-item input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener('change', (event) => {
-                const quantityInput = document.querySelector(`#quantity_${event.target.id.split('_')[1]}`);
-                if (checkbox.checked) {
+        document.querySelectorAll('.material-item input[type="checkbox"]').forEach((checkbox) => {
+            checkbox.addEventListener('change', function () {
+                // Extract material type from the checkbox ID
+                const materialType = this.id.split('_').slice(1).join('_'); 
+                const quantityInput = document.querySelector(`#quantity_${materialType}`);
+        
+                if (!quantityInput) {
+                    console.error(`No matching input found for: #quantity_${materialType}`);
+                    return;
+                }
+        
+                if (this.checked) {
                     quantityInput.value = 1; // Automatically set quantity to 1
                     quantityInput.removeAttribute('disabled');
                 } else {
@@ -536,5 +543,6 @@
             }
         }
     </script>
+    
 </body>
 </html>

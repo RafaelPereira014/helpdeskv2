@@ -186,7 +186,7 @@ def new_ticket():
     gra_divisoes = get_all_gra()
     admin_unidades = sorted(all_unidades + gra_divisoes)
     material_types = get_material_types()
-
+    print(material_types)
     
 
     if request.method == 'POST':
@@ -202,6 +202,7 @@ def new_ticket():
         title = request.form['title']
         assigned_to = request.form.get('assigned_to')
         material_type = request.form.getlist('material_type')
+        print(material_type)
         material_quantity = request.form.getlist('quantity_type')
         quantidade = '1'
         motivo = 'Requisição'
