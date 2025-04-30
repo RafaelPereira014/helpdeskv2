@@ -3,3 +3,4 @@ helpdesk-dump3.sql
 helpdesk-dump4.sql
 nohup.out
 test_connection_db.py
+static/uploads
