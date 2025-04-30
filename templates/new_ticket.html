@@ -4,13 +4,10 @@
     <meta charset="UTF-8">
     <title>Novo ticket - Helpdesk NIT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/basic.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/new_ticket.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/side_menu.css') }}">
-    <link href='https://unpkg.com/css.gg@2.0.0/icons/css/log-out.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href='https://unpkg.com/css.gg@2.0.0/icons/css/log-out.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/new_ticketv2.css') }}">
     
     <!-- Include Quill stylesheet -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
@@ -203,22 +200,22 @@
                 <a href="/pannel_group"><i class="fa fa-users"></i>Painel de grupo</a>
             </div>
             <div class="menu-item dropdown">
-                <a href="#" class="dropdown-toggle" id="helpdeskMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a href="#" class="dropdown-toggle" id="helpdeskMenu" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa fa-list-alt"></i> Gerir Helpdesk
                 </a>
-                <div class="dropdown-menu" aria-labelledby="helpdeskMenu">
-                    <a class="dropdown-item" href="/new_user">Adicionar Utilizadores</a>
-                    <a class="dropdown-item" href="/change_password">Alterar Password</a>
-                    <a class="dropdown-item" href="/gerirtopicos">Gerir Tópicos</a>
-                    <a class="dropdown-item" href="/gerir_utilizadores">Gerir Utilizadores</a>
-                </div>
+                <ul class="dropdown-menu bg-dark" aria-labelledby="helpdeskMenu">
+                    <li><a class="dropdown-item bg-dark" href="/new_user">Adicionar Utilizadores</a></li>
+                    <li><a class="dropdown-item bg-dark" href="/change_password">Alterar Password</a></li>
+                    <li><a class="dropdown-item bg-dark" href="/gerirtopicos">Gerir Tópicos</a></li>
+                    <li><a class="dropdown-item bg-dark" href="/gerir_utilizadores">Gerir Utilizadores</a></li>
+                </ul>
             </div>
             <div class="menu-item">
                 <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
             </div>
             
             <div class="menu-item">
-                <a href="/logout"><i class="gg-log-out"></i> Terminar sessão</a>
+                <a href="/logout">Terminar sessão</a>
             </div>
         {% endif %}
         
@@ -236,7 +233,7 @@
                 <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
             </div>
             <div class="menu-item">
-                <a href="/logout"><i class="gg-log-out"></i> Terminar sessão</a>
+                <a href="/logout">Terminar sessão</a>
             </div>
         {% endif %}
         
@@ -361,6 +358,7 @@
 
     <!-- Include Quill JavaScript -->
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         var is_edu = {{ is_edu|tojson }};

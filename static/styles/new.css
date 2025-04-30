@@ -1,0 +1,133 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.sidenav {
+    width: 250px; /* Fixed width for the sidebar */
+    background-color: #343a40; /* Dark background */
+    color: white;
+    height: 100vh; /* Full viewport height */
+    position: fixed; /* Sidebar is fixed */
+    top: 0;
+    left: 0;
+    padding: 20px;
+    overflow-y: auto; /* Enable scrolling for long content */
+}
+
+.sidenav a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #ddd;
+    display: block;
+}
+
+.sidenav a:hover {
+    color: white;
+}
+
+.sidenav .logo-main {
+    display: block;
+    margin: 0 auto 20px auto;
+    width: 150px;
+}
+
+.main {
+    margin-left: 270px;
+    padding: 20px;
+}
+
+.button-filter {
+    margin: 5px;
+    padding: 10px 20px;
+    border: none;
+    font-size: 14px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.button-filter:hover {
+    background-color: #0056b3;
+}
+
+.search-form {
+    margin-bottom: 20px;
+}
+
+.search-input {
+    margin: 5px 5px 5px 0;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 10px;
+}
+
+.search-form button {
+    margin: 5px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: #3f5ece;
+    color: white;
+    font-size: 14px;
+}
+
+.search-form button:hover {
+    background-color: #0a379f;
+}
+
+#ticket-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#ticket-table th, #ticket-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+#ticket-table th {
+    background-color: #007bff;
+    color: white;
+}
+
+#ticket-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#ticket-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+#ticket-table td a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+#ticket-table td a:hover {
+    text-decoration: underline;
+}
+
+#pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#pagination .button {
+    padding: 10px 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+#pagination .button:hover {
+    background-color: #0056b3;
+}
+

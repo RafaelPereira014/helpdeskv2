@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/popup.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/side_menu.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/ticket_details.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/new.css') }}">
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     
@@ -36,7 +37,7 @@
     <!-- Side Navigation Menu -->
     <div class="sidenav">
         <img src="{{ url_for('static', filename='images/NIT_logo.png') }}" alt="logo-main" class="logo-main">
-        {%if is_admin%}
+        {% if admin_status %}
             <div class="menu-item">
                 <a href="/admin_init"><i class="fa fa-home"></i> Inicio</a>
             </div>
@@ -52,43 +53,41 @@
             <div class="menu-item">
                 <a href="/pannel_group"><i class="fa fa-users"></i>Painel de grupo</a>
             </div>
-
             <div class="menu-item dropdown">
-                <a href="#" class="dropdown-toggle" id="helpdeskMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a href="#" class="dropdown-toggle" id="helpdeskMenu" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa fa-list-alt"></i> Gerir Helpdesk
                 </a>
-                <div class="dropdown-menu" aria-labelledby="helpdeskMenu">
-                    <a class="dropdown-item" href="/new_user">Adicionar Utilizadores</a>
-                    <a class="dropdown-item" href="/change_password">Alterar Password</a>
-                    <a class="dropdown-item" href="/gerirtopicos">Gerir Tópicos</a>
-                    <a class="dropdown-item" href="/gerir_utilizadores">Gerir Utilizadores</a>
-                </div>
+                <ul class="dropdown-menu bg-dark" aria-labelledby="helpdeskMenu">
+                    <li><a class="dropdown-item bg-dark" href="/new_user">Adicionar Utilizadores</a></li>
+                    <li><a class="dropdown-item bg-dark" href="/change_password">Alterar Password</a></li>
+                    <li><a class="dropdown-item bg-dark" href="/gerirtopicos">Gerir Tópicos</a></li>
+                    <li><a class="dropdown-item bg-dark" href="/gerir_utilizadores">Gerir Utilizadores</a></li>
+                </ul>
             </div>
-            
             <div class="menu-item">
                 <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
             </div>
             
             <div class="menu-item">
-                <a href="/logout"><i class="gg-log-out"></i> Terminar sessão</a>
+                <a href="/logout">Terminar sessão</a>
             </div>
-        {%endif%}
+        {% endif %}
         
-        {%if not is_admin%}
+        {% if not admin_status %}
             <div class="menu-item">
                 <a href="/init_page"><i class="fa fa-home"></i> Inicio</a>
             </div>
             <div class="menu-item">
-                <a href="/new_ticket"><i class="fa fa-dashboard"></i>Abrir novo ticket</a>
+                <a href="/new_ticket"><i class="fa fa-ticket"></i> Abrir novo ticket</a>
             </div>
             <div class="menu-item">
-                <a href="/my_tickets"><i class="fa fa-users"></i>Tickets</a>
+                <a href="/my_tickets"><i class="fa fa-users"></i> Tickets</a>
             </div>
             <div class="menu-item">
                 <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
             </div>
             <div class="menu-item">
-                <a href="/logout"><i class="gg-log-out"></i> Terminar sessão</a>
+                <a href="/logout"> Terminar sessão</a>
             </div>
         {% endif %}
         

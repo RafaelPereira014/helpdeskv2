@@ -3,108 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/basic.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/side_menu.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/table.css') }}">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href='https://unpkg.com/css.gg@2.0.0/icons/css/log-out.css' rel='stylesheet'>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/new.css') }}">
+
     <title>Painel de grupo - Tickets</title>
-    <style>
-        /* Styles for search form */
-        #searchForm {
-
-            margin-top: 5px;
-            display: flex; /* Use flexbox for alignment */
-            flex-wrap: wrap; /* Allow inputs to wrap to the next line */
-            gap: 2px; /* Add space between inputs */
-            margin-bottom: 10px; /* Adds some space below the form */
-        }
-
-        /* Styles for search input */
-        #searchInput {
-            padding: 6px; /* Reduced padding for smaller boxes */
-            font-size: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 200px; /* Smaller width for input boxes */
-        }
-
-        /* Styles for search and clear buttons */
-        #searchForm button {
-            padding: 6px 6px; /* Reduced padding for buttons */
-            font-size: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            color: white;
-        }
-
-        #searchForm button[type="submit"] {
-            background-color: #007BFF; /* Blue color for search button */
-        }
-
-        #searchForm button[type="submit"]:hover {
-            background-color: #0056b3; /* Darker blue color on hover */
-        }
-
-        #searchForm button[type="button"] {
-            background-color: #DC3545; /* Red color for clear button */
-        }
-
-        #searchForm button[type="button"]:hover {
-            background-color: #c82333; /* Darker red color on hover */
-        }
-
-    </style>
+    
 </head>
 <body>
     <div class="sidenav">
         <img src="{{ url_for('static', filename='images/NIT_logo.png') }}" alt="logo-main" class="logo-main">
-        <div class="sidenav">
-            <img src="{{ url_for('static', filename='images/NIT_logo.png') }}" alt="logo-main" class="logo-main">
-            <div class="menu-item">
-                <a href="/admin_init"><i class="fa fa-home"></i> Inicio</a>
-            </div>
-            <div class="menu-item">
-                <a href="/new_ticket"><i class="fa fa-ticket"></i> Abrir novo ticket</a>
-            </div>
-            <div class="menu-item">
-                <a href="/admin_pannel"><i class="fa fa-dashboard"></i> Painel de administração</a>
-            </div>
-            <div class="menu-item">
-                <a href="/pannel_personal"><i class="fa fa-user" ></i>Painel pessoal</a>
-            </div>
-            <div class="menu-item">
-                <a href="/pannel_group"><i class="fa fa-users"></i>Painel de grupo</a>
-            </div>
-
-            <div class="menu-item dropdown">
-                <a href="#" class="dropdown-toggle" id="helpdeskMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa-list-alt"></i> Gerir Helpdesk
-                </a>
-                <div class="dropdown-menu" aria-labelledby="helpdeskMenu">
-                    <a class="dropdown-item" href="/new_user">Adicionar Utilizadores</a>
-                    <a class="dropdown-item" href="/change_password">Alterar Password</a>
-                    <a class="dropdown-item" href="/gerirtopicos">Gerir Tópicos</a>
-                    <a class="dropdown-item" href="/gerir_utilizadores">Gerir Utilizadores</a>
-                </div>
-            </div>
-            
-            <div class="menu-item">
-                <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
-            </div>
-            
-            <div class="menu-item">
-                <a href="/logout"><i class="gg-log-out"></i> Terminar sessão</a>
-            </div>
-
+        <div class="menu-item">
+            <a href="/admin_init"><i class="fa fa-home"></i> Inicio</a>
+        </div>
+        <div class="menu-item">
+            <a href="/new_ticket"><i class="fa fa-ticket"></i> Abrir novo ticket</a>
+        </div>
+        <div class="menu-item">
+            <a href="/admin_pannel"><i class="fa fa-dashboard"></i> Painel de administração</a>
+        </div>
+        <div class="menu-item">
+            <a href="/pannel_personal"><i class="fa fa-user"></i> Painel pessoal</a>
+        </div>
+        <div class="menu-item">
+            <a href="/pannel_group"><i class="fa fa-users"></i> Painel de grupo</a>
+        </div>
+        <div class="menu-item dropdown">
+            <a href="#" class="dropdown-toggle" id="helpdeskMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa fa-list-alt"></i> Gerir Helpdesk
+            </a>
+            <ul class="dropdown-menu bg-dark" aria-labelledby="helpdeskMenu">
+                <li><a class="dropdown-item bg-dark" href="/new_user">Adicionar Utilizadores</a></li>
+                <li><a class="dropdown-item bg-dark" href="/change_password">Alterar Password</a></li>
+                <li><a class="dropdown-item bg-dark" href="/gerirtopicos">Gerir Tópicos</a></li>
+                <li><a class="dropdown-item bg-dark" href="/gerir_utilizadores">Gerir Utilizadores</a></li>
+            </ul>
+        </div>
+        <div class="menu-item">
+            <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
+        </div>
+        <div class="menu-item">
+            <a href="/logout">Terminar sessão</a>
         </div>
     </div>
+
 
     <div class="main">
         <h1>Painel de grupo - Tickets</h1>
@@ -150,6 +95,7 @@
     </div>
 
     
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

@@ -93,13 +93,14 @@ def logout():
 def init_page():
     if 'user_id' not in session:
         return redirect(url_for('login'))  # Redirect to login page if user is not logged in
-
     user_id = session['user_id']
+    admin_status = is_admin(user_id)
+
     open_tickets = get_opened_tickets_count_by_user(user_id)
     closed_tickets = get_closed_tickets_count_by_user(user_id)
     executing_tickets = get_executing_tickets_count_by_user(user_id)
     
-    return render_template('init.html', open_tickets=open_tickets,closed_tickets=closed_tickets,executing_tickets=executing_tickets)
+    return render_template('init.html', open_tickets=open_tickets,closed_tickets=closed_tickets,executing_tickets=executing_tickets,admin=admin_status)
 
 @app.route('/my_profile', methods=['GET', 'POST'])
 def profile_page():
@@ -135,7 +136,7 @@ def profile_page():
         else:
             message = {'type': 'error', 'content': 'Password incorreta!'}
 
-    return render_template('new_forms/my_profile.html', user_name=user_name, is_admin=admin_status, message=message, tickets_closed_by= tickets_closed_by,tickets_open_by=tickets_open_by,tickets_executing_by=tickets_executing_by)
+    return render_template('new_forms/my_profile.html', user_name=user_name, admin_status=admin_status, message=message, tickets_closed_by= tickets_closed_by,tickets_open_by=tickets_open_by,tickets_executing_by=tickets_executing_by)
 
 
 
@@ -411,7 +412,7 @@ def my_tickets():
     admin_status = is_admin(user_id)
 
     # Render the template with the tickets and admin status
-    return render_template('my_tickets.html', tickets=ticket_fields, is_admin=admin_status,open_tickets=open_tickets,close_tickets=close_tickets,executing_tickets=executing_tickets,all_tickets=all_tickets)
+    return render_template('my_tickets.html', tickets=ticket_fields,admin_status=admin_status,open_tickets=open_tickets,close_tickets=close_tickets,executing_tickets=executing_tickets,all_tickets=all_tickets)
 
 
 
@@ -922,7 +923,7 @@ def ticket_details(ticket_id):
     id_topico = get_topic_id(ticket_id)
     topico = get_topic_name(id_topico)
 
-    return render_template('ticket_details.html', ticket_details=ticket_details, is_admin=admin_status, user_name=user_name,topico=topico,no_anexos=no_anexos)
+    return render_template('ticket_details.html', ticket_details=ticket_details, admin_status=admin_status, user_name=user_name,topico=topico,no_anexos=no_anexos)
 
 
 @app.route('/close_ticket/<int:ticket_id>', methods=['POST'])
