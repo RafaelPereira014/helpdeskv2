@@ -10,7 +10,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/new.css') }}">
 
     <title>Painel de administração - Tickets</title>
-
+    <style>
+        #grupo-id-header {
+            cursor: pointer;
+            color: #007bff; /* Bootstrap's primary blue */
+            text-decoration: underline;
+        }
+    </style>
     
 </head>
 <body>
@@ -85,7 +91,11 @@
                     <th>Unidade Org.</th>
                     <th>Titulo</th>
                     <th>Estado</th>
-                    <th>Grupo ID</th>
+                    <th id="grupo-id-header" 
+                        data-bs-toggle="popover" 
+                        data-bs-content="3 - Duarte Pinto | 4 - Rodrigo Silva | 5 - DRAC ">
+                        Grupo ID
+                    </th>
                     <th>Atribuido a/Fechado por</th>
                     <th>Ações</th>
                 </tr>
@@ -320,7 +330,16 @@
         });
         
     </script>
-    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize Bootstrap popover for Grupo ID
+            var grupoIdHeader = document.getElementById('grupo-id-header');
+            var grupoIdPopover = new bootstrap.Popover(grupoIdHeader, {
+                trigger: 'click', // Trigger on click
+                placement: 'top', // Position the popover above the element
+            });
+        });
+    </script>
     
     
 </body>
