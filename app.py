@@ -100,7 +100,7 @@ def init_page():
     closed_tickets = get_closed_tickets_count_by_user(user_id)
     executing_tickets = get_executing_tickets_count_by_user(user_id)
     
-    return render_template('init.html', open_tickets=open_tickets,closed_tickets=closed_tickets,executing_tickets=executing_tickets,admin=admin_status)
+    return render_template('init.html', open_tickets=open_tickets,closed_tickets=closed_tickets,executing_tickets=executing_tickets,admin_status=admin_status)
 
 @app.route('/my_profile', methods=['GET', 'POST'])
 def profile_page():
@@ -146,11 +146,12 @@ def admin_init():
         return redirect(url_for('login'))  # Redirect to login page if user is not logged in
     
     user_id = session['user_id']
+    admin_status = is_admin(user_id)
     super_admin = is_super_admin(user_id)
     tickets_created_today = tickets_today()
     tickets_solved = tickets_solved_today()
     
-    return render_template('admin_init.html',super_admin=super_admin,tickets_created_today=tickets_created_today,tickets_solved=tickets_solved)
+    return render_template('admin_init.html',super_admin=super_admin,tickets_created_today=tickets_created_today,tickets_solved=tickets_solved,admin_status = admin_status)
 
 @app.route('/get_unidades/<ilha_id>', methods=['GET'])
 def get_unidades(ilha_id):
@@ -657,12 +658,13 @@ def remove_file(ticket_id):
 @admin_required
 def admin_panel():
     search_keyword = request.args.get('search')
+    user_id = session.get('user_id')
     
     if search_keyword:
         tickets = search_tickets(search_keyword)  # Search for tickets matching the keyword
     else:
         tickets = get_all_tickets()  # Fetch all tickets from the database
-
+    admin_status = is_admin(user_id)
     # Compute and cache ticket counts
     open_tickets = cache_ticket_count('open_tickets', no_open_tickets)
     closed_tickets = cache_ticket_count('closed_tickets', no_closed_tickets)
@@ -677,7 +679,8 @@ def admin_panel():
         tickets=tickets,
         open_tickets=open_tickets,
         closed_tickets=closed_tickets,
-        executing_tickets=executing_tickets
+        executing_tickets=executing_tickets,
+        admin_status=admin_status
     )
 
 @app.route('/update_group_id/<int:ticket_id>', methods=['POST'])
@@ -695,13 +698,15 @@ def update_group_id(ticket_id):
 @app.route('/gerirtopicos', methods=['GET', 'POST'])
 @admin_required
 def topicos():
+    user_id = session['user_id']
+    admin_status = is_admin(user_id)
     if request.method == 'GET':
         visible_topics = get_topics(visible=True)
         invisible_topics = get_topics(visible=False)
         
         return render_template('new_forms/gerirtopicos.html', 
                                visible_topics=visible_topics, 
-                               invisible_topics=invisible_topics)
+                               invisible_topics=invisible_topics,admin_status=admin_status)
     else:
         visible_topics = get_topics(visible=True)
         invisible_topics = get_topics(visible=False)
@@ -709,25 +714,27 @@ def topicos():
     
         return render_template('new_forms/gerirtopicos.html', 
                                visible_topics=visible_topics, 
-                               invisible_topics=invisible_topics)
+                               invisible_topics=invisible_topics,admin_status=admin_status)
         
 @app.route('/gerir_utilizadores', methods=['GET', 'POST'])
 @admin_required
 def gerir_utilizadores():
+    user_id = session['user_id']
+    admin_status = is_admin(user_id)
     if request.method == 'GET':
         visible_users = get_users(visible=True)
         invisible_users = get_users(visible=False)
     
         return render_template('new_forms/gerir_utilizadores.html', 
                                visible_users=visible_users, 
-                               invisible_users=invisible_users)
+                               invisible_users=invisible_users,admin_status=admin_status)
     else:
         visible_users = get_users(visible=True)
         invisible_users = get_users(visible=False)
     
         return render_template('new_forms/gerir_utilizadores.html', 
                                visible_users=visible_users, 
-                               invisible_users=invisible_users)
+                               invisible_users=invisible_users,admin_status=admin_status)
 
 @app.route('/toggle_topic_visibility_on/<int:topic_id>', methods=['POST'])
 def toggle_visibility_on(topic_id):
@@ -791,8 +798,9 @@ def new_user():
     if 'user_id' not in session:
         return redirect(url_for('login'))  # Redirect to login page if user is not logged in
 
+    user_id = session['user_id']
     error_message = None
-
+    admin_status = is_admin(user_id)
     if request.method == 'POST':
         # Extract user details from the form
         name = request.form['name']
@@ -827,13 +835,15 @@ def new_user():
             error_message = "Erro ao criar utilizador. Tente novamente mais tarde."
 
     # Render the form for adding a new user, passing the error message (if any)
-    return render_template('new_forms/adicionar_utilizador.html', error_message=error_message)
+    return render_template('new_forms/adicionar_utilizador.html', error_message=error_message,admin_status=admin_status)
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @admin_required
 def change_user_password():
+    user_id = session.get('user_id')
+    admin_status = is_admin(user_id)
     if request.method == 'GET':
-        return render_template('new_forms/alterar_password.html')  # Serve the form page
+        return render_template('new_forms/alterar_password.html',admin_status=admin_status)  # Serve the form page
 
     if request.method == 'POST':
         email = request.form.get('email_change')
@@ -843,7 +853,7 @@ def change_user_password():
         else:
             flash(f'❌ Não foi possível alterar a password do utilizador com o email: {email}', 'error')
         
-        return render_template('new_forms/alterar_password.html')
+        return render_template('new_forms/alterar_password.html',admin_status=admin_status)
 
 
 
@@ -853,7 +863,7 @@ def group_panel():
         return redirect(url_for('login'))  # Redirect to login page if user is not logged in
 
     user_id = session['user_id']
-    # Fetch the group_id associated with the user
+    admin_status = is_admin(user_id)
     group_id = get_user_group(user_id)
     # Fetch tickets based on the group_id
     tickets = get_all_tickets_group(group_id)
@@ -861,7 +871,7 @@ def group_panel():
     opened_tickets = get_opened_tickets_count_by_group(group_id)
     executing_tickets = get_executing_tickets_count_by_group(group_id)
     
-    return render_template('pannel_group.html', tickets=tickets,closed_tickets=closed_tickets,opened_tickets=opened_tickets,executing_tickets=executing_tickets)
+    return render_template('pannel_group.html', tickets=tickets,closed_tickets=closed_tickets,opened_tickets=opened_tickets,executing_tickets=executing_tickets,admin_status=admin_status)
 
 @app.route('/pannel_personal')
 def personal_panel():
@@ -871,7 +881,7 @@ def personal_panel():
     user_id = session['user_id']
     # Fetch the group_id associated with the user
     tickets = get_tickets_for_user(user_id)
-    
+    admin_status = is_admin(user_id)
     for ticket in tickets:
         # Get the latest ticket message
         info = get_latest_ticket_message(ticket['id'])
@@ -888,7 +898,7 @@ def personal_panel():
     closed_tickets = get_closed_tickets_count_by_admin(user_name)
     opened_tickets = get_opened_tickets_count_by_user(user_id)
     executing_tickets = count_executing_tickets_admin(user_name)
-    return render_template('personal_pannel.html', tickets=tickets,closed_tickets=closed_tickets,opened_tickets=opened_tickets,executing_tickets=executing_tickets)
+    return render_template('personal_pannel.html', tickets=tickets,closed_tickets=closed_tickets,opened_tickets=opened_tickets,executing_tickets=executing_tickets,admin_status=admin_status)
 
 
 @app.route('/ticket_details/<int:ticket_id>')

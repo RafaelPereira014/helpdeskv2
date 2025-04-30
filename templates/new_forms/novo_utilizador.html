@@ -18,39 +18,63 @@
 <body>
     <div class="sidenav">
         <img src="{{ url_for('static', filename='images/NIT_logo.png') }}" alt="logo-main" class="logo-main">
-        <div class="menu-item">
-            <a href="/admin_init"><i class="fa fa-home"></i> Inicio</a>
-        </div>
-        <div class="menu-item">
-            <a href="/new_ticket"><i class="fa fa-ticket"></i> Abrir novo ticket</a>
-        </div>
-        <div class="menu-item">
-            <a href="/admin_pannel"><i class="fa fa-dashboard"></i> Painel de administração</a>
-        </div>
-        <div class="menu-item">
-            <a href="/pannel_personal"><i class="fa fa-user" ></i>Painel pessoal</a>
-        </div>
-        <div class="menu-item">
-            <a href="/pannel_group"><i class="fa fa-users"></i> Painel de grupo</a>
-        </div>
-        <div class="menu-item dropdown">
-            <a href="#" class="dropdown-toggle" id="helpdeskMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-list-alt"></i> Gerir Helpdesk
-            </a>
-            <ul class="dropdown-menu bg-dark" aria-labelledby="helpdeskMenu">
-                <li><a class="dropdown-item bg-dark" href="/new_user">Adicionar Utilizadores</a></li>
-                <li><a class="dropdown-item bg-dark" href="/change_password">Alterar Password</a></li>
-                <li><a class="dropdown-item bg-dark" href="/gerirtopicos">Gerir Tópicos</a></li>
-                <li><a class="dropdown-item bg-dark" href="/gerir_utilizadores">Gerir Utilizadores</a></li>
-            </ul>
-        </div>
-        <div class="menu-item">
-            <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
-        </div>
+        {% if admin_status %}
+            <div class="menu-item">
+                <a href="/admin_init"><i class="fa fa-home"></i> Inicio</a>
+            </div>
+            <div class="menu-item">
+                <a href="/new_ticket"><i class="fa fa-ticket"></i> Abrir novo ticket</a>
+            </div>
+            <hr>
+            <div class="menu-item">
+                <a href="/admin_pannel"><i class="fa fa-dashboard"></i> Painel de administração</a>
+            </div>
+            <div class="menu-item">
+                <a href="/pannel_personal"><i class="fa fa-user"></i>Painel pessoal</a>
+            </div>
+            <div class="menu-item">
+                <a href="/pannel_group"><i class="fa fa-users"></i>Painel de grupo</a>
+            </div>
+            <div class="menu-item dropdown">
+                <a href="#" class="dropdown-toggle" id="helpdeskMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-list-alt"></i> Gerir Helpdesk
+                </a>
+                <ul class="dropdown-menu bg-dark" aria-labelledby="helpdeskMenu">
+                    <li><a class="dropdown-item bg-dark" href="/new_user">Adicionar Utilizadores</a></li>
+                    <li><a class="dropdown-item bg-dark" href="/change_password">Alterar Password</a></li>
+                    <li><a class="dropdown-item bg-dark" href="/gerirtopicos">Gerir Tópicos</a></li>
+                    <li><a class="dropdown-item bg-dark" href="/gerir_utilizadores">Gerir Utilizadores</a></li>
+                </ul>
+            </div>
+            <hr>
+            
+            <div class="menu-item">
+                <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
+            </div>
+            
+            <div class="menu-item">
+                <a href="/logout">Terminar sessão</a>
+            </div>
+        {% endif %}
         
-        <div class="menu-item">
-            <a href="/logout">Terminar sessão</a>
-        </div>
+        {% if not admin_status %}
+            <div class="menu-item">
+                <a href="/init_page"><i class="fa fa-home"></i> Inicio</a>
+            </div>
+            <div class="menu-item">
+                <a href="/new_ticket"><i class="fa fa-ticket"></i> Abrir novo ticket</a>
+            </div>
+            <div class="menu-item">
+                <a href="/my_tickets"><i class="fa fa-users"></i> Tickets</a>
+            </div>
+            <div class="menu-item">
+                <a href="/my_profile"><i class="fa fa-user"></i> Meu perfil</a>
+            </div>
+            <div class="menu-item">
+                <a href="/logout"> Terminar sessão</a>
+            </div>
+        {% endif %}
+        
     </div>
 
     <div class="main">
