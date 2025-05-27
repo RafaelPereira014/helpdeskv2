@@ -449,13 +449,17 @@ def create_ticket(topic_id, description, date, state, created_by, contacto, titl
     finally:
         cursor.close()
         conn.close()
-
-
-def get_user_tickets(user_id):
-    """Fetches tickets associated with the given user ID."""
+        
+def get_user_tickets(user_ids):
+    """Fetches tickets associated with the given user ID(s)."""
     conn = connect_to_database()
     cursor = conn.cursor(pymysql.cursors.DictCursor)
-    cursor.execute("SELECT id, date, state, description, attributed_to, contacto, title FROM tickets WHERE created_by = %s ORDER BY id DESC", (user_id,))
+    if isinstance(user_ids, list):
+        # Generate placeholders for the IN clause dynamically
+        query = "SELECT id, date, state, description, attributed_to, contacto, title FROM tickets WHERE created_by IN (%s) ORDER BY id DESC" % ','.join(['%s'] * len(user_ids))
+        cursor.execute(query, user_ids)
+    else:
+        cursor.execute("SELECT id, date, state, description, attributed_to, contacto, title FROM tickets WHERE created_by = %s ORDER BY id DESC", (user_ids,))
     user_tickets = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -1174,3 +1178,58 @@ def dump_database():
     return 0
 
 
+def get_opened_tickets_count_by_users(user_ids):
+    """Fetches the number of opened tickets for the given user ID(s)."""
+    conn = connect_to_database()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    if isinstance(user_ids, list):
+        query = "SELECT COUNT(*) AS opened_tickets_count FROM tickets WHERE state = 'Aberto' AND created_by IN (%s)" % ','.join(['%s'] * len(user_ids))
+        cursor.execute(query, user_ids)
+    else:
+        cursor.execute("SELECT COUNT(*) AS opened_tickets_count FROM tickets WHERE state = 'Aberto' AND created_by = %s", (user_ids,))
+    opened_tickets_count = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return opened_tickets_count['opened_tickets_count'] if opened_tickets_count else 0
+
+def get_closed_tickets_count_by_users(user_ids):
+    """Fetches the number of closed tickets for the given user ID(s)."""
+    conn = connect_to_database()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    if isinstance(user_ids, list):
+        query = "SELECT COUNT(*) AS closed_tickets_count FROM tickets WHERE state = 'Fechado' AND created_by IN (%s)" % ','.join(['%s'] * len(user_ids))
+        cursor.execute(query, user_ids)
+    else:
+        cursor.execute("SELECT COUNT(*) AS closed_tickets_count FROM tickets WHERE state = 'Fechado' AND created_by = %s", (user_ids,))
+    closed_tickets_count = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return closed_tickets_count['closed_tickets_count'] if closed_tickets_count else 0
+
+def get_executing_tickets_count_by_users(user_ids):
+    """Fetches the number of executing tickets for the given user ID(s)."""
+    conn = connect_to_database()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    if isinstance(user_ids, list):
+        query = "SELECT COUNT(*) AS executing_tickets_count FROM tickets WHERE state = 'em execucao' AND created_by IN (%s)" % ','.join(['%s'] * len(user_ids))
+        cursor.execute(query, user_ids)
+    else:
+        cursor.execute("SELECT COUNT(*) AS executing_tickets_count FROM tickets WHERE state = 'em execucao' AND created_by = %s", (user_ids,))
+    executing_tickets_count = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return executing_tickets_count['executing_tickets_count'] if executing_tickets_count else 0
+
+def get_all_tickets_users(user_ids):
+    """Fetches all tickets count for the given user ID(s)."""
+    conn = connect_to_database()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    if isinstance(user_ids, list):
+        query = "SELECT COUNT(*) AS all_tickets_count FROM tickets WHERE created_by IN (%s)" % ','.join(['%s'] * len(user_ids))
+        cursor.execute(query, user_ids)
+    else:
+        cursor.execute("SELECT COUNT(*) AS all_tickets_count FROM tickets WHERE created_by = %s", (user_ids,))
+    all_tickets_count = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return all_tickets_count['all_tickets_count'] if all_tickets_count else 0

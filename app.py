@@ -386,11 +386,24 @@ def my_tickets():
         return redirect(url_for('login'))  # Redirect to login page if user is not logged in
 
     user_id = session['user_id']
-    tickets = get_user_tickets(user_id)  # Function to fetch tickets associated with the user ID
-    open_tickets = get_opened_tickets_count_by_user(user_id)
-    close_tickets = get_closed_tickets_count_by_user(user_id)
-    executing_tickets = get_executing_tickets_count_by_user(user_id)
-    all_tickets = get_all_tickets_user(user_id)
+    # Special case for users 64 and 435
+    print(user_id)
+    if str(user_id) in ['64', '435']:
+        print("entrei")
+        # Combine tickets for both users 64 and 435
+        special_user_ids = ['64', '435']
+        tickets = get_user_tickets(special_user_ids)  # Function updated to accept a list of user IDs
+        open_tickets = get_opened_tickets_count_by_users(special_user_ids)  # Fetch combined open tickets
+        close_tickets = get_closed_tickets_count_by_users(special_user_ids)  # Fetch combined closed tickets
+        executing_tickets = get_executing_tickets_count_by_users(special_user_ids)  # Fetch combined executing tickets
+        all_tickets = get_all_tickets_users(special_user_ids)  # Fetch all tickets for these users
+    else:
+        # For other users, fetch only their tickets
+        tickets = get_user_tickets([user_id])
+        open_tickets = get_opened_tickets_count_by_user(user_id)
+        close_tickets = get_closed_tickets_count_by_user(user_id)
+        executing_tickets = get_executing_tickets_count_by_user(user_id)
+        all_tickets = get_all_tickets_user(user_id)
 
 
 
