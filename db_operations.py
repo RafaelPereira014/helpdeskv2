@@ -422,7 +422,9 @@ def create_ticket(topic_id, description, date, state, created_by, contacto, titl
     print(UnidadeOrg)
     try:
         if 'DRAC' in UnidadeOrg:
-            group_id=5
+            group_id = 5
+        elif 'SGC' in UnidadeOrg:
+            group_id = 6
         else:
             # Fetch the group_id associated with the provided topic_id
             cursor.execute("SELECT group_id FROM Topics WHERE id = %s", (topic_id,))
