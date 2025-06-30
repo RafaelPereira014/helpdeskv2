@@ -423,7 +423,7 @@ def create_ticket(topic_id, description, date, state, created_by, contacto, titl
     try:
         if 'DRAC' in UnidadeOrg:
             group_id = 5
-        elif 'SGC' in UnidadeOrg:
+        elif 'SGC' in get_topic_name(topic_id):
             group_id = 6
         else:
             # Fetch the group_id associated with the provided topic_id
@@ -820,6 +820,17 @@ def get_topic_id(ticket_id):
     conn.close()
     return topic_id[0] if topic_id else None  # Return the topic_id or None if no topic found
 
+
+def get_topic_key(topic_id):
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    # Use a parameterized query to avoid SQL injection
+    query = "SELECT key_word FROM Topics WHERE id = %s "
+    cursor.execute(query, (topic_id,))
+    topic_id = cursor.fetchone()  # Fetch the first (and only) row returned by the query
+    cursor.close()
+    conn.close()
+    return topic_id[0] if topic_id else None  # Return the topic_id or None if no topic found
 
 
 
