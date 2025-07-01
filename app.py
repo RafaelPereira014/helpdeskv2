@@ -702,6 +702,55 @@ def update_group_id(ticket_id):
         data = request.get_json()
         group_id = data['group_id']
         update_ticket_group(group_id, ticket_id)
+        user_email = get_emails_by_group(ticket_id)
+        group_name = get_group_name(ticket_id)
+        
+        
+        for email in user_email:
+            msg = Message(f'Helpdesk NIT: Ticket atribuido #{ticket_id}', sender='noreply@azores.gov.pt', recipients=[email])
+            msg.html = f"""
+                    <html>
+                    <head>
+                        <style>
+                            /* CSS styles for email content */
+                            body {{
+                                font-family: Arial, sans-serif;
+                                font-size: 14px;
+                                line-height: 1.6;
+                            }}
+                            h1 {{
+                                color: #333;
+                            }}
+                            p {{
+                                margin-bottom: 10px;
+                            }}
+                            hr {{
+                                border: 1px solid #ccc;
+                                margin: 20px 0;
+                            }}
+                            /* Add more styles as needed */
+                        </style>
+                    </head>
+                    <body>
+                        <table role="presentation" width="100%">
+                            <tr>
+                                <td bgcolor="#00A4BD" align="center" style="color: white;">
+                                    <h1> Novo ticket atribuido!</h1>
+                                </td>
+                        </table>
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="10px" style="padding: 30px 30px 30px 60px;">
+                            <tr>
+                                <td>
+                                    <p>Foi atribuido ao seu grupo <em>{group_name}</em> o ticket com o número #<strong><a href="https://helpdesk.edu.azores.gov.pt/ticket_details/{ticket_id}" target="_blank">{ticket_id}</a></strong></p>
+                                </td>
+                            </tr>
+                        </table>
+                        <p>Obrigado por usar o nosso helpdesk.</p>
+                        <h3><strong>SREC-NIT</strong></h3>
+                    </body>
+                    </html>
+                """
+            mail.send(msg)
         return jsonify({"success": True}), 200
     except Exception as e:
         # Log the error and return an error response
