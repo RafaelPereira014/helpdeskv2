@@ -62,3 +62,4 @@ def get_material_types():
             cursor.close()
         if 'connection' in locals():
             connection.close()
+            
