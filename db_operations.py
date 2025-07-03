@@ -1060,7 +1060,7 @@ def add_message_to_ticket(ticket_id, message):
                        (ticket_id, message))
         conn.commit()
         print("Message added to ticket successfully")
-    except mysql.connector.Error as e:
+    except pymysql.connector.Error as e:
         print("Error adding message to ticket:", e)
     finally:
         cursor.close()
