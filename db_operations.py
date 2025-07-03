@@ -2,8 +2,6 @@
 
 from datetime import datetime
 import re
-
-import mysql
 from config import DB_CONFIG  # Import the database configuration
 from flask import session
 import pymysql # Import MySQL Connector Python module
