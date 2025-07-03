@@ -703,7 +703,9 @@ def update_group_id(ticket_id):
         group_id = data['group_id']
         update_ticket_group(group_id, ticket_id)
         user_email = get_emails_by_group(ticket_id)
-        group_name = get_group_name(ticket_id)
+        group_name = get_nome_grupo(group_id)
+        date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        send_ticket_message(ticket_id, 'Este ticket foi atribuido ao grupo {}.'.format(group_name), 'admin', 'Administrador', date, None)
         
         
         for email in user_email:

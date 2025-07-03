@@ -2,6 +2,8 @@
 
 from datetime import datetime
 import re
+
+import mysql
 from config import DB_CONFIG  # Import the database configuration
 from flask import session
 import pymysql # Import MySQL Connector Python module
@@ -1244,3 +1246,21 @@ def get_all_tickets_users(user_ids):
     cursor.close()
     conn.close()
     return all_tickets_count['all_tickets_count'] if all_tickets_count else 0
+
+def get_nome_grupo(group_id):
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    
+    try:
+        
+        # Fetch the group name based on the group ID
+        cursor.execute("SELECT name FROM `Groups` WHERE id = %s", (group_id,))
+        group_name = cursor.fetchone()
+        
+        return group_name[0] if group_name else None  # Return the group name or None if not found
+    except Exception as e:
+        print("Error fetching group name:", e)
+        return None
+    finally:
+        cursor.close()
+        conn.close()
