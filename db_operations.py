@@ -636,14 +636,32 @@ def attributed_to_by_ticket(ticket_id):
         cursor.close()
         conn.close()
 
+def attributed_to_id_by_ticket(ticket_id):
+    try:
+        conn = connect_to_database()
+        cursor = conn.cursor()
+        cursor.execute("SELECT attributed_to_name FROM tickets WHERE id = %s", (ticket_id,))
+        result = cursor.fetchone()
+        if result is None:
+            print(f"No data found for ticket_id: {ticket_id}")
+            return None
+        user_name = result[0]
+        return user_name
+    except Exception as e:
+        print(f"Error querying database: {e}")
+        return None
+    finally:
+        cursor.close()
+        conn.close()
+
 def get_user_id_by_name(user_name):
     conn = connect_to_database()
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM users WHERE name = %s", (user_name,))
-    user_id = cursor.fetchone()[0]  # Assuming user names are unique
+    result = cursor.fetchone()
     cursor.close()
     conn.close()
-    return user_id
+    return result[0] if result else None
 
 def assign_ticket_to_user(ticket_id,user_name):
     assigned_user_id = get_user_id_by_name(user_name)

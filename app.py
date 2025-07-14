@@ -940,29 +940,39 @@ def group_panel():
 @app.route('/pannel_personal')
 def personal_panel():
     if 'user_id' not in session:
-        return redirect(url_for('login'))  # Redirect to login page if user is not logged in
+        return redirect(url_for('login'))
 
     user_id = session['user_id']
-    # Fetch the group_id associated with the user
     tickets = get_tickets_for_user(user_id)
     admin_status = is_admin(user_id)
+
     for ticket in tickets:
-        # Get the latest ticket message
         info = get_latest_ticket_message(ticket['id'])
+        ticket['sent_from_user'] = False  # Default
 
-        # Add sent_from_user property to the ticket
-        ticket['sent_from_user'] = False  # Default value
+        if info:
+            sender_user_id = get_user_id_by_name(info.get('sender_name'))
+            attributed_user_name = attributed_to_by_ticket(ticket['id'])  # this returns a name?
+            attributed_user_id = get_user_id_by_name(attributed_user_name)
 
-        # Check if info exists and sender_type is 'user'
-        if info and info.get('sender_type') == 'user':
-            ticket['sent_from_user'] = True
-        
-        print(ticket['sent_from_user'])
+            # Set to True if sender is NOT the person assigned to the ticket
+            if sender_user_id and attributed_user_id and sender_user_id != attributed_user_id:
+                ticket['sent_from_user'] = True
+
+
     user_name = get_username(user_id)
     closed_tickets = get_closed_tickets_count_by_admin(user_name)
     opened_tickets = get_opened_tickets_count_by_user(user_id)
     executing_tickets = count_executing_tickets_admin(user_name)
-    return render_template('personal_pannel.html', tickets=tickets,closed_tickets=closed_tickets,opened_tickets=opened_tickets,executing_tickets=executing_tickets,admin_status=admin_status)
+
+    return render_template(
+        'personal_pannel.html',
+        tickets=tickets,
+        closed_tickets=closed_tickets,
+        opened_tickets=opened_tickets,
+        executing_tickets=executing_tickets,
+        admin_status=admin_status
+    )
 
 
 @app.route('/ticket_details/<int:ticket_id>')
