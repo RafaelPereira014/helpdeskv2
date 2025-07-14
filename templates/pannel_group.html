@@ -86,6 +86,7 @@
         <form id="searchForm" class="search-form" method="GET" action="{{ url_for('group_panel') }}">
             <input type="text" id="search_id" name="search_id" class="search-input" placeholder="Procurar por ID..." value="{{ search_id }}">
             <input type="text" id="search_date" name="search_date" class="search-input" placeholder="Procurar por data..." value="{{ search_date }}">
+            <input type="text" id="search_date_close" name="search_date_close" class="search-input" placeholder="Procurar por data de fecho..." value="{{ search_date_close }}">
             <input type="text" id="search_user" name="search_user" class="search-input" placeholder="Procurar por utilizador..." value="{{ search_user }}">
             <input type="text" id="search_unidade" name="search_unidade" class="search-input" placeholder="Procurar por UO..." value="{{ search_unidade }}">
             <input type="text" id="search_title" name="search_title" class="search-input" placeholder="Procurar por título..." value="{{ search_title }}">
@@ -134,7 +135,8 @@
                     title: "{{ ticket.title }}",
                     state: "{{ ticket.state }}",
                     closed_by: "{{ ticket.closed_by }}",
-                    attributed_to_name: "{{ ticket.attributed_to_name }}"
+                    attributed_to_name: "{{ ticket.attributed_to_name }}",
+                    closed_at: "{{ ticket.closed_at }}"
                 },
                 {% endfor %}
             ];
@@ -154,6 +156,7 @@
             var searchIdInput = document.getElementById('search_id');
             var searchTitleInput = document.getElementById('search_title');
             var searchDateInput = document.getElementById('search_date');
+            var searchDateInput_close = document.getElementById('search_date_close');
             var searchUserInput = document.getElementById('search_user');
             var searchUnidadeInput = document.getElementById('search_unidade');
             var searchEstadoInput = document.getElementById('search_estado');
@@ -178,6 +181,7 @@
                 var searchId = searchIdInput.value.trim().toLowerCase();
                 var searchTitle = searchTitleInput.value.trim().toLowerCase();
                 var searchDate = searchDateInput.value.trim().toLowerCase();
+                var searchDate_close = searchDateInput_close.value.trim().toLowerCase();
                 var searchUser = searchUserInput.value.trim().toLowerCase();
                 var searchUnidade = searchUnidadeInput.value.trim().toLowerCase();
                 var searchEstado = searchEstadoInput.value.trim().toLowerCase();
@@ -187,6 +191,7 @@
                     return (searchId === '' || ticket.id.toLowerCase().includes(searchId)) &&
                         (searchTitle === '' || ticket.title.toLowerCase().includes(searchTitle)) &&
                         (searchDate === '' || ticket.date.toLowerCase().includes(searchDate)) &&
+                        (searchDate_close === '' || ticket.closed_at.toLowerCase().includes(searchDate_close)) &&
                         (searchUser === '' || ticket.created_by_user.toLowerCase().includes(searchUser)) &&
                         (searchUnidade === '' || ticket.UnidadeOrg.toLowerCase().includes(searchUnidade)) &&
                         (searchEstado === '' || ticket.state.toLowerCase().includes(searchEstado)) &&
@@ -238,6 +243,7 @@
                 searchIdInput.value = '';
                 searchTitleInput.value = '';
                 searchDateInput.value = '';
+                searchDateInput_close.value = '';
                 searchUserInput.value = '';
                 searchUnidadeInput.value = '';
                 searchEstadoInput.value = '';

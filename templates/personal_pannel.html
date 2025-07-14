@@ -37,7 +37,7 @@
             margin-left: 5px; /* Adds some space between the state text and the dot */
         }
     </style>
-    <title>Painel de grupo - Tickets</title>
+    <title>Painel pessoal - Tickets</title>
     
 </head>
 <body>
@@ -112,6 +112,7 @@
         <form id="searchForm" class="search-form" method="GET" action="{{ url_for('personal_panel') }}">
             <input type="text" id="search_id" name="search_id" class="search-input" placeholder="Procurar por ID..." value="{{ search_id }}">
             <input type="text" id="search_date" name="search_date" class="search-input" placeholder="Procurar por data..." value="{{ search_date }}">
+            <input type="text" id="search_date_close" name="search_date_close" class="search-input" placeholder="Procurar por data de fecho..." value="{{ search_date_close }}">
             <input type="text" id="search_user" name="search_user" class="search-input" placeholder="Procurar por utilizador..." value="{{ search_user }}">
             <input type="text" id="search_unidade" name="search_unidade" class="search-input" placeholder="Procurar por UO..." value="{{ search_unidade }}">
             <input type="text" id="search_title" name="search_title" class="search-input" placeholder="Procurar por título..." value="{{ search_title }}">
@@ -158,6 +159,7 @@
                     state: "{{ ticket.state }}",
                     closed_by: "{{ ticket.closed_by }}",
                     attributed_to_name: "{{ ticket.attributed_to_name }}",
+                    closed_at: "{{ ticket.closed_at }}",
                     sent_from_user: {{ ticket.sent_from_user | tojson }} // Add sent_from_user status
                 },
                 {% endfor %}
@@ -191,6 +193,7 @@
                 // Apply search filters
                 var searchId = document.getElementById('search_id').value.toLowerCase();
                 var searchDate = document.getElementById('search_date').value.toLowerCase();
+                var searchDate_close = document.getElementById('search_date_close').value.toLowerCase();
                 var searchUser = document.getElementById('search_user').value.toLowerCase();
                 var searchUnidade = document.getElementById('search_unidade').value.toLowerCase();
                 var searchTitle = document.getElementById('search_title').value.toLowerCase();
@@ -200,6 +203,7 @@
                     return (
                         (searchId === '' || ticket.id.toString().toLowerCase().includes(searchId)) &&
                         (searchDate === '' || ticket.date.toLowerCase().includes(searchDate)) &&
+                        (searchDate_close === '' || ticket.closed_at.toLowerCase().includes(searchDate_close)) &&
                         (searchUser === '' || ticket.created_by_user.toLowerCase().includes(searchUser)) &&
                         (searchUnidade === '' || ticket.UnidadeOrg.toLowerCase().includes(searchUnidade)) &&
                         (searchTitle === '' || ticket.title.toLowerCase().includes(searchTitle)) &&
