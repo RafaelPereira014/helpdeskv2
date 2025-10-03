@@ -136,6 +136,18 @@
             <button id="next-btn" class="button">Próximo</button>
         </div>
     </div>
+    <!-- Funny Loading Modal -->
+    <!-- Loading Modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4 shadow-lg" style="border-radius: 15px;">
+        <div class="modal-body">
+            <h5 class="mb-2">A atualizar grupo...</h5>
+            <p class="text-muted">Por favor aguarde uns segundos ⏳</p>
+        </div>
+        </div>
+    </div>
+    </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -270,6 +282,9 @@
         
             // Function to update group_id
             function updateGroupId(ticketId, newGroupId) {
+                var loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+                loadingModal.show(); // Mostra o modal enquanto atualiza
+
                 fetch(`/update_group_id/${ticketId}`, {
                     method: 'POST',
                     headers: {
@@ -279,12 +294,16 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                    loadingModal.hide(); // Esconde o modal quando termina
                     if (data.success) {
                         window.location.reload();
-                        displayTickets();
                     } else {
-                        alert('Failed to update Group ID');
+                        alert('❌ Falha ao atualizar o grupo.');
                     }
+                })
+                .catch(() => {
+                    loadingModal.hide();
+                    alert('⚠️ Erro de rede. Tente novamente.');
                 });
             }
         
