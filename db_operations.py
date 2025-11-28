@@ -419,7 +419,6 @@ def create_ticket(topic_id, description, date, state, created_by, contacto, titl
     """Creates a new ticket in the database."""
     conn = connect_to_database()
     cursor = conn.cursor()
-    print(UnidadeOrg)
     try:
         if 'DRAC' in UnidadeOrg:
             group_id = 5
@@ -444,7 +443,7 @@ def create_ticket(topic_id, description, date, state, created_by, contacto, titl
         """, (topic_id, description, date, state, created_by, contacto, title, group_id, created_by_user,UnidadeOrg,file))
         conn.commit()
         print("Ticket created successfully")
-    except pymysql.connector.Error as e:
+    except pymysql.Error as e:
         print("Error creating ticket:", e)
     finally:
         cursor.close()
@@ -658,6 +657,15 @@ def get_user_id_by_name(user_name):
     conn = connect_to_database()
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM users WHERE name = %s", (user_name,))
+    result = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return result[0] if result else None
+
+def get_user_id_by_email(user_email):
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM users WHERE email = %s", (user_email,))
     result = cursor.fetchone()
     cursor.close()
     conn.close()
@@ -1078,7 +1086,7 @@ def add_message_to_ticket(ticket_id, message):
                        (ticket_id, message))
         conn.commit()
         print("Message added to ticket successfully")
-    except pymysql.connector.Error as e:
+    except pymysql.Error as e:
         print("Error adding message to ticket:", e)
     finally:
         cursor.close()

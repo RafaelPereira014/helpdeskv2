@@ -411,33 +411,44 @@
         }
 
         function fetchUnidadeOrganica() {
-            var ilhaDropdown = document.getElementById('ilha');
-            var unidadeOrgDropdown = document.getElementById('UnidadeOrg');
+        var ilhaDropdown = document.getElementById('ilha');
+        var unidadeOrgDropdown = document.getElementById('UnidadeOrg');
 
-            unidadeOrgDropdown.innerHTML = '';
+        // Clear existing options
+        unidadeOrgDropdown.innerHTML = '';
 
-            if (is_edu) {
-                var selectedIlha = ilhaDropdown.value;
-                var options = ilhaOptions[selectedIlha] || [];
-                options.forEach(option => {
-                    var newOption = document.createElement('option');
-                    newOption.textContent = option.trim();
-                    unidadeOrgDropdown.appendChild(newOption);
-                });
-            } else if (is_admin) {
-                adminUnidades.forEach(option => {
-                    var newOption = document.createElement('option');
-                    newOption.textContent = option.trim();
-                    unidadeOrgDropdown.appendChild(newOption);
-                });
-            } else {
-                graUnidades.forEach(option => {
-                    var newOption = document.createElement('option');
-                    newOption.textContent = option.trim();
-                    unidadeOrgDropdown.appendChild(newOption);
-                });
-            }
+        // Add the default placeholder
+        var placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = '-Selecione uma opção-';
+        unidadeOrgDropdown.appendChild(placeholder);
+
+        // Populate the rest of the options
+        if (is_edu) {
+            var selectedIlha = ilhaDropdown.value;
+            var options = ilhaOptions[selectedIlha] || [];
+            options.forEach(option => {
+                var newOption = document.createElement('option');
+                newOption.textContent = option.trim();
+                unidadeOrgDropdown.appendChild(newOption);
+            });
+        } else if (is_admin) {
+            adminUnidades.forEach(option => {
+                var newOption = document.createElement('option');
+                newOption.textContent = option.trim();
+                unidadeOrgDropdown.appendChild(newOption);
+            });
+        } else {
+            graUnidades.forEach(option => {
+                var newOption = document.createElement('option');
+                newOption.textContent = option.trim();
+                unidadeOrgDropdown.appendChild(newOption);
+            });
         }
+
+        // Ensure placeholder is selected by default
+        unidadeOrgDropdown.value = '';
+    }
         // Show the waiting popup
         function showWaitingPopup() {
             var waitingPopup = document.getElementById('waiting-popup');

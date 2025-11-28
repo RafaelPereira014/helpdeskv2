@@ -1,18 +1,18 @@
 import csv
 import datetime
 import bleach
+import requests
 from functools import wraps
 import secrets
 import os
 import subprocess
 from flask_caching import Cache
 from flask import Flask, flash, jsonify, render_template, request, redirect, send_from_directory, url_for
-import requests
 from db_operations import *
 from more_operations import *
 from flask import session
 from flask import redirect
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import request
 from flask_mail import Mail, Message
 from werkzeug.utils import secure_filename
@@ -69,7 +69,7 @@ def login():
         conn = connect_to_database()
         cursor = conn.cursor()
         cursor.execute("SELECT id, type, password FROM users WHERE email = %s", (email,))
-        user_data = cursor.fetchone()  # Fetch the user ID, type, and hashed password from the database
+        user_data = cursor.fetchone()  
         cursor.close()
 
         if user_data:
@@ -83,6 +83,49 @@ def login():
                     return redirect(url_for('init_page'))  # Redirect non-admin users to init_page
         error = 'Invalid credentials. Please try again.'
     return render_template('login.html', error=error)
+
+active_tokens = {}
+
+@app.route('/services/login', methods=['POST'])
+def login_api():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({"error": "Missing email or password"}), 400
+
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    user_verified = False
+    
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, password FROM users WHERE email = %s", (email,))
+    user_data = cursor.fetchone()  
+    cursor.close()
+    conn.close()
+
+    if user_data:
+        stored_password = user_data[1]
+        if hashed_password == stored_password:
+            user_verified = True
+
+    if user_verified:
+        # ✅ Generate a random secure token
+        token = secrets.token_hex(32)  # 64-character random token
+
+        # Store token temporarily (e.g., in memory or DB)
+        active_tokens[token] = {
+            "user": email,
+            "expires_at": datetime.now() + timedelta(hours=1)
+        }
+
+        return jsonify({
+            "token": token,
+            "expires_in": 3600
+        })
+    else:
+        return jsonify({"error": "Invalid credentials"}), 401
 
 @app.route('/logout')
 def logout():
@@ -188,7 +231,6 @@ def new_ticket():
     gra_divisoes = get_all_gra()
     admin_unidades = sorted(all_unidades + gra_divisoes)
     material_types = get_material_types()
-    print(material_types)
     
 
     if request.method == 'POST':
@@ -204,7 +246,6 @@ def new_ticket():
         title = request.form['title']
         assigned_to = request.form.get('assigned_to')
         material_type = request.form.getlist('material_type')
-        print(material_type)
         material_quantity = request.form.getlist('quantity_type')
         quantidade = '1'
         motivo = 'Requisição'
@@ -256,10 +297,9 @@ def new_ticket():
             'data_inicio': data_inicio,
             'data_fim': data_fim
         }
-        print(data_to_send)
 
         
-        api_url = 'http://172.22.130.12:8081/receive-data'  
+        api_url = 'http://172.22.130.12:8081/receive-data'
         #api_url = 'http://127.0.0.1:8081/receive-data'  
         try:
             response = requests.post(api_url, json=data_to_send)
@@ -378,6 +418,54 @@ def new_ticket():
             admin_unidades=admin_unidades,
             material_types = material_types)
 
+
+
+@app.route('/services/create-ticket', methods=['POST'])
+def create_ticket_api():
+    auth_header = request.headers.get('Authorization')
+
+    # Check for Authorization header
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return jsonify({"error": "Missing or invalid token"}), 401
+
+    token = auth_header.split(" ")[1]
+
+    # Verify token
+    token_data = active_tokens.get(token)
+    if not token_data:
+        return jsonify({"error": "Invalid token"}), 401
+
+    if datetime.now() > token_data["expires_at"]:
+        return jsonify({"error": "Token expired"}), 401
+
+    # Get ticket data
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Missing request data"}), 400
+
+    ticket_info = {
+        "email": data.get("email"),
+        "topic_id": data.get("topic_id"),
+        "ticket_summary": data.get("ticket_summary"),
+        "description": data.get("description"),
+        "organization": data.get("organization"),
+        "attachments": data.get("attachments", []),
+        "contact": data.get("contact")
+    }
+    created_by = get_user_id_by_email(ticket_info['email'])
+
+    # Validate required fields
+    required_fields = ["email", "topic_id", "ticket_summary"]
+    missing_fields = [field for field in required_fields if not ticket_info.get(field)]
+    if missing_fields:
+        return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
+
+    # Simulate saving the ticket
+    create_ticket(ticket_info['topic_id'], ticket_info['description'], datetime.now(), 'Aberto', created_by, ticket_info['contact'], ticket_info['ticket_summary'], 'DREAE', '')
+    print(f"Received ticket from {token_data['user']}: {ticket_info}")
+    
+
+    return jsonify({"status": "success", "message": "Ticket created successfully", "ticket": ticket_info})
 
 
 @app.route('/my_tickets')
